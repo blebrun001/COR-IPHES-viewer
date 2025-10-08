@@ -19,14 +19,14 @@ Web application that browses 3D models hosted in the CORA-IPES Dataverse directl
 
 ### Python option (fastest)
 ```bash
-cd /Users/brice/Documents/website/website
+cd /path/to/COR-IPHES-viewer
 python3 -m http.server 8000
 ```
 Open `http://localhost:8000/` in any compatible browser.
 
 ### Node.js option (with auto-reload)
 ```bash
-cd /Users/brice/Documents/website/website
+cd /path/to/COR-IPHES-viewer
 npm install --global serve
 serve . --listen 8000
 ```
@@ -35,7 +35,7 @@ serve . --listen 8000
 
 ## Project Structure
 ```
-website/
+COR-IPHES-viewer/
 ├── index.html               # Application entry point
 ├── public/
 │   ├── css/styles.css       # Core stylesheets
@@ -78,7 +78,7 @@ website/
 
 ## Deployment
 The project is static and can be hosted on any file-based platform (GitHub Pages, Netlify, nginx, …):
-1. Serve the `website/` directory as the site root.
+1. Serve the repository root directory (the one containing `index.html`).
 2. Enforce HTTPS whenever possible (the Dataverse API is HTTPS-only).
 3. Confirm that `https://dataverse.csuc.cat` is reachable from the hosting environment (no restrictive firewalls).
 
