@@ -1,0 +1,108 @@
+{
+  "header": {
+    "toggleSidebar": "Afficher/masquer le panneau latéral",
+    "title": "Esqueletos en Línea",
+    "subtitle": "Visualiseur de modèles 3D COR-IPHES"
+  },
+  "sidebar": {
+    "selectionHeading": "Sélection",
+    "datasetLabel": "Spécimen (jeu de données)",
+    "datasetLoadingOption": "Chargement des jeux de données...",
+    "modelLabel": "Os (modèle 3D)",
+    "modelDisabledOption": "Sélectionnez un jeu de données",
+    "actionsLabel": "Actions",
+    "reloadButton": "Recharger les listes",
+    "metadataHeading": "Métadonnées du jeu de données",
+    "moreInfoHeading": "Plus d'infos",
+    "links": {
+      "gbif": "Espèce (GBIF)",
+      "cora": "Spécimen (CORA-RDR)",
+      "uberon": "Os (OLS UBERON)",
+      "about": "À propos du projet"
+    }
+  },
+  "language": {
+    "selectorLabel": "Langue",
+    "names": {
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "ca": "Català"
+    }
+  },
+  "viewer": {
+    "projection": {
+      "label": "Projection",
+      "perspective": "Perspective",
+      "orthographic": "Orthographique"
+    },
+    "orbit": {
+      "label": "Orbite",
+      "upright": "Verticale",
+      "free": "Libre"
+    },
+    "buttons": {
+      "disableTextures": "Désactiver les textures",
+      "enableTextures": "Activer les textures",
+      "disableWireframe": "Désactiver le mode filaire",
+      "enableWireframe": "Activer le mode filaire",
+      "restoreLights": "Rétablir l'éclairage",
+      "dimLights": "Atténuer les lumières",
+      "exitMeasure": "Quitter la mesure",
+      "measure": "Mesurer",
+      "clearMeasurements": "Effacer les mesures",
+      "capture": "Capturer",
+      "resetView": "Réinitialiser la vue"
+    }
+  },
+  "metadata": {
+    "itemLabel": "Élément",
+    "emptySelection": "Sélectionnez un jeu de données pour afficher les métadonnées.",
+    "emptyData": "Aucune métadonnée disponible pour ce jeu de données."
+  },
+  "selector": {
+    "dataset": {
+      "placeholder": "Choisir un jeu de données...",
+      "loading": "Chargement des jeux de données..."
+    },
+    "model": {
+      "disabled": "Sélectionnez un jeu de données",
+      "loading": "Chargement des modèles...",
+      "none": "Aucun modèle OBJ/MTL trouvé",
+      "placeholder": "Choisir un modèle...",
+      "error": "Erreur de chargement"
+    }
+  },
+  "status": {
+    "loadingDatasets": "Chargement des jeux de données...",
+    "datasetsLoadedFromCache": "Chargé depuis le cache",
+    "datasetsLoadedFromAPI": "Chargé depuis l'API",
+    "datasetsLoadError": "Échec du chargement de la liste des jeux de données.",
+    "selectDatasetAndModel": "Sélectionnez un jeu de données et un modèle.",
+    "loadingDataset": "Chargement du jeu de données...",
+    "noModelsInDataset": "Aucun modèle OBJ/MTL dans ce jeu de données.",
+    "selectModel": "Sélectionnez un modèle 3D à charger.",
+    "datasetLoadFailure": "Échec du chargement du jeu de données.",
+    "loadingGeometry": "Chargement de la géométrie...",
+    "screenshotFailed": "Impossible de capturer la capture d'écran.",
+    "modelLoadFailure": "Échec du chargement du modèle 3D."
+  },
+  "about": {
+    "title": "À propos du projet",
+    "section1": {
+      "heading": "IPHES-CERCA et l'aire de zooarchéologie et de taphonomie",
+      "paragraph1": "L'Institut Català de Paleoecologia Humana i Evolució Social (IPHES-CERCA) est un centre de recherche de premier plan dédié à l'étude de l'évolution humaine, des environnements passés et du patrimoine archéologique, situé à Tarragone (Catalogne, Espagne). Au sein de l'IPHES-CERCA, l'aire de zooarchéologie et de taphonomie se consacre à l'analyse des restes animaux provenant de contextes archéologiques afin de reconstituer les stratégies de subsistance, les conditions paléoécologiques et les interactions entre humains et animaux au fil du temps."
+    },
+    "section2": {
+      "heading": "Esqueletos en Línea",
+      "paragraph1": "Esqueletos en Línea est un projet dirigé par la Dre Palmira Saladié Ballesté visant à créer une plateforme numérique en libre accès pour la collection de référence zooarchéologique de l'IPHES. Ce projet s'inscrit dans un effort plus large visant à rendre les données scientifiques plus accessibles, réutilisables et interopérables conformément aux principes FAIR. Il offre aux chercheurs, étudiants et professionnels du patrimoine une collection numérique organisée et documentée qui facilite l'identification, l'analyse comparative et la collaboration scientifique.",
+      "paragraph2": "Le projet est financé par la FECYT au moyen d'une bourse María de Guzmán (MDG-23-11591) et a également bénéficié du soutien de CORA-RDR, qui héberge et préserve les collections numériques."
+    },
+    "section3": {
+      "heading": "Visualiseur 3D",
+      "paragraph1": "Le visualiseur 3D est un outil web conçu pour explorer, inspecter et contextualiser des modèles numériques de spécimens zooarchéologiques directement dans le navigateur. Il a été développé par le Dr Brice Lebrun. Il permet aux utilisateurs de naviguer de manière interactive dans des reconstructions 3D, de visualiser les métadonnées, de basculer entre différents modes de rendu (texturé, filaire, variations d'éclairage) et de créer des liens directs vers des ressources scientifiques externes telles que GBIF, CORA-RDR et UBERON. Le visualiseur se veut à la fois un instrument scientifique et une ressource pédagogique, soutenant les travaux de recherche et la valorisation du patrimoine archéologique."
+    },
+    "closeButton": "×",
+    "closeAria": "Fermer la fenêtre À propos"
+  }
+}

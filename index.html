@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dataverse 3D Viewer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./public/css/styles.css" />
+  </head>
+  <body>
+    <!-- Application shell grouping header, sidebar, and 3D viewer surface -->
+    <div class="app-shell">
+      <!-- Header keeps project identity and controls global actions -->
+      <header class="top-bar">
+        <div class="top-bar__left">
+          <button
+            id="toggleSidebar"
+            type="button"
+            class="top-bar__toggle"
+            aria-controls="appSidebar"
+            aria-expanded="true"
+            data-i18n-attr="aria-label:header.toggleSidebar"
+          >
+            ☰
+          </button>
+          <h1 class="project-title" data-i18n="header.title">Esqueletos en Línea</h1>
+          <p class="project-subtitle" data-i18n="header.subtitle">COR-IPHES 3D Model Viewer</p>
+        </div>
+        <div class="top-bar__center"></div>
+        <div class="top-bar__right">
+          <img
+            src="./public/ressources/iphes.png"
+            alt="IPHES-CERCA logo"
+            class="top-bar__logo"
+            decoding="async"
+          />
+        </div>
+      </header>
+      <div class="app-layout">
+        <!-- Sidebar hosts dataset selection, metadata, and external resources -->
+        <aside id="appSidebar" class="sidebar" tabindex="-1" aria-expanded="true">
+          <section class="sidebar-section selectors-section">
+            <div class="sidebar-heading" data-i18n="sidebar.selectionHeading">Selection</div>
+            <div class="sidebar-selectors">
+              <div class="selector-group">
+                <label for="datasetSelect" data-i18n="sidebar.datasetLabel">Specimen (Dataset)</label>
+                <select id="datasetSelect">
+                  <option value="" data-i18n="sidebar.datasetLoadingOption">Loading datasets...</option>
+                </select>
+              </div>
+              <div class="selector-group">
+                <label for="modelSelect" data-i18n="sidebar.modelLabel">Bone (3D Model)</label>
+                <select id="modelSelect" disabled>
+                  <option value="" data-i18n="sidebar.modelDisabledOption">Select a dataset</option>
+                </select>
+              </div>
+              <div class="selector-group selector-group--compact">
+                <label for="reloadDatasets" data-i18n="sidebar.actionsLabel">Actions</label>
+                <button id="reloadDatasets" type="button" data-i18n="sidebar.reloadButton">Reload lists</button>
+              </div>
+            </div>
+          </section>
+          <section class="sidebar-section metadata-section">
+            <div class="sidebar-heading" data-i18n="sidebar.metadataHeading">Dataset metadata</div>
+            <div id="metadataPanel" class="metadata-scroll"></div>
+          </section>
+          <section class="sidebar-section links-section">
+            <div class="sidebar-heading" data-i18n="sidebar.moreInfoHeading">More infos</div>
+            <div class="external-links">
+              <a id="gbifLink" class="external-link" href="#" target="_blank" rel="noopener noreferrer" hidden data-i18n="sidebar.links.gbif">Species (GBIF)</a>
+              <a id="coraLink" class="external-link" href="#" target="_blank" rel="noopener noreferrer" hidden data-i18n="sidebar.links.cora">Specimen (CORA-RDR)</a>
+              <a id="uberonLink" class="external-link" href="#" target="_blank" rel="noopener noreferrer" hidden data-i18n="sidebar.links.uberon">Bone (OLS UBERON)</a>
+              <button id="aboutButton" type="button" class="external-link" data-i18n="sidebar.links.about">About the project</button>
+              <div class="language-selector" role="group" aria-labelledby="languageSelectLabel">
+                <label id="languageSelectLabel" for="languageSelect" class="language-selector__label" data-i18n="language.selectorLabel">Language</label>
+                <select id="languageSelect" class="language-selector__control" aria-describedby="languageSelectLabel"></select>
+              </div>
+            </div>
+          </section>
+        </aside>
+        <!-- Main area renders the Three.js canvas, status banner, and viewer toolbar -->
+        <main class="viewer-area">
+          <div id="viewer3D" class="viewer-surface"></div>
+          <div id="status" class="viewer-status"></div>
+          <div id="measurementOverlay" class="measurement-overlay"></div>
+          <img
+            src="./public/ressources/cc.png"
+            alt="Creative Commons logo"
+            class="viewer-watermark"
+            decoding="async"
+          />
+          <div id="viewerToolbar" class="viewer-toolbar">
+            <div class="toolbar-section">
+              <label for="projectionMode" data-i18n="viewer.projection.label">Projection</label>
+              <select id="projectionMode">
+                <option value="perspective" data-i18n="viewer.projection.perspective">Perspective</option>
+                <option value="orthographic" data-i18n="viewer.projection.orthographic">Orthographic</option>
+              </select>
+            </div>
+            <div class="toolbar-section">
+              <label for="orbitMode" data-i18n="viewer.orbit.label">Orbit</label>
+              <select id="orbitMode">
+                <option value="upright" data-i18n="viewer.orbit.upright">Upright</option>
+                <option value="free" data-i18n="viewer.orbit.free">Free</option>
+              </select>
+            </div>
+            <div class="toolbar-section toolbar-buttons">
+              <button id="toggleTextures" type="button" data-i18n="viewer.buttons.disableTextures">Disable Textures</button>
+              <button id="toggleWireframe" type="button" data-i18n="viewer.buttons.enableWireframe">Enable Wireframe</button>
+              <button id="toggleLighting" type="button" data-i18n="viewer.buttons.dimLights">Dim Lights</button>
+              <button id="toggleMeasure" type="button" data-i18n="viewer.buttons.measure">Measure</button>
+              <button id="clearMeasurements" type="button" data-i18n="viewer.buttons.clearMeasurements">Clear Measurements</button>
+              <button id="captureScreenshot" type="button" data-i18n="viewer.buttons.capture">Capture</button>
+              <button id="resetView" type="button" data-i18n="viewer.buttons.resetView">Reset View</button>
+            </div>
+          </div>
+        </main>
+      </div>
+      <div id="sidebarOverlay" hidden></div>
+    </div>
+
+    <!-- Import map resolves Three.js modules when running without a bundler -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+          "three/examples/jsm/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+        }
+      }
+    </script>
+    <!-- About dialog content is toggled by about.js for additional context -->
+    <dialog id="aboutDialog" class="about-dialog">
+      <h2 data-i18n="about.title">About the project</h2>
+      <section>
+        <h3 data-i18n="about.section1.heading">IPHES-CERCA and the Area of Zooarchaeology and Taphonomy</h3>
+        <p data-i18n="about.section1.paragraph1">
+          The Institut Català de Paleoecologia Humana i Evolució Social (IPHES-CERCA) is a leading research centre dedicated to the study of human evolution, past environments, and archaeological heritage, located in Tarragona (Catalonia, Spain).
+          Within IPHES-CERCA, the Zooarchaeology and Taphonomy Area focuses on the analysis of animal remains from archaeological contexts to reconstruct subsistence strategies, paleoecological conditions, and human-animal interactions over time.
+        </p>
+      </section>
+      <section>
+        <h3 data-i18n="about.section2.heading">Esqueletos en Línea</h3>
+        <p data-i18n="about.section2.paragraph1">
+          Esqueletos en Línea is a project led by Dra. Palmira Saladié Ballesté aiming to create an open-access digital platform for the IPHES zooarchaeological reference collection.
+          This project is part of a broader effort to make scientific data more accessible, reusable, and interoperable according to the FAIR principles.
+          It provides researchers, students, and heritage professionals with a curated and documented digital collection that supports identification, comparative analysis, and scientific collaboration.
+        </p>
+        <p data-i18n="about.section2.paragraph2">
+          The project is funded by FECYT through a María de Guzmán fellowship (MDG-23-11591) and has also benefited from the support of CORA-RDR, which hosts and preserves the digital collections.
+        </p>
+      </section>
+      <section>
+        <h3 data-i18n="about.section3.heading">3D Viewer</h3>
+        <p data-i18n="about.section3.paragraph1">
+          The 3D viewer is a web-based tool designed to explore, inspect, and contextualize digital models of zooarchaeological specimens directly in the browser.
+          It has been developed by Dr. Brice Lebrun.
+          It allows users to navigate 3D reconstructions interactively, visualize metadata, switch between different rendering modes (textured, wireframe, lighting variations), and link directly to external scientific resources such as GBIF, CORA-RDR, and UBERON.
+          The viewer is intended to serve as both a scientific instrument and an educational resource, supporting research workflows and public engagement with archaeological heritage.
+        </p>
+      </section>
+      <div class="about-logos" role="group" aria-label="Project partners">
+        <img src="./public/ressources/iphes.png" alt="IPHES-CERCA logo" />
+        <img src="./public/ressources/cerca.png" alt="CERCA logo" />
+        <img src="./public/ressources/fecyt.jpg" alt="FECYT logo" />
+        <img src="./public/ressources/ministerio.png" alt="Ministerio de Ciencia e Innovación logo" />
+      </div>
+      <button
+        id="closeAbout"
+        type="button"
+        class="about-close"
+        data-i18n="about.closeButton"
+        data-i18n-attr="aria-label:about.closeAria"
+      >&times;</button>
+    </dialog>
+
+    <!-- Entry modules: core viewer bootstrap + supporting UI behaviours -->
+    <script type="module" src="./public/js/app.js"></script>
+    <script type="module" src="./public/js/about.js"></script>
+    <script type="module" src="./public/js/sidebar.js"></script>
+  </body>
+</html>

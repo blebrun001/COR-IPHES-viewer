@@ -1,0 +1,108 @@
+{
+  "header": {
+    "toggleSidebar": "Toggle sidebar",
+    "title": "Esqueletos en Línea",
+    "subtitle": "COR-IPHES 3D Model Viewer"
+  },
+  "sidebar": {
+    "selectionHeading": "Selection",
+    "datasetLabel": "Specimen (Dataset)",
+    "datasetLoadingOption": "Loading datasets...",
+    "modelLabel": "Bone (3D Model)",
+    "modelDisabledOption": "Select a dataset",
+    "actionsLabel": "Actions",
+    "reloadButton": "Reload lists",
+    "metadataHeading": "Dataset metadata",
+    "moreInfoHeading": "More infos",
+    "links": {
+      "gbif": "Species (GBIF)",
+      "cora": "Specimen (CORA-RDR)",
+      "uberon": "Bone (OLS UBERON)",
+      "about": "About the project"
+    }
+  },
+  "language": {
+    "selectorLabel": "Language",
+    "names": {
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "ca": "Català"
+    }
+  },
+  "viewer": {
+    "projection": {
+      "label": "Projection",
+      "perspective": "Perspective",
+      "orthographic": "Orthographic"
+    },
+    "orbit": {
+      "label": "Orbit",
+      "upright": "Upright",
+      "free": "Free"
+    },
+    "buttons": {
+      "disableTextures": "Disable Textures",
+      "enableTextures": "Enable Textures",
+      "disableWireframe": "Disable Wireframe",
+      "enableWireframe": "Enable Wireframe",
+      "restoreLights": "Restore Lights",
+      "dimLights": "Dim Lights",
+      "exitMeasure": "Exit Measure",
+      "measure": "Measure",
+      "clearMeasurements": "Clear Measurements",
+      "capture": "Capture",
+      "resetView": "Reset View"
+    }
+  },
+  "metadata": {
+    "itemLabel": "Item",
+    "emptySelection": "Select a dataset to display metadata.",
+    "emptyData": "No metadata available for this dataset."
+  },
+  "selector": {
+    "dataset": {
+      "placeholder": "Choose a dataset...",
+      "loading": "Loading datasets..."
+    },
+    "model": {
+      "disabled": "Select a dataset",
+      "loading": "Loading models...",
+      "none": "No OBJ/MTL model found",
+      "placeholder": "Choose a model...",
+      "error": "Load error"
+    }
+  },
+  "status": {
+    "loadingDatasets": "Loading datasets...",
+    "datasetsLoadedFromCache": "Loaded from cache",
+    "datasetsLoadedFromAPI": "Loaded from API",
+    "datasetsLoadError": "Failed to load dataset list.",
+    "selectDatasetAndModel": "Select a dataset and a model.",
+    "loadingDataset": "Loading dataset...",
+    "noModelsInDataset": "No OBJ/MTL model in this dataset.",
+    "selectModel": "Select a 3D model to load.",
+    "datasetLoadFailure": "Failed to load dataset.",
+    "loadingGeometry": "Loading geometry...",
+    "screenshotFailed": "Unable to capture screenshot.",
+    "modelLoadFailure": "Failed to load the 3D model."
+  },
+  "about": {
+    "title": "About the project",
+    "section1": {
+      "heading": "IPHES-CERCA and the Area of Zooarchaeology and Taphonomy",
+      "paragraph1": "The Institut Català de Paleoecologia Humana i Evolució Social (IPHES-CERCA) is a leading research centre dedicated to the study of human evolution, past environments, and archaeological heritage, located in Tarragona (Catalonia, Spain). Within IPHES-CERCA, the Zooarchaeology and Taphonomy Area focuses on the analysis of animal remains from archaeological contexts to reconstruct subsistence strategies, paleoecological conditions, and human-animal interactions over time."
+    },
+    "section2": {
+      "heading": "Esqueletos en Línea",
+      "paragraph1": "Esqueletos en Línea is a project led by Dra. Palmira Saladié Ballesté aiming to create an open-access digital platform for the IPHES zooarchaeological reference collection. This project is part of a broader effort to make scientific data more accessible, reusable, and interoperable according to the FAIR principles. It provides researchers, students, and heritage professionals with a curated and documented digital collection that supports identification, comparative analysis, and scientific collaboration.",
+      "paragraph2": "The project is funded by FECYT through a María de Guzmán fellowship (MDG-23-11591) and has also benefited from the support of CORA-RDR, which hosts and preserves the digital collections."
+    },
+    "section3": {
+      "heading": "3D Viewer",
+      "paragraph1": "The 3D viewer is a web-based tool designed to explore, inspect, and contextualize digital models of zooarchaeological specimens directly in the browser. It has been developed by Dr. Brice Lebrun. It allows users to navigate 3D reconstructions interactively, visualize metadata, switch between different rendering modes (textured, wireframe, lighting variations), and link directly to external scientific resources such as GBIF, CORA-RDR, and UBERON. The viewer is intended to serve as both a scientific instrument and an educational resource, supporting research workflows and public engagement with archaeological heritage."
+    },
+    "closeButton": "×",
+    "closeAria": "Close about dialog"
+  }
+}
