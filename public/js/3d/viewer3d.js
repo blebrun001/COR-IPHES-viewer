@@ -301,7 +301,7 @@ class Viewer3D {
 
     this.cameraMode = 'perspective';
     this.camera = this.perspectiveCamera;
-    this.orbitMode = 'free';
+    this.orbitMode = 'upright';
     this.viewState = null;
     this.texturesEnabled = true;
     this.wireframeEnabled = false;

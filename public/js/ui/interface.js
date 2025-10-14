@@ -33,6 +33,36 @@ function escapeHtml(value) {
   });
 }
 
+function formatSpecimenAttributes(summary) {
+  if (!summary || typeof summary !== 'object') {
+    return '';
+  }
+  const seen = new Set();
+  const tokens = [];
+  const pushValue = (value) => {
+    if (!value) return;
+    const key = String(value).toLowerCase();
+    if (seen.has(key)) {
+      return;
+    }
+    seen.add(key);
+    tokens.push(String(value));
+  };
+  pushValue(summary.sex);
+  pushValue(summary.lifeStage);
+  pushValue(summary.ageClass);
+  return tokens.join(' · ');
+}
+
+function formatSpecimenLabel(baseLabel, summary) {
+  const label = baseLabel || '';
+  const attributes = formatSpecimenAttributes(summary);
+  if (!attributes) {
+    return label;
+  }
+  return `${label} (${attributes})`;
+}
+
 /**
  * Converts metadata keys into reader-friendly labels.
  *
@@ -1023,7 +1053,9 @@ export async function initInterface({
       datasets
         .map(
           (info) =>
-            `<option value="${escapeHtml(info.value)}">${escapeHtml(info.label)}</option>`,
+            `<option value="${escapeHtml(info.value)}">${escapeHtml(
+              formatSpecimenLabel(info.label, info.specimenSummary),
+            )}</option>`,
         )
         .join('');
     datasetSelect.innerHTML = options;

@@ -8,6 +8,159 @@ const DEFAULT_API_ROOT = "https://dataverse.csuc.cat/api";
 const DEFAULT_DATAVERSE_ID = "cor-iphes";
 const DEFAULT_FETCH = getDefaultFetch();
 
+function normalizeKeyToken(name) {
+  return typeof name === 'string' ? name.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+}
+
+function flattenFieldValues(value, results) {
+  if (value === null || value === undefined) {
+    return;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((item) => flattenFieldValues(item, results));
+    return;
+  }
+  if (typeof value === 'object') {
+    if (Object.prototype.hasOwnProperty.call(value, 'value')) {
+      flattenFieldValues(value.value, results);
+      return;
+    }
+    Object.values(value).forEach((entry) => flattenFieldValues(entry, results));
+    return;
+  }
+  const text = String(value).trim();
+  if (text) {
+    results.push(text);
+  }
+}
+
+function collectFieldValues(fields = [], targetNames = [], { split = false } = {}) {
+  if (!fields.length || !targetNames.length) {
+    return [];
+  }
+
+  const normalizedTargets = targetNames.map(normalizeKeyToken);
+  const field = fields.find((item) => {
+    const typeToken = normalizeKeyToken(item.typeName);
+    if (normalizedTargets.includes(typeToken)) {
+      return true;
+    }
+    const displayToken = normalizeKeyToken(item.displayName);
+    return normalizedTargets.includes(displayToken);
+  });
+
+  if (!field) {
+    return [];
+  }
+
+  const values = [];
+  flattenFieldValues(field.value, values);
+
+  if (!values.length) {
+    return [];
+  }
+
+  const finalValues = [];
+  const pushValue = (raw) => {
+    if (!raw) return;
+    const trimmed = raw.trim();
+    if (!trimmed) return;
+    finalValues.push(trimmed);
+  };
+
+  if (split) {
+    values.forEach((item) => {
+      item.split(/[;,|\r\n]+/).forEach((segment) => pushValue(segment));
+    });
+  } else {
+    values.forEach((item) => pushValue(item));
+  }
+
+  return finalValues;
+}
+
+function humaniseSpecimenValue(value) {
+  if (!value) {
+    return null;
+  }
+  const normalised = String(value)
+    .replace(/[_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+  if (!normalised) {
+    return null;
+  }
+  return normalised.charAt(0).toUpperCase() + normalised.slice(1);
+}
+
+function extractSpecimenSummary(detail) {
+  const block = detail?.data?.latestVersion?.metadataBlocks?.darwincore;
+  const fields = Array.isArray(block?.fields) ? block.fields : null;
+  if (!fields) {
+    return null;
+  }
+
+  const sex =
+    collectFieldValues(fields, ['dwcSex', 'dwc:sex', 'sex'])
+      .map(humaniseSpecimenValue)
+      .find(Boolean) || null;
+
+  const lifeStage =
+    collectFieldValues(fields, ['dwcLifeStage', 'dwc:lifeStage', 'lifeStage'])
+      .map(humaniseSpecimenValue)
+      .find(Boolean) || null;
+
+  const ageClass =
+    collectFieldValues(fields, ['dwcAgeClass', 'dwc:ageClass', 'ageClass'])
+      .map(humaniseSpecimenValue)
+      .find(Boolean) || null;
+
+  const catalogNumber =
+    collectFieldValues(fields, ['dwcCatalogNumber', 'dwc:catalogNumber', 'catalogNumber']).find(
+      Boolean,
+    ) || null;
+
+  const otherCatalogNumbers = collectFieldValues(
+    fields,
+    ['dwcOtherCatalogNumbers', 'dwc:otherCatalogNumbers', 'otherCatalogNumbers'],
+    { split: true },
+  );
+
+  const individualId =
+    collectFieldValues(fields, ['dwcIndividualID', 'dwc:individualID', 'individualID']).find(
+      Boolean,
+    ) || null;
+
+  const summary = {};
+  if (sex) summary.sex = sex;
+  if (lifeStage) summary.lifeStage = lifeStage;
+  if (ageClass) summary.ageClass = ageClass;
+  if (catalogNumber) summary.catalogNumber = catalogNumber;
+  if (otherCatalogNumbers.length) {
+    summary.otherCatalogNumbers = Array.from(
+      new Set(otherCatalogNumbers.map((item) => item.trim()).filter(Boolean)),
+    );
+  }
+  if (individualId) summary.individualId = individualId;
+
+  if (!Object.keys(summary).length) {
+    return null;
+  }
+
+  const idCandidates = [
+    summary.catalogNumber,
+    ...(summary.otherCatalogNumbers || []),
+    summary.individualId,
+  ];
+  const primaryId = idCandidates.find(Boolean) || null;
+  if (primaryId) {
+    summary.primaryId = primaryId;
+  }
+
+  return summary;
+}
+
 /**
  * Normalises path separators to forward slashes.
  *
@@ -449,9 +602,11 @@ export class DataverseClient {
           )}`
         );
         const title = extractTitle(detail) || item.identifier;
+        const specimenSummary = extractSpecimenSummary(detail);
         cacheEntry.title = title;
         cacheEntry.detail = detail;
         cacheEntry.files = detail?.data?.latestVersion?.files || [];
+        cacheEntry.specimenSummary = specimenSummary;
         cacheEntry.models = null;
         cacheEntry.modelMap = null;
         cacheEntry.fileMap = null;
@@ -467,6 +622,7 @@ export class DataverseClient {
         label: cacheEntry.title || item.identifier,
         value: persistentId,
         identifier: item.identifier,
+        specimenSummary: cacheEntry.specimenSummary || null,
       });
     }
 
@@ -500,7 +656,12 @@ export class DataverseClient {
         detail,
         files: detail?.data?.latestVersion?.files || [],
       };
+      entry.specimenSummary = extractSpecimenSummary(detail);
       this.datasetCache.set(persistentId, entry);
+    }
+
+    if (!entry.specimenSummary) {
+      entry.specimenSummary = extractSpecimenSummary(entry.detail);
     }
 
     if (!entry.fileMap || !entry.fileNameMap || !entry.modelMap) {
