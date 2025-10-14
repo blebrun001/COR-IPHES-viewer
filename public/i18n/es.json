@@ -6,7 +6,7 @@
   },
   "sidebar": {
     "selectionHeading": "Selección",
-    "datasetLabel": "Especimen (conjunto de datos)",
+    "datasetLabel": "Especie",
     "datasetLoadingOption": "Cargando conjuntos de datos...",
     "modelLabel": "Hueso (modelo 3D)",
     "modelDisabledOption": "Selecciona un conjunto de datos",
@@ -16,7 +16,7 @@
     "moreInfoHeading": "Más información",
     "links": {
       "gbif": "Especie (GBIF)",
-      "cora": "Especimen (CORA-RDR)",
+      "cora": "Especie (CORA-RDR)",
       "uberon": "Hueso (OLS UBERON)",
       "about": "Acerca del proyecto"
     }

@@ -6,7 +6,7 @@
   },
   "sidebar": {
     "selectionHeading": "Selection",
-    "datasetLabel": "Specimen (Dataset)",
+    "datasetLabel": "Species",
     "datasetLoadingOption": "Loading datasets...",
     "modelLabel": "Bone (3D Model)",
     "modelDisabledOption": "Select a dataset",
@@ -16,7 +16,7 @@
     "moreInfoHeading": "More infos",
     "links": {
       "gbif": "Species (GBIF)",
-      "cora": "Specimen (CORA-RDR)",
+      "cora": "Species (CORA-RDR)",
       "uberon": "Bone (OLS UBERON)",
       "about": "About the project"
     }

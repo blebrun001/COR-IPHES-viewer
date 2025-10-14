@@ -6,7 +6,7 @@
   },
   "sidebar": {
     "selectionHeading": "Sélection",
-    "datasetLabel": "Spécimen (jeu de données)",
+    "datasetLabel": "Espèce",
     "datasetLoadingOption": "Chargement des jeux de données...",
     "modelLabel": "Os (modèle 3D)",
     "modelDisabledOption": "Sélectionnez un jeu de données",
@@ -16,7 +16,7 @@
     "moreInfoHeading": "Plus d'infos",
     "links": {
       "gbif": "Espèce (GBIF)",
-      "cora": "Spécimen (CORA-RDR)",
+      "cora": "Espèce (CORA-RDR)",
       "uberon": "Os (OLS UBERON)",
       "about": "À propos du projet"
     }

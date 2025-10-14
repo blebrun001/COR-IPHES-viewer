@@ -6,7 +6,7 @@
   },
   "sidebar": {
     "selectionHeading": "Selecció",
-    "datasetLabel": "Espècimen (conjunt de dades)",
+    "datasetLabel": "Espècie",
     "datasetLoadingOption": "Carregant conjunts de dades...",
     "modelLabel": "Os (model 3D)",
     "modelDisabledOption": "Selecciona un conjunt de dades",
@@ -16,7 +16,7 @@
     "moreInfoHeading": "Més informació",
     "links": {
       "gbif": "Espècie (GBIF)",
-      "cora": "Espècimen (CORA-RDR)",
+      "cora": "Espècie (CORA-RDR)",
       "uberon": "Os (OLS UBERON)",
       "about": "Sobre el projecte"
     }
