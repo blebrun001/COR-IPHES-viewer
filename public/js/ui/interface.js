@@ -14,6 +14,13 @@ import { i18n } from '../i18n/translator.js';
  */
 const translate = (key, fallback = '') => i18n.translate(key, { defaultValue: fallback });
 
+const LATERALITY_FALLBACKS = {
+  left: 'Left',
+  right: 'Right',
+  bilateral: 'Bilateral',
+  unknown: 'Not specified',
+};
+
 /**
  * Escapes arbitrary text for safe HTML insertion.
  *
@@ -776,6 +783,7 @@ export async function initInterface({
   const clearMeasurementsButton = documentRef.getElementById('clearMeasurements');
   const measurementOverlay = documentRef.getElementById('measurementOverlay');
   const languageSelect = documentRef.getElementById('languageSelect');
+  const lateralityIndicator = documentRef.getElementById('elementLaterality');
 
   if (!datasetSelect || !modelSelect || !reloadButton || !viewerContainer) {
     throw new Error('Required UI elements are missing');
@@ -795,6 +803,30 @@ export async function initInterface({
   resizeViewer();
 
   let lastStatus = null;
+  const modelLateralityByKey = new Map();
+  let currentLateralityCode = null;
+
+  const updateLateralityIndicator = (code) => {
+    if (!lateralityIndicator) {
+      return;
+    }
+    currentLateralityCode = code && code !== 'unknown' ? code : null;
+    if (!currentLateralityCode) {
+      lateralityIndicator.hidden = true;
+      lateralityIndicator.textContent = '';
+      return;
+    }
+    const labelText = translate('sidebar.laterality.label', 'Laterality');
+    const fallback = LATERALITY_FALLBACKS[currentLateralityCode] || currentLateralityCode;
+    const valueText = translate(
+      `sidebar.laterality.values.${currentLateralityCode}`,
+      fallback,
+    );
+    lateralityIndicator.textContent = `${labelText}: ${valueText}`;
+    lateralityIndicator.hidden = false;
+  };
+
+  updateLateralityIndicator(null);
 
   const setStatus = (key, type = 'loading') => {
     if (!statusBanner) return;
@@ -929,6 +961,7 @@ export async function initInterface({
     updateLightingButton();
     updateMeasureButton();
     i18n.applyTranslations(documentRef);
+    updateLateralityIndicator(currentLateralityCode);
   };
 
   let activeDatasetId = null;
@@ -989,6 +1022,8 @@ export async function initInterface({
     );
     modelSelect.innerHTML = `<option value="">${modelPlaceholder}</option>`;
     modelSelect.disabled = true;
+    modelLateralityByKey.clear();
+    updateLateralityIndicator(null);
     activeDatasetId = null;
     if (statusKey) {
       setStatus(statusKey, 'info');
@@ -1058,6 +1093,8 @@ export async function initInterface({
       renderDatasetMetadata(metadataPanel, null);
       currentMetadataDetail = null;
       updateExternalLinks(null, coraLink, gbifLink, uberonLink);
+      modelLateralityByKey.clear();
+      updateLateralityIndicator(null);
       setStatus('status.selectDatasetAndModel', 'info');
       return;
     }
@@ -1078,6 +1115,8 @@ export async function initInterface({
       updateExternalLinks(currentMetadataDetail, coraLink, gbifLink, uberonLink);
 
       if (!entry.models?.length) {
+        modelLateralityByKey.clear();
+        updateLateralityIndicator(null);
         const noModelsOption = escapeHtml(
           translate('selector.model.none', 'No OBJ/MTL model found'),
         );
@@ -1087,6 +1126,15 @@ export async function initInterface({
         return;
       }
 
+      modelLateralityByKey.clear();
+      entry.models.forEach((model) => {
+        if (!model || !model.key) {
+          return;
+        }
+        modelLateralityByKey.set(model.key, model.laterality || null);
+      });
+      updateLateralityIndicator(null);
+
       const chooseModelOption = escapeHtml(
         translate('selector.model.placeholder', 'Choose a model...'),
       );
@@ -1095,7 +1143,11 @@ export async function initInterface({
         entry.models
           .map(
             (model) =>
-              `<option value="${escapeHtml(model.key)}">${escapeHtml(model.displayName)}</option>`,
+              `<option value="${escapeHtml(model.key)}"${
+                model.laterality && model.laterality !== 'unknown'
+                  ? ` data-laterality="${escapeHtml(model.laterality)}"`
+                  : ''
+              }>${escapeHtml(model.displayName)}</option>`,
           )
           .join('');
 
@@ -1105,6 +1157,8 @@ export async function initInterface({
     } catch (error) {
       console.error(error);
       if (currentModelToken === modelToken) {
+        modelLateralityByKey.clear();
+        updateLateralityIndicator(null);
         const loadErrorOption = escapeHtml(
           translate('selector.model.error', 'Load error'),
         );
@@ -1128,6 +1182,7 @@ export async function initInterface({
       setStatus('status.loadingGeometry');
       const entry = await dataClient.ensureDatasetPrepared(persistentId);
       const modelInfo = entry.modelMap ? entry.modelMap.get(modelKey) : null;
+      updateLateralityIndicator(modelInfo?.laterality || modelLateralityByKey.get(modelKey) || null);
       const source = await dataClient.createModelSource(persistentId, modelKey);
       if (currentModelToken !== modelToken) {
         return;
@@ -1170,11 +1225,13 @@ export async function initInterface({
     if (!modelKey) {
       viewer.clear();
       setStatus('status.selectModel', 'info');
+      updateLateralityIndicator(null);
       const persistentId = datasetSelect.value;
       currentMetadataDetail = dataClient.getDatasetMetadata(persistentId) || currentMetadataDetail;
       updateExternalLinks(currentMetadataDetail, coraLink, gbifLink, uberonLink, null);
       return;
     }
+    updateLateralityIndicator(modelLateralityByKey.get(modelKey) || null);
     const persistentId = datasetSelect.value;
     loadModel(persistentId, modelKey);
   });

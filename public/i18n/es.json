@@ -8,7 +8,7 @@
     "selectionHeading": "Selección",
     "datasetLabel": "Especie",
     "datasetLoadingOption": "Cargando conjuntos de datos...",
-    "modelLabel": "Hueso (modelo 3D)",
+    "modelLabel": "Elemento anatómico",
     "modelDisabledOption": "Selecciona un conjunto de datos",
     "actionsLabel": "Acciones",
     "reloadButton": "Recargar listas",
@@ -17,8 +17,17 @@
     "links": {
       "gbif": "Especie (GBIF)",
       "cora": "Especie (CORA-RDR)",
-      "uberon": "Hueso (OLS UBERON)",
+      "uberon": "Elemento anatómico (OLS UBERON)",
       "about": "Acerca del proyecto"
+    },
+    "laterality": {
+      "label": "Lateralidad",
+      "values": {
+        "left": "Izquierdo",
+        "right": "Derecho",
+        "bilateral": "Bilateral",
+        "unknown": "No especificada"
+      }
     }
   },
   "language": {

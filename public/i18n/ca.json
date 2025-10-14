@@ -8,7 +8,7 @@
     "selectionHeading": "Selecció",
     "datasetLabel": "Espècie",
     "datasetLoadingOption": "Carregant conjunts de dades...",
-    "modelLabel": "Os (model 3D)",
+    "modelLabel": "Element anatòmic",
     "modelDisabledOption": "Selecciona un conjunt de dades",
     "actionsLabel": "Accions",
     "reloadButton": "Torna a carregar les llistes",
@@ -17,8 +17,17 @@
     "links": {
       "gbif": "Espècie (GBIF)",
       "cora": "Espècie (CORA-RDR)",
-      "uberon": "Os (OLS UBERON)",
+      "uberon": "Element anatòmic (OLS UBERON)",
       "about": "Sobre el projecte"
+    },
+    "laterality": {
+      "label": "Lateralitat",
+      "values": {
+        "left": "Esquerra",
+        "right": "Dreta",
+        "bilateral": "Bilateral",
+        "unknown": "No especificada"
+      }
     }
   },
   "language": {

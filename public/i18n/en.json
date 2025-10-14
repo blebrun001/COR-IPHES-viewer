@@ -8,7 +8,7 @@
     "selectionHeading": "Selection",
     "datasetLabel": "Species",
     "datasetLoadingOption": "Loading datasets...",
-    "modelLabel": "Bone (3D Model)",
+    "modelLabel": "Anatomical element",
     "modelDisabledOption": "Select a dataset",
     "actionsLabel": "Actions",
     "reloadButton": "Reload lists",
@@ -17,8 +17,17 @@
     "links": {
       "gbif": "Species (GBIF)",
       "cora": "Species (CORA-RDR)",
-      "uberon": "Bone (OLS UBERON)",
+      "uberon": "Anatomical element (OLS UBERON)",
       "about": "About the project"
+    },
+    "laterality": {
+      "label": "Laterality",
+      "values": {
+        "left": "Left",
+        "right": "Right",
+        "bilateral": "Bilateral",
+        "unknown": "Not specified"
+      }
     }
   },
   "language": {
