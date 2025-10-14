@@ -8,7 +8,7 @@
     "selectionHeading": "Sélection",
     "datasetLabel": "Espèce",
     "datasetLoadingOption": "Chargement des jeux de données...",
-    "modelLabel": "Os (modèle 3D)",
+    "modelLabel": "Élément anatomique",
     "modelDisabledOption": "Sélectionnez un jeu de données",
     "actionsLabel": "Actions",
     "reloadButton": "Recharger les listes",
@@ -17,8 +17,17 @@
     "links": {
       "gbif": "Espèce (GBIF)",
       "cora": "Espèce (CORA-RDR)",
-      "uberon": "Os (OLS UBERON)",
+      "uberon": "Élément anatomique (OLS UBERON)",
       "about": "À propos du projet"
+    },
+    "laterality": {
+      "label": "Latéralité",
+      "values": {
+        "left": "Gauche",
+        "right": "Droite",
+        "bilateral": "Bilatéral",
+        "unknown": "Non précisée"
+      }
     }
   },
   "language": {

@@ -49,10 +49,11 @@
                 </select>
               </div>
               <div class="selector-group">
-                <label for="modelSelect" data-i18n="sidebar.modelLabel">Bone (3D Model)</label>
+                <label for="modelSelect" data-i18n="sidebar.modelLabel">Anatomical element</label>
                 <select id="modelSelect" disabled>
                   <option value="" data-i18n="sidebar.modelDisabledOption">Select a dataset</option>
                 </select>
+                <div id="elementLaterality" class="selector-note" hidden></div>
               </div>
               <div class="selector-group selector-group--compact">
                 <label for="reloadDatasets" data-i18n="sidebar.actionsLabel">Actions</label>
@@ -69,7 +70,7 @@
             <div class="external-links">
               <a id="gbifLink" class="external-link" href="#" target="_blank" rel="noopener noreferrer" hidden data-i18n="sidebar.links.gbif">Species (GBIF)</a>
               <a id="coraLink" class="external-link" href="#" target="_blank" rel="noopener noreferrer" hidden data-i18n="sidebar.links.cora">Species (CORA-RDR)</a>
-              <a id="uberonLink" class="external-link" href="#" target="_blank" rel="noopener noreferrer" hidden data-i18n="sidebar.links.uberon">Bone (OLS UBERON)</a>
+              <a id="uberonLink" class="external-link" href="#" target="_blank" rel="noopener noreferrer" hidden data-i18n="sidebar.links.uberon">Anatomical element (OLS UBERON)</a>
               <button id="aboutButton" type="button" class="external-link" data-i18n="sidebar.links.about">About the project</button>
               <div class="language-selector" role="group" aria-labelledby="languageSelectLabel">
                 <label id="languageSelectLabel" for="languageSelect" class="language-selector__label" data-i18n="language.selectorLabel">Language</label>
