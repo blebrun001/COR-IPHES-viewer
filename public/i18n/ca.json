@@ -93,18 +93,26 @@
   },
   "about": {
     "title": "Sobre el projecte",
-    "section1": {
-      "heading": "IPHES-CERCA i l'Àrea de Zooarqueologia i Tafonomia",
-      "paragraph1": "L'Institut Català de Paleoecologia Humana i Evolució Social (IPHES-CERCA) és un centre de recerca de referència dedicat a l'estudi de l'evolució humana, els entorns del passat i el patrimoni arqueològic, amb seu a Tarragona (Catalunya, Espanya). Dins de l'IPHES-CERCA, l'Àrea de Zooarqueologia i Tafonomia es dedica a l'anàlisi de restes animals procedents de contextos arqueològics per reconstruir les estratègies de subsistència, les condicions paleoecològiques i les interaccions entre humans i animals al llarg del temps."
+    "bannerAlt": "Bàner amb exemplars d'Esqueletos en Línea",
+    "sectionIntro": {
+      "heading": "Presentació del projecte",
+      "paragraph1": "Aquest visor 3D en línia forma part del projecte Esqueletos en Línea, liderat per la Dra. Palmira Saladié Ballesté. Permet explorar models 3D detallats i les metadades de la col·lecció osteològica de referència de l'IPHES-CERCA."
     },
-    "section2": {
-      "heading": "Esqueletos en Línea",
-      "paragraph1": "Esqueletos en Línea és un projecte liderat per la Dra. Palmira Saladié Ballesté que té com a objectiu crear una plataforma digital d'accés obert per a la col·lecció de referència zooarqueològica de l'IPHES. Aquest projecte forma part d'un esforç més ampli per fer que les dades científiques siguin més accessibles, reutilitzables i interoperables segons els principis FAIR. Proporciona a investigadors, estudiants i professionals del patrimoni una col·lecció digital curada i documentada que facilita la identificació, l'anàlisi comparativa i la col·laboració científica.",
-      "paragraph2": "El projecte està finançat per la FECYT mitjançant una beca María de Guzmán (MDG-23-11591) i també ha comptat amb el suport de CORA-RDR, que allotja i preserva les col·leccions digitals."
+    "sectionPartners": {
+      "heading": "Socis institucionals",
+      "items": {
+        "item1": "Organització col·laboradora provisional 1",
+        "item2": "Organització col·laboradora provisional 2",
+        "item3": "Organització col·laboradora provisional 3"
+      }
     },
-    "section3": {
-      "heading": "Visor 3D",
-      "paragraph1": "El visor 3D és una eina web pensada per explorar, inspeccionar i contextualitzar models digitals d'espècimens zooarqueològics directament al navegador. Ha estat desenvolupat pel Dr. Brice Lebrun. Permet als usuaris navegar per reconstruccions 3D de manera interactiva, visualitzar metadades, canviar entre diferents modes de representació (texturitzat, filferro, variacions d'il·luminació) i enllaçar amb recursos científics externs com GBIF, CORA-RDR i UBERON. El visor vol ser alhora un instrument científic i un recurs educatiu que dona suport als fluxos de treball de recerca i a la divulgació del patrimoni arqueològic."
+    "sectionContributors": {
+      "heading": "Persones col·laboradores",
+      "items": {
+        "item1": "Nom de col·laborador provisional 1",
+        "item2": "Nom de col·laborador provisional 2",
+        "item3": "Nom de col·laborador provisional 3"
+      }
     },
     "closeButton": "×",
     "closeAria": "Tanca el diàleg d'informació"

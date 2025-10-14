@@ -93,18 +93,26 @@
   },
   "about": {
     "title": "À propos du projet",
-    "section1": {
-      "heading": "IPHES-CERCA et l'aire de zooarchéologie et de taphonomie",
-      "paragraph1": "L'Institut Català de Paleoecologia Humana i Evolució Social (IPHES-CERCA) est un centre de recherche de premier plan dédié à l'étude de l'évolution humaine, des environnements passés et du patrimoine archéologique, situé à Tarragone (Catalogne, Espagne). Au sein de l'IPHES-CERCA, l'aire de zooarchéologie et de taphonomie se consacre à l'analyse des restes animaux provenant de contextes archéologiques afin de reconstituer les stratégies de subsistance, les conditions paléoécologiques et les interactions entre humains et animaux au fil du temps."
+    "bannerAlt": "Bannière présentant des spécimens d'Esqueletos en Línea",
+    "sectionIntro": {
+      "heading": "Présentation du projet",
+      "paragraph1": "Ce visualiseur 3D en ligne s'inscrit dans le projet Esqueletos en Línea dirigé par la Dre Palmira Saladié Ballesté. Il met à disposition des modèles 3D détaillés ainsi que les métadonnées de la collection ostéologique de référence de l'IPHES-CERCA."
     },
-    "section2": {
-      "heading": "Esqueletos en Línea",
-      "paragraph1": "Esqueletos en Línea est un projet dirigé par la Dre Palmira Saladié Ballesté visant à créer une plateforme numérique en libre accès pour la collection de référence zooarchéologique de l'IPHES. Ce projet s'inscrit dans un effort plus large visant à rendre les données scientifiques plus accessibles, réutilisables et interopérables conformément aux principes FAIR. Il offre aux chercheurs, étudiants et professionnels du patrimoine une collection numérique organisée et documentée qui facilite l'identification, l'analyse comparative et la collaboration scientifique.",
-      "paragraph2": "Le projet est financé par la FECYT au moyen d'une bourse María de Guzmán (MDG-23-11591) et a également bénéficié du soutien de CORA-RDR, qui héberge et préserve les collections numériques."
+    "sectionPartners": {
+      "heading": "Partenaires institutionnels",
+      "items": {
+        "item1": "Organisation partenaire provisoire 1",
+        "item2": "Organisation partenaire provisoire 2",
+        "item3": "Organisation partenaire provisoire 3"
+      }
     },
-    "section3": {
-      "heading": "Visualiseur 3D",
-      "paragraph1": "Le visualiseur 3D est un outil web conçu pour explorer, inspecter et contextualiser des modèles numériques de spécimens zooarchéologiques directement dans le navigateur. Il a été développé par le Dr Brice Lebrun. Il permet aux utilisateurs de naviguer de manière interactive dans des reconstructions 3D, de visualiser les métadonnées, de basculer entre différents modes de rendu (texturé, filaire, variations d'éclairage) et de créer des liens directs vers des ressources scientifiques externes telles que GBIF, CORA-RDR et UBERON. Le visualiseur se veut à la fois un instrument scientifique et une ressource pédagogique, soutenant les travaux de recherche et la valorisation du patrimoine archéologique."
+    "sectionContributors": {
+      "heading": "Contributeurs et contributrices",
+      "items": {
+        "item1": "Nom de contributeur provisoire 1",
+        "item2": "Nom de contributeur provisoire 2",
+        "item3": "Nom de contributeur provisoire 3"
+      }
     },
     "closeButton": "×",
     "closeAria": "Fermer la fenêtre À propos"

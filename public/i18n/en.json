@@ -93,18 +93,26 @@
   },
   "about": {
     "title": "About the project",
-    "section1": {
-      "heading": "IPHES-CERCA and the Area of Zooarchaeology and Taphonomy",
-      "paragraph1": "The Institut Català de Paleoecologia Humana i Evolució Social (IPHES-CERCA) is a leading research centre dedicated to the study of human evolution, past environments, and archaeological heritage, located in Tarragona (Catalonia, Spain). Within IPHES-CERCA, the Zooarchaeology and Taphonomy Area focuses on the analysis of animal remains from archaeological contexts to reconstruct subsistence strategies, paleoecological conditions, and human-animal interactions over time."
+    "bannerAlt": "Banner featuring Esqueletos en Línea specimens",
+    "sectionIntro": {
+      "heading": "Project overview",
+      "paragraph1": "This online 3D viewer is part of the Esqueletos en Línea initiative led by Dr. Palmira Saladié Ballesté. It showcases detailed 3D models and metadata from the IPHES-CERCA osteological reference collection."
     },
-    "section2": {
-      "heading": "Esqueletos en Línea",
-      "paragraph1": "Esqueletos en Línea is a project led by Dra. Palmira Saladié Ballesté aiming to create an open-access digital platform for the IPHES zooarchaeological reference collection. This project is part of a broader effort to make scientific data more accessible, reusable, and interoperable according to the FAIR principles. It provides researchers, students, and heritage professionals with a curated and documented digital collection that supports identification, comparative analysis, and scientific collaboration.",
-      "paragraph2": "The project is funded by FECYT through a María de Guzmán fellowship (MDG-23-11591) and has also benefited from the support of CORA-RDR, which hosts and preserves the digital collections."
+    "sectionPartners": {
+      "heading": "Institutional partners",
+      "items": {
+        "item1": "Partner Organisation Placeholder 1",
+        "item2": "Partner Organisation Placeholder 2",
+        "item3": "Partner Organisation Placeholder 3"
+      }
     },
-    "section3": {
-      "heading": "3D Viewer",
-      "paragraph1": "The 3D viewer is a web-based tool designed to explore, inspect, and contextualize digital models of zooarchaeological specimens directly in the browser. It has been developed by Dr. Brice Lebrun. It allows users to navigate 3D reconstructions interactively, visualize metadata, switch between different rendering modes (textured, wireframe, lighting variations), and link directly to external scientific resources such as GBIF, CORA-RDR, and UBERON. The viewer is intended to serve as both a scientific instrument and an educational resource, supporting research workflows and public engagement with archaeological heritage."
+    "sectionContributors": {
+      "heading": "Contributors",
+      "items": {
+        "item1": "Contributor Name Placeholder 1",
+        "item2": "Contributor Name Placeholder 2",
+        "item3": "Contributor Name Placeholder 3"
+      }
     },
     "closeButton": "×",
     "closeAria": "Close about dialog"
