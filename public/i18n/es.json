@@ -53,6 +53,10 @@
       "clearMeasurements": "Borrar medidas",
       "capture": "Capturar",
       "resetView": "Restablecer vista"
+    },
+    "toolbar": {
+      "showMore": "Más controles",
+      "showLess": "Menos controles"
     }
   },
   "metadata": {

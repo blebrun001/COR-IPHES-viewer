@@ -89,29 +89,47 @@
             class="viewer-watermark"
             decoding="async"
           />
-          <div id="viewerToolbar" class="viewer-toolbar">
-            <div class="toolbar-section">
-              <label for="projectionMode" data-i18n="viewer.projection.label">Projection</label>
-              <select id="projectionMode">
-                <option value="perspective" data-i18n="viewer.projection.perspective">Perspective</option>
-                <option value="orthographic" data-i18n="viewer.projection.orthographic">Orthographic</option>
-              </select>
-            </div>
-            <div class="toolbar-section">
-              <label for="orbitMode" data-i18n="viewer.orbit.label">Orbit</label>
-              <select id="orbitMode">
-                <option value="upright" data-i18n="viewer.orbit.upright">Upright</option>
-                <option value="free" data-i18n="viewer.orbit.free">Free</option>
-              </select>
-            </div>
-            <div class="toolbar-section toolbar-buttons">
-              <button id="toggleTextures" type="button" data-i18n="viewer.buttons.disableTextures">Disable Textures</button>
-              <button id="toggleWireframe" type="button" data-i18n="viewer.buttons.enableWireframe">Enable Wireframe</button>
-              <button id="toggleLighting" type="button" data-i18n="viewer.buttons.dimLights">Dim Lights</button>
-              <button id="toggleMeasure" type="button" data-i18n="viewer.buttons.measure">Measure</button>
-              <button id="clearMeasurements" type="button" data-i18n="viewer.buttons.clearMeasurements">Clear Measurements</button>
-              <button id="captureScreenshot" type="button" data-i18n="viewer.buttons.capture">Capture</button>
-              <button id="resetView" type="button" data-i18n="viewer.buttons.resetView">Reset View</button>
+          <div id="viewerToolbar" class="viewer-toolbar" data-collapsed="true">
+            <div class="viewer-toolbar__inner">
+              <div class="viewer-toolbar__group viewer-toolbar__group--primary">
+                <div class="toolbar-control">
+                  <label for="projectionMode" data-i18n="viewer.projection.label">Projection</label>
+                  <select id="projectionMode">
+                    <option value="perspective" data-i18n="viewer.projection.perspective">Perspective</option>
+                    <option value="orthographic" data-i18n="viewer.projection.orthographic">Orthographic</option>
+                  </select>
+                </div>
+                <div class="toolbar-control">
+                  <label for="orbitMode" data-i18n="viewer.orbit.label">Orbit</label>
+                  <select id="orbitMode">
+                    <option value="upright" data-i18n="viewer.orbit.upright">Upright</option>
+                    <option value="free" data-i18n="viewer.orbit.free">Free</option>
+                  </select>
+                </div>
+                <div class="toolbar-buttons toolbar-buttons--primary">
+                  <button id="captureScreenshot" type="button" data-i18n="viewer.buttons.capture">Capture</button>
+                  <button id="resetView" type="button" data-i18n="viewer.buttons.resetView">Reset View</button>
+                </div>
+              </div>
+              <div class="viewer-toolbar__group viewer-toolbar__group--secondary" id="viewerToolbarSecondary">
+                <div class="toolbar-buttons toolbar-buttons--secondary">
+                  <button id="toggleTextures" type="button" data-i18n="viewer.buttons.disableTextures">Disable Textures</button>
+                  <button id="toggleWireframe" type="button" data-i18n="viewer.buttons.enableWireframe">Enable Wireframe</button>
+                  <button id="toggleLighting" type="button" data-i18n="viewer.buttons.dimLights">Dim Lights</button>
+                  <button id="toggleMeasure" type="button" data-i18n="viewer.buttons.measure">Measure</button>
+                  <button id="clearMeasurements" type="button" data-i18n="viewer.buttons.clearMeasurements">Clear Measurements</button>
+                </div>
+              </div>
+              <button
+                id="viewerToolbarToggle"
+                class="viewer-toolbar__toggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="viewerToolbarSecondary"
+                data-i18n="viewer.toolbar.showMore"
+              >
+                More controls
+              </button>
             </div>
           </div>
         </main>

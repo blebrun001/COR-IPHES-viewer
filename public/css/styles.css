@@ -397,77 +397,133 @@ body {
   left: 50%;
   bottom: 1.25rem;
   transform: translateX(-50%);
+  width: min(100%, 880px);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.viewer-toolbar__inner {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 1rem;
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 1rem 1.25rem;
-  border-radius: 0.75rem;
+  gap: 0.85rem;
+  padding: 0.95rem 1.25rem;
+  border-radius: 0.85rem;
   backdrop-filter: blur(14px);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  box-shadow: 0 20px 40px var(--color-surface-alt);
-  width: fit-content;
-  max-width: 95vw;
-  overflow-x: auto;
-  z-index: 6;
+  box-shadow: 0 20px 40px color-mix(in srgb, var(--color-surface-alt) 70%, transparent);
+  width: 100%;
+  pointer-events: auto;
 }
 
-.viewer-toolbar label {
+.viewer-toolbar__group {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.toolbar-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: max-content;
+}
+
+.toolbar-control label {
   font-size: var(--font-xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
-.toolbar-section {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.75rem;
-  min-width: max-content;
-}
-
-.toolbar-section label {
-  margin: 0;
-  flex: 0 0 auto;
-  white-space: nowrap;
-}
-
-.toolbar-section select,
-.toolbar-section button {
-  padding: 0.55rem 0.75rem;
-  border-radius: 0.6rem;
+.toolbar-control select,
+.toolbar-buttons button {
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.65rem;
   border: 1px solid var(--color-border);
   background: var(--color-surface-alt);
   color: inherit;
   font-size: var(--font-sm);
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
-  flex: 0 0 auto;
-  width: auto;
-  min-width: 7rem;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  min-width: clamp(6rem, 18vw, 8.5rem);
+  text-align: center;
+  white-space: nowrap;
 }
 
-.toolbar-section select:focus-visible,
-.toolbar-section button:focus-visible {
+.toolbar-control select:focus-visible,
+.toolbar-buttons button:focus-visible {
   outline: none;
   border-color: var(--color-accent);
-}
-
-.toolbar-section button:hover {
-  border-color: var(--color-accent);
-  background: var(--color-accent);
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--color-accent) 35%, transparent);
 }
 
 .toolbar-buttons {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 0.75rem;
-  align-items: center;
-  justify-content: flex-start;
-  overflow-x: auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.toolbar-buttons button:hover {
+  border-color: var(--color-accent);
+}
+
+.toolbar-buttons button:active {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+}
+
+.toolbar-buttons--primary button {
+  min-width: clamp(6.5rem, 20vw, 9rem);
+}
+
+.viewer-toolbar__toggle {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-size: var(--font-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.viewer-toolbar__toggle:hover,
+.viewer-toolbar__toggle:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+.viewer-toolbar[data-collapsed="true"] .viewer-toolbar__group--secondary {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .viewer-toolbar__inner {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .viewer-toolbar__group {
+    flex: 1;
+  }
+
+  .viewer-toolbar__toggle {
+    display: none;
+  }
+
+  .viewer-toolbar[data-collapsed="true"] .viewer-toolbar__group--secondary {
+    display: flex;
+  }
 }
 
 /* Measurement HUD layer letting the viewer place labels without blocking input */
@@ -499,13 +555,14 @@ body {
 
 .viewer-watermark {
   position: absolute;
-  right: 1.5rem;
-  bottom: calc(1.25rem + 5rem);
+  top: 1.5rem;
+  left: 1.5rem;
   width: clamp(72px, 12vw, 96px);
   max-width: 96px;
-  opacity: 0.5;
+  opacity: 0.55;
   pointer-events: none;
-  z-index: 7;
+  z-index: 3;
+  mix-blend-mode: screen;
 }
 
 .about-dialog {
@@ -804,13 +861,13 @@ body.sidebar-open {
     width: min(300px, 78vw);
   }
 
-  .viewer-toolbar {
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
+  .viewer-toolbar__inner {
+    padding: 0.8rem 1rem;
+    gap: 0.7rem;
   }
 
-  .toolbar-section {
-    gap: 0.5rem;
+  .viewer-toolbar__group {
+    gap: 0.6rem;
   }
 
   .metadata-section {
@@ -828,13 +885,13 @@ body.sidebar-open {
     justify-content: space-between;
   }
 
-  .toolbar-section label {
+  .toolbar-control label {
     display: none;
   }
 
-  .toolbar-section select,
-  .toolbar-section button {
-    min-width: 5.5rem;
+  .toolbar-control select,
+  .toolbar-buttons button {
+    min-width: clamp(4.75rem, 24vw, 6.5rem);
   }
 
   .metadata-section {
@@ -869,6 +926,15 @@ body.sidebar-open {
 
   .language-selector__control {
     min-width: 0;
+  }
+
+  .viewer-toolbar__inner {
+    padding: 0.7rem 0.75rem;
+  }
+
+  .toolbar-control select,
+  .toolbar-buttons button {
+    padding: 0.5rem 0.65rem;
   }
 
   .metadata-section {

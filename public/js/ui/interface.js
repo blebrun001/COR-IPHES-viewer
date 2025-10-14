@@ -776,6 +776,8 @@ export async function initInterface({
   const clearMeasurementsButton = documentRef.getElementById('clearMeasurements');
   const measurementOverlay = documentRef.getElementById('measurementOverlay');
   const languageSelect = documentRef.getElementById('languageSelect');
+  const viewerToolbar = documentRef.getElementById('viewerToolbar');
+  const viewerToolbarToggle = documentRef.getElementById('viewerToolbarToggle');
 
   if (!datasetSelect || !modelSelect || !reloadButton || !viewerContainer) {
     throw new Error('Required UI elements are missing');
@@ -787,14 +789,56 @@ export async function initInterface({
     viewer.attachMeasurementOverlay(measurementOverlay);
   }
 
+  let lastStatus = null;
+  const isToolbarCollapsed = () =>
+    !viewerToolbar || viewerToolbar.getAttribute('data-collapsed') !== 'false';
+
+  const updateToolbarToggle = () => {
+    if (!viewerToolbarToggle) return;
+    const collapsed = isToolbarCollapsed();
+    viewerToolbarToggle.textContent = translate(
+      collapsed ? 'viewer.toolbar.showMore' : 'viewer.toolbar.showLess',
+      collapsed ? 'More controls' : 'Fewer controls',
+    );
+    viewerToolbarToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  };
+
+  const setToolbarCollapsed = (collapsed) => {
+    if (!viewerToolbar) return;
+    viewerToolbar.setAttribute('data-collapsed', collapsed ? 'true' : 'false');
+    updateToolbarToggle();
+  };
+
+  const syncToolbarForViewport = () => {
+    if (!viewerToolbar) return;
+    const isWide = windowRef.matchMedia('(min-width: 900px)').matches;
+    if (isWide) {
+      if (isToolbarCollapsed()) {
+        viewerToolbar.setAttribute('data-collapsed', 'false');
+      }
+    } else if (viewerToolbar.getAttribute('data-collapsed') === 'false') {
+      viewerToolbar.setAttribute('data-collapsed', 'true');
+    }
+    updateToolbarToggle();
+  };
+
+  if (viewerToolbarToggle) {
+    viewerToolbarToggle.addEventListener('click', () => {
+      if (windowRef.matchMedia('(min-width: 900px)').matches) {
+        return;
+      }
+      const collapsed = isToolbarCollapsed();
+      setToolbarCollapsed(!collapsed);
+    });
+  }
+
   const resizeViewer = () => {
     const { clientWidth, clientHeight } = viewerContainer;
     viewer.resize(clientWidth, clientHeight);
+    syncToolbarForViewport();
   };
   windowRef.addEventListener('resize', resizeViewer);
   resizeViewer();
-
-  let lastStatus = null;
 
   const setStatus = (key, type = 'loading') => {
     if (!statusBanner) return;
@@ -929,6 +973,7 @@ export async function initInterface({
     updateLightingButton();
     updateMeasureButton();
     i18n.applyTranslations(documentRef);
+    updateToolbarToggle();
   };
 
   let activeDatasetId = null;
