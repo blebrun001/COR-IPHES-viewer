@@ -6,13 +6,14 @@
   },
   "sidebar": {
     "selectionHeading": "Sélection",
-    "datasetLabel": "Espèce",
-    "datasetLoadingOption": "Chargement des jeux de données...",
+    "taxonomyHeading": "Taxonomie",
+    "datasetLabel": "Spécimen",
+    "datasetLoadingOption": "Chargement des spécimens...",
     "modelLabel": "Élément anatomique",
-    "modelDisabledOption": "Sélectionnez un jeu de données",
+    "modelDisabledOption": "Sélectionnez un spécimen",
     "actionsLabel": "Actions",
     "reloadButton": "Recharger les listes",
-    "metadataHeading": "Métadonnées du jeu de données",
+    "metadataHeading": "Métadonnées du spécimen",
     "moreInfoHeading": "Plus d'infos",
     "links": {
       "gbif": "Espèce (GBIF)",
@@ -61,16 +62,17 @@
   },
   "metadata": {
     "itemLabel": "Élément",
-    "emptySelection": "Sélectionnez un jeu de données pour afficher les métadonnées.",
-    "emptyData": "Aucune métadonnée disponible pour ce jeu de données."
+    "emptySelection": "Sélectionnez un spécimen pour afficher les métadonnées.",
+    "emptyData": "Aucune métadonnée disponible pour ce spécimen."
   },
   "selector": {
     "dataset": {
-      "placeholder": "Choisir un jeu de données...",
-      "loading": "Chargement des jeux de données..."
+      "placeholder": "Sélectionnez un spécimen...",
+      "loading": "Chargement des spécimens...",
+      "none": "Aucun spécimen disponible"
     },
     "model": {
-      "disabled": "Sélectionnez un jeu de données",
+      "disabled": "Sélectionnez un spécimen",
       "loading": "Chargement des modèles...",
       "none": "Aucun modèle OBJ/MTL trouvé",
       "placeholder": "Choisir un modèle...",
@@ -78,18 +80,30 @@
     }
   },
   "status": {
-    "loadingDatasets": "Chargement des jeux de données...",
+    "loadingDatasets": "Chargement des spécimens...",
     "datasetsLoadedFromCache": "Chargé depuis le cache",
     "datasetsLoadedFromAPI": "Chargé depuis l'API",
-    "datasetsLoadError": "Échec du chargement de la liste des jeux de données.",
-    "selectDatasetAndModel": "Sélectionnez un jeu de données et un modèle.",
-    "loadingDataset": "Chargement du jeu de données...",
-    "noModelsInDataset": "Aucun modèle OBJ/MTL dans ce jeu de données.",
+    "datasetsLoadError": "Échec du chargement de la liste des spécimens.",
+    "selectDatasetAndModel": "Sélectionnez un spécimen et un modèle.",
+    "loadingDataset": "Chargement du spécimen...",
+    "noModelsInDataset": "Aucun modèle OBJ/MTL pour ce spécimen.",
     "selectModel": "Sélectionnez un modèle 3D à charger.",
-    "datasetLoadFailure": "Échec du chargement du jeu de données.",
+    "datasetLoadFailure": "Échec du chargement du spécimen.",
     "loadingGeometry": "Chargement de la géométrie...",
     "screenshotFailed": "Impossible de capturer la capture d'écran.",
     "modelLoadFailure": "Échec du chargement du modèle 3D."
+  },
+  "taxonomy": {
+    "select": "Sélectionner",
+    "unknown": "Inconnu",
+    "kingdom": "Règne",
+    "phylum": "Phylum",
+    "class": "Classe",
+    "order": "Ordre",
+    "family": "Famille",
+    "subfamily": "Sous-famille",
+    "genus": "Genre",
+    "species": "Espèce"
   },
   "about": {
     "title": "À propos du projet",

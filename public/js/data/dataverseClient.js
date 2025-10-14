@@ -79,7 +79,7 @@ function collectFieldValues(fields = [], targetNames = [], { split = false } = {
   return finalValues;
 }
 
-function humaniseSpecimenValue(value) {
+function humaniseMetadataValue(value) {
   if (!value) {
     return null;
   }
@@ -103,17 +103,17 @@ function extractSpecimenSummary(detail) {
 
   const sex =
     collectFieldValues(fields, ['dwcSex', 'dwc:sex', 'sex'])
-      .map(humaniseSpecimenValue)
+      .map(humaniseMetadataValue)
       .find(Boolean) || null;
 
   const lifeStage =
     collectFieldValues(fields, ['dwcLifeStage', 'dwc:lifeStage', 'lifeStage'])
-      .map(humaniseSpecimenValue)
+      .map(humaniseMetadataValue)
       .find(Boolean) || null;
 
   const ageClass =
     collectFieldValues(fields, ['dwcAgeClass', 'dwc:ageClass', 'ageClass'])
-      .map(humaniseSpecimenValue)
+      .map(humaniseMetadataValue)
       .find(Boolean) || null;
 
   const catalogNumber =
@@ -159,6 +159,35 @@ function extractSpecimenSummary(detail) {
   }
 
   return summary;
+}
+
+function extractTaxonomyPath(detail) {
+  const block = detail?.data?.latestVersion?.metadataBlocks?.darwincore;
+  const fields = Array.isArray(block?.fields) ? block.fields : null;
+  if (!fields) {
+    return null;
+  }
+
+  const valueFor = (candidates, { fallback = null } = {}) =>
+    collectFieldValues(fields, candidates)
+      .map(humaniseMetadataValue)
+      .find(Boolean) || fallback;
+
+  const taxonomy = {
+    kingdom: valueFor(['dwcKingdom', 'dwc:kingdom', 'kingdom']),
+    phylum: valueFor(['dwcPhylum', 'dwc:phylum', 'phylum']),
+    class: valueFor(['dwcClass', 'dwc:class', 'class']),
+    order: valueFor(['dwcOrder', 'dwc:order', 'order']),
+    family: valueFor(['dwcFamily', 'dwc:family', 'family']),
+    subfamily: valueFor(['dwcSubfamily', 'dwc:subfamily', 'subfamily']),
+    genus: valueFor(['dwcGenus', 'dwc:genus', 'genus']),
+    species: valueFor(
+      ['dwcScientificName', 'dwc:scientificName', 'dwcSpecies', 'dwc:species', 'dwcSpecificEpithet', 'dwc:specificEpithet', 'scientificName', 'species'],
+    ),
+  };
+
+  const hasData = Object.values(taxonomy).some(Boolean);
+  return hasData ? taxonomy : null;
 }
 
 /**
@@ -603,10 +632,12 @@ export class DataverseClient {
         );
         const title = extractTitle(detail) || item.identifier;
         const specimenSummary = extractSpecimenSummary(detail);
+        const taxonomyPath = extractTaxonomyPath(detail);
         cacheEntry.title = title;
         cacheEntry.detail = detail;
         cacheEntry.files = detail?.data?.latestVersion?.files || [];
         cacheEntry.specimenSummary = specimenSummary;
+        cacheEntry.taxonomyPath = taxonomyPath;
         cacheEntry.models = null;
         cacheEntry.modelMap = null;
         cacheEntry.fileMap = null;
@@ -623,6 +654,7 @@ export class DataverseClient {
         value: persistentId,
         identifier: item.identifier,
         specimenSummary: cacheEntry.specimenSummary || null,
+        taxonomyPath: cacheEntry.taxonomyPath || null,
       });
     }
 
@@ -657,11 +689,16 @@ export class DataverseClient {
         files: detail?.data?.latestVersion?.files || [],
       };
       entry.specimenSummary = extractSpecimenSummary(detail);
+      entry.taxonomyPath = extractTaxonomyPath(detail);
       this.datasetCache.set(persistentId, entry);
     }
 
     if (!entry.specimenSummary) {
       entry.specimenSummary = extractSpecimenSummary(entry.detail);
+    }
+
+    if (!entry.taxonomyPath) {
+      entry.taxonomyPath = extractTaxonomyPath(entry.detail);
     }
 
     if (!entry.fileMap || !entry.fileNameMap || !entry.modelMap) {

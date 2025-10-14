@@ -42,8 +42,27 @@
           <section class="sidebar-section selectors-section">
             <div class="sidebar-heading" data-i18n="sidebar.selectionHeading">Selection</div>
             <div class="sidebar-selectors">
+              <div class="selector-group taxonomy-group" id="taxonomyGroup" data-collapsed="true" hidden>
+                <button
+                  id="toggleTaxonomy"
+                  class="taxonomy-toggle"
+                  type="button"
+                  aria-controls="taxonomySelectors"
+                  aria-expanded="false"
+                >
+                  <span class="taxonomy-heading" data-i18n="sidebar.taxonomyHeading">Taxonomy</span>
+                  <span class="taxonomy-toggle__icon" aria-hidden="true"></span>
+                </button>
+                <div
+                  id="taxonomySelectors"
+                  class="taxonomy-selectors"
+                  role="group"
+                  aria-labelledby="toggleTaxonomy"
+                  hidden
+                ></div>
+              </div>
               <div class="selector-group">
-                <label for="datasetSelect" data-i18n="sidebar.datasetLabel">Species</label>
+                <label for="datasetSelect" data-i18n="sidebar.datasetLabel">Specimen</label>
                 <select id="datasetSelect">
                   <option value="" data-i18n="sidebar.datasetLoadingOption">Loading datasets...</option>
                 </select>

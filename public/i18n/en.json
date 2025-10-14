@@ -6,13 +6,14 @@
   },
   "sidebar": {
     "selectionHeading": "Selection",
-    "datasetLabel": "Species",
-    "datasetLoadingOption": "Loading datasets...",
+    "taxonomyHeading": "Taxonomy",
+    "datasetLabel": "Specimen",
+    "datasetLoadingOption": "Loading specimens...",
     "modelLabel": "Anatomical element",
-    "modelDisabledOption": "Select a dataset",
+    "modelDisabledOption": "Select a specimen",
     "actionsLabel": "Actions",
     "reloadButton": "Reload lists",
-    "metadataHeading": "Dataset metadata",
+    "metadataHeading": "Specimen metadata",
     "moreInfoHeading": "More infos",
     "links": {
       "gbif": "Species (GBIF)",
@@ -61,16 +62,17 @@
   },
   "metadata": {
     "itemLabel": "Item",
-    "emptySelection": "Select a dataset to display metadata.",
-    "emptyData": "No metadata available for this dataset."
+    "emptySelection": "Select a specimen to display metadata.",
+    "emptyData": "No metadata available for this specimen."
   },
   "selector": {
     "dataset": {
-      "placeholder": "Choose a dataset...",
-      "loading": "Loading datasets..."
+      "placeholder": "Select a specimen...",
+      "loading": "Loading specimens...",
+      "none": "No specimens available"
     },
     "model": {
-      "disabled": "Select a dataset",
+      "disabled": "Select a specimen",
       "loading": "Loading models...",
       "none": "No OBJ/MTL model found",
       "placeholder": "Choose a model...",
@@ -78,18 +80,30 @@
     }
   },
   "status": {
-    "loadingDatasets": "Loading datasets...",
+    "loadingDatasets": "Loading specimens...",
     "datasetsLoadedFromCache": "Loaded from cache",
     "datasetsLoadedFromAPI": "Loaded from API",
-    "datasetsLoadError": "Failed to load dataset list.",
-    "selectDatasetAndModel": "Select a dataset and a model.",
-    "loadingDataset": "Loading dataset...",
-    "noModelsInDataset": "No OBJ/MTL model in this dataset.",
+    "datasetsLoadError": "Failed to load specimen list.",
+    "selectDatasetAndModel": "Select a specimen and a model.",
+    "loadingDataset": "Loading specimen...",
+    "noModelsInDataset": "No OBJ/MTL model for this specimen.",
     "selectModel": "Select a 3D model to load.",
-    "datasetLoadFailure": "Failed to load dataset.",
+    "datasetLoadFailure": "Failed to load specimen.",
     "loadingGeometry": "Loading geometry...",
     "screenshotFailed": "Unable to capture screenshot.",
     "modelLoadFailure": "Failed to load the 3D model."
+  },
+  "taxonomy": {
+    "select": "Select",
+    "unknown": "Unknown",
+    "kingdom": "Kingdom",
+    "phylum": "Phylum",
+    "class": "Class",
+    "order": "Order",
+    "family": "Family",
+    "subfamily": "Subfamily",
+    "genus": "Genus",
+    "species": "Species"
   },
   "about": {
     "title": "About the project",

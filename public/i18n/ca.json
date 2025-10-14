@@ -6,13 +6,14 @@
   },
   "sidebar": {
     "selectionHeading": "Selecció",
-    "datasetLabel": "Espècie",
-    "datasetLoadingOption": "Carregant conjunts de dades...",
+    "taxonomyHeading": "Taxonomia",
+    "datasetLabel": "Exemplar",
+    "datasetLoadingOption": "S'estan carregant els exemplars...",
     "modelLabel": "Element anatòmic",
-    "modelDisabledOption": "Selecciona un conjunt de dades",
+    "modelDisabledOption": "Seleccioneu un exemplar",
     "actionsLabel": "Accions",
     "reloadButton": "Torna a carregar les llistes",
-    "metadataHeading": "Metadades del conjunt de dades",
+    "metadataHeading": "Metadades de l'exemplar",
     "moreInfoHeading": "Més informació",
     "links": {
       "gbif": "Espècie (GBIF)",
@@ -61,16 +62,17 @@
   },
   "metadata": {
     "itemLabel": "Element",
-    "emptySelection": "Selecciona un conjunt de dades per mostrar les metadades.",
-    "emptyData": "No hi ha metadades disponibles per a aquest conjunt de dades."
+    "emptySelection": "Seleccioneu un exemplar per mostrar les metadades.",
+    "emptyData": "No hi ha metadades disponibles per a aquest exemplar."
   },
   "selector": {
     "dataset": {
-      "placeholder": "Tria un conjunt de dades...",
-      "loading": "Carregant conjunts de dades..."
+      "placeholder": "Seleccioneu un exemplar...",
+      "loading": "S'estan carregant els exemplars...",
+      "none": "No hi ha exemplars disponibles"
     },
     "model": {
-      "disabled": "Selecciona un conjunt de dades",
+      "disabled": "Seleccioneu un exemplar",
       "loading": "Carregant models...",
       "none": "No s'ha trobat cap model OBJ/MTL",
       "placeholder": "Tria un model...",
@@ -78,18 +80,30 @@
     }
   },
   "status": {
-    "loadingDatasets": "Carregant conjunts de dades...",
+    "loadingDatasets": "S'estan carregant els exemplars...",
     "datasetsLoadedFromCache": "Carregat des de la memòria cau",
     "datasetsLoadedFromAPI": "Carregat des de l'API",
-    "datasetsLoadError": "No s'ha pogut carregar la llista de conjunts de dades.",
-    "selectDatasetAndModel": "Selecciona un conjunt de dades i un model.",
-    "loadingDataset": "Carregant el conjunt de dades...",
-    "noModelsInDataset": "Aquest conjunt de dades no conté models OBJ/MTL.",
-    "selectModel": "Selecciona un model 3D per carregar.",
-    "datasetLoadFailure": "No s'ha pogut carregar el conjunt de dades.",
+    "datasetsLoadError": "No s'ha pogut carregar la llista d'exemplars.",
+    "selectDatasetAndModel": "Seleccioneu un exemplar i un model.",
+    "loadingDataset": "S'està carregant l'exemplar...",
+    "noModelsInDataset": "No hi ha cap model OBJ/MTL per a aquest exemplar.",
+    "selectModel": "Seleccioneu un model 3D per carregar.",
+    "datasetLoadFailure": "No s'ha pogut carregar l'exemplar.",
     "loadingGeometry": "Carregant la geometria...",
     "screenshotFailed": "No s'ha pogut capturar la imatge.",
     "modelLoadFailure": "No s'ha pogut carregar el model 3D."
+  },
+  "taxonomy": {
+    "select": "Seleccioneu",
+    "unknown": "Desconegut",
+    "kingdom": "Regne",
+    "phylum": "Fílum",
+    "class": "Classe",
+    "order": "Ordre",
+    "family": "Família",
+    "subfamily": "Subfamília",
+    "genus": "Gènere",
+    "species": "Espècie"
   },
   "about": {
     "title": "Sobre el projecte",

@@ -6,13 +6,14 @@
   },
   "sidebar": {
     "selectionHeading": "Selección",
-    "datasetLabel": "Especie",
-    "datasetLoadingOption": "Cargando conjuntos de datos...",
+    "taxonomyHeading": "Taxonomía",
+    "datasetLabel": "Ejemplar",
+    "datasetLoadingOption": "Cargando ejemplares...",
     "modelLabel": "Elemento anatómico",
-    "modelDisabledOption": "Selecciona un conjunto de datos",
+    "modelDisabledOption": "Selecciona un ejemplar",
     "actionsLabel": "Acciones",
     "reloadButton": "Recargar listas",
-    "metadataHeading": "Metadatos del conjunto de datos",
+    "metadataHeading": "Metadatos del ejemplar",
     "moreInfoHeading": "Más información",
     "links": {
       "gbif": "Especie (GBIF)",
@@ -61,16 +62,17 @@
   },
   "metadata": {
     "itemLabel": "Elemento",
-    "emptySelection": "Selecciona un conjunto de datos para mostrar los metadatos.",
-    "emptyData": "No hay metadatos disponibles para este conjunto de datos."
+    "emptySelection": "Selecciona un ejemplar para mostrar los metadatos.",
+    "emptyData": "No hay metadatos disponibles para este ejemplar."
   },
   "selector": {
     "dataset": {
-      "placeholder": "Elige un conjunto de datos...",
-      "loading": "Cargando conjuntos de datos..."
+      "placeholder": "Selecciona un ejemplar...",
+      "loading": "Cargando ejemplares...",
+      "none": "No hay ejemplares disponibles"
     },
     "model": {
-      "disabled": "Selecciona un conjunto de datos",
+      "disabled": "Selecciona un ejemplar",
       "loading": "Cargando modelos...",
       "none": "No se encontró ningún modelo OBJ/MTL",
       "placeholder": "Elige un modelo...",
@@ -78,18 +80,30 @@
     }
   },
   "status": {
-    "loadingDatasets": "Cargando conjuntos de datos...",
+    "loadingDatasets": "Cargando ejemplares...",
     "datasetsLoadedFromCache": "Cargado desde la caché",
     "datasetsLoadedFromAPI": "Cargado desde la API",
-    "datasetsLoadError": "No se pudo cargar la lista de conjuntos de datos.",
-    "selectDatasetAndModel": "Selecciona un conjunto de datos y un modelo.",
-    "loadingDataset": "Cargando conjunto de datos...",
-    "noModelsInDataset": "No hay modelos OBJ/MTL en este conjunto de datos.",
+    "datasetsLoadError": "No se pudo cargar la lista de ejemplares.",
+    "selectDatasetAndModel": "Selecciona un ejemplar y un modelo.",
+    "loadingDataset": "Cargando ejemplar...",
+    "noModelsInDataset": "No hay modelos OBJ/MTL para este ejemplar.",
     "selectModel": "Selecciona un modelo 3D para cargar.",
-    "datasetLoadFailure": "No se pudo cargar el conjunto de datos.",
+    "datasetLoadFailure": "No se pudo cargar el ejemplar.",
     "loadingGeometry": "Cargando geometría...",
     "screenshotFailed": "No se pudo capturar la imagen.",
     "modelLoadFailure": "No se pudo cargar el modelo 3D."
+  },
+  "taxonomy": {
+    "select": "Seleccionar",
+    "unknown": "Desconocido",
+    "kingdom": "Reino",
+    "phylum": "Filo",
+    "class": "Clase",
+    "order": "Orden",
+    "family": "Familia",
+    "subfamily": "Subfamilia",
+    "genus": "Género",
+    "species": "Especie"
   },
   "about": {
     "title": "Acerca del proyecto",

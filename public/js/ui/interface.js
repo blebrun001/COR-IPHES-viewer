@@ -734,7 +734,7 @@ function renderDatasetMetadata(panel, detail) {
 
   if (!detail) {
     const message = escapeHtml(
-      translate('metadata.emptySelection', 'Select a dataset to display metadata.'),
+      translate('metadata.emptySelection', 'Select a specimen to display metadata.'),
     );
     panel.innerHTML = `<p class="metadata-empty">${message}</p>`;
     return;
@@ -753,7 +753,7 @@ function renderDatasetMetadata(panel, detail) {
 
   if (!sections.length) {
     const message = escapeHtml(
-      translate('metadata.emptyData', 'No metadata available for this dataset.'),
+      translate('metadata.emptyData', 'No metadata available for this specimen.'),
     );
     panel.innerHTML = `<p class="metadata-empty">${message}</p>`;
     return;
@@ -1004,6 +1004,48 @@ export async function initInterface({
     updateMeasureButton();
     i18n.applyTranslations(documentRef);
     updateToolbarToggle();
+    if (taxonomySupported) {
+      refreshTaxonomyFromLevel(0);
+    }
+  };
+
+  const TAXONOMY_LEVEL_DEFS = [
+    { key: 'class', fallback: 'Class' },
+    { key: 'order', fallback: 'Order' },
+    { key: 'family', fallback: 'Family' },
+    { key: 'subfamily', fallback: 'Subfamily' },
+    { key: 'genus', fallback: 'Genus' },
+    { key: 'species', fallback: 'Species' },
+  ];
+
+  const UNKNOWN_TAXON_VALUE = '__unknown__';
+
+  const taxonomySelectors = new Map();
+  const taxonomyState = new Map();
+  let taxonomyLevels = [];
+  let taxonomySupported = false;
+  let allDatasets = [];
+
+  const normalizeTaxonomyValue = (value) => {
+    if (!value) {
+      return '';
+    }
+    return String(value)
+      .replace(/[_]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+  };
+
+  const getTaxonomyLabel = (levelKey, fallback) =>
+    translate(`taxonomy.${levelKey}`, fallback);
+
+  const getUnknownLabel = () => translate('taxonomy.unknown', 'Unknown');
+
+  const getTaxonomySelectLabel = (levelKey, fallback) => {
+    const selectPrefix = translate('taxonomy.select', 'Select');
+    const levelLabel = getTaxonomyLabel(levelKey, fallback);
+    return `${selectPrefix} ${levelLabel}`;
   };
 
   let activeDatasetId = null;
@@ -1013,12 +1055,14 @@ export async function initInterface({
 
   const CACHE_KEY = 'dataverseCache';
   const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+  const CACHE_VERSION = 2;
 
   const loadDatasetsFromAPI = async ({ force = false } = {}) => {
     const datasets = await dataClient.listDatasets({ force });
     const payload = {
       datasets,
       timestamp: Date.now(),
+      version: CACHE_VERSION,
     };
     try {
       window.localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
@@ -1034,6 +1078,9 @@ export async function initInterface({
       if (!raw) return null;
       const cached = JSON.parse(raw);
       if (!cached || !cached.datasets || !cached.timestamp) return null;
+      if (cached.version !== CACHE_VERSION) {
+        return null;
+      }
       if (Date.now() - cached.timestamp > CACHE_TTL_MS) {
         return null;
       }
@@ -1044,10 +1091,216 @@ export async function initInterface({
     }
   };
 
-  const populateDatasetSelect = (datasets, statusKey) => {
-    const placeholder = escapeHtml(
-      translate('selector.dataset.placeholder', 'Choose a dataset...'),
+  const taxonomyContainer = documentRef.getElementById('taxonomySelectors');
+  const taxonomyGroup = documentRef.getElementById('taxonomyGroup');
+  const taxonomyToggleButton = documentRef.getElementById('toggleTaxonomy');
+
+  const isTaxonomyCollapsed = () =>
+    !taxonomyGroup || taxonomyGroup.dataset.collapsed !== 'false';
+
+  const setTaxonomyCollapsed = (collapsed) => {
+    if (!taxonomyGroup) {
+      return;
+    }
+    taxonomyGroup.dataset.collapsed = collapsed ? 'true' : 'false';
+    if (taxonomyToggleButton) {
+      taxonomyToggleButton.setAttribute('aria-expanded', String(!collapsed));
+    }
+    if (taxonomyContainer) {
+      taxonomyContainer.hidden = collapsed || !taxonomySupported;
+    }
+  };
+
+  const setTaxonomyVisibility = (visible) => {
+    if (taxonomyGroup) {
+      taxonomyGroup.hidden = !visible;
+    }
+    if (taxonomyToggleButton) {
+      taxonomyToggleButton.disabled = !visible;
+      taxonomyToggleButton.tabIndex = visible ? 0 : -1;
+    }
+    if (taxonomyContainer && !visible) {
+      taxonomyContainer.hidden = true;
+    } else if (taxonomyContainer && visible) {
+      taxonomyContainer.hidden = isTaxonomyCollapsed();
+    }
+  };
+
+  const getDatasetsMatchingLevels = (levelIndex) => {
+    if (!taxonomySupported || levelIndex <= 0) {
+      return allDatasets;
+    }
+    const applicableLevels = taxonomyLevels.slice(0, levelIndex);
+    return allDatasets.filter((dataset) =>
+      applicableLevels.every((level) => {
+        const selected = taxonomyState.get(level.key);
+        if (!selected) return true;
+        const datasetValue =
+          normalizeTaxonomyValue(dataset.taxonomyPath?.[level.key]) || UNKNOWN_TAXON_VALUE;
+        return datasetValue === selected;
+      }),
     );
+  };
+
+  const populateTaxonomyLevel = (levelIndex) => {
+    const level = taxonomyLevels[levelIndex];
+    const select = taxonomySelectors.get(level.key);
+    if (!select) {
+      return false;
+    }
+
+    const datasets = getDatasetsMatchingLevels(levelIndex);
+    const valueMap = new Map();
+
+    datasets.forEach((dataset) => {
+      const rawValue = dataset.taxonomyPath?.[level.key];
+      const normalized = normalizeTaxonomyValue(rawValue) || UNKNOWN_TAXON_VALUE;
+      if (!valueMap.has(normalized)) {
+        valueMap.set(normalized, rawValue || getUnknownLabel());
+      }
+    });
+
+    const entries = Array.from(valueMap.entries());
+    entries.sort((a, b) => {
+      if (a[0] === UNKNOWN_TAXON_VALUE) return 1;
+      if (b[0] === UNKNOWN_TAXON_VALUE) return -1;
+      return a[1].localeCompare(b[1], i18n.currentLanguage || 'en', { sensitivity: 'base' });
+    });
+
+    const placeholder = escapeHtml(getTaxonomySelectLabel(level.key, level.fallback));
+    let html = `<option value="">${placeholder}</option>`;
+    entries.forEach(([value, label]) => {
+      html += `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`;
+    });
+
+    select.innerHTML = html;
+    select.disabled = entries.length === 0;
+    const previous = taxonomyState.get(level.key) || null;
+    const stillValid = previous && valueMap.has(previous) ? previous : null;
+
+    let nextValue = stillValid;
+    if (!nextValue && entries.length === 1) {
+      nextValue = entries[0][0];
+    }
+
+    taxonomyState.set(level.key, nextValue);
+    select.value = nextValue || '';
+    const label = select.previousElementSibling;
+    if (label) {
+      label.textContent = getTaxonomyLabel(level.key, level.fallback);
+    }
+    return nextValue !== previous;
+  };
+
+  const refreshTaxonomyFromLevel = (startIndex = 0) => {
+    if (!taxonomySupported) {
+      return;
+    }
+    for (let index = startIndex; index < taxonomyLevels.length; index += 1) {
+      const changed = populateTaxonomyLevel(index);
+      if (changed) {
+        for (let downstream = index + 1; downstream < taxonomyLevels.length; downstream += 1) {
+          taxonomyState.set(taxonomyLevels[downstream].key, null);
+        }
+      }
+    }
+    refreshSpecimenOptions();
+  };
+
+  const initializeTaxonomySelectors = (datasets) => {
+    taxonomySelectors.clear();
+    taxonomyState.clear();
+    taxonomyLevels = [];
+    taxonomySupported =
+      Array.isArray(datasets) &&
+      datasets.some((dataset) => dataset.taxonomyPath && Object.keys(dataset.taxonomyPath).length);
+
+    if (!taxonomySupported) {
+      setTaxonomyCollapsed(true);
+      if (taxonomyContainer) {
+        taxonomyContainer.innerHTML = '';
+      }
+      setTaxonomyVisibility(false);
+      return;
+    }
+
+    taxonomyLevels = TAXONOMY_LEVEL_DEFS.filter((level) =>
+      datasets.some((dataset) => dataset.taxonomyPath?.[level.key]),
+    );
+
+    if (!taxonomyLevels.length) {
+      taxonomySupported = false;
+      setTaxonomyCollapsed(true);
+      if (taxonomyContainer) {
+        taxonomyContainer.innerHTML = '';
+      }
+      setTaxonomyVisibility(false);
+      return;
+    }
+
+    if (taxonomyContainer) {
+      taxonomyContainer.innerHTML = '';
+      taxonomyLevels.forEach((level) => {
+        const wrapper = documentRef.createElement('div');
+        wrapper.className = 'taxonomy-selectors__item';
+
+        const label = documentRef.createElement('label');
+        const selectId = `taxonomy-${level.key}`;
+        label.setAttribute('for', selectId);
+        label.dataset.i18n = `taxonomy.${level.key}`;
+        label.textContent = getTaxonomyLabel(level.key, level.fallback);
+
+        const select = documentRef.createElement('select');
+        select.id = selectId;
+        select.dataset.levelKey = level.key;
+
+        wrapper.appendChild(label);
+        wrapper.appendChild(select);
+        taxonomyContainer.appendChild(wrapper);
+
+        taxonomySelectors.set(level.key, select);
+        taxonomyState.set(level.key, null);
+
+        select.addEventListener('change', (event) => {
+          const newValue = event.target.value || null;
+          const currentIndex = taxonomyLevels.findIndex((entry) => entry.key === level.key);
+          taxonomyState.set(level.key, newValue);
+          for (let downstream = currentIndex + 1; downstream < taxonomyLevels.length; downstream += 1) {
+            taxonomyState.set(taxonomyLevels[downstream].key, null);
+          }
+          refreshTaxonomyFromLevel(currentIndex + 1);
+        });
+      });
+    }
+
+    setTaxonomyVisibility(true);
+    setTaxonomyCollapsed(isTaxonomyCollapsed());
+    refreshTaxonomyFromLevel(0);
+  };
+
+  const filterDatasetsByTaxonomy = () => {
+    if (!taxonomySupported || !taxonomyLevels.length) {
+      return allDatasets;
+    }
+    return allDatasets.filter((dataset) =>
+      taxonomyLevels.every((level) => {
+        const selected = taxonomyState.get(level.key);
+        if (!selected) return true;
+        const datasetValue =
+          normalizeTaxonomyValue(dataset.taxonomyPath?.[level.key]) || UNKNOWN_TAXON_VALUE;
+        return datasetValue === selected;
+      }),
+    );
+  };
+
+  const updateSpecimenSelect = (datasets, statusKey) => {
+    const placeholder = escapeHtml(
+      translate('selector.dataset.placeholder', 'Select a specimen...'),
+    );
+    const unavailableLabel = escapeHtml(
+      translate('selector.dataset.none', 'No specimens available'),
+    );
+
     const options =
       `<option value="">${placeholder}</option>` +
       datasets
@@ -1058,19 +1311,50 @@ export async function initInterface({
             )}</option>`,
         )
         .join('');
-    datasetSelect.innerHTML = options;
-    datasetSelect.disabled = false;
+
+    datasetSelect.innerHTML =
+      datasets.length > 0 ? options : `<option value="">${placeholder}</option>`;
+
+    if (!datasets.length) {
+      datasetSelect.innerHTML += `<option value="" disabled>${unavailableLabel}</option>`;
+    }
+
+    datasetSelect.disabled = datasets.length === 0;
     datasetSelect.value = '';
+
     const modelPlaceholder = escapeHtml(
-      translate('selector.model.disabled', 'Select a dataset'),
+      translate('selector.model.disabled', 'Select a specimen'),
     );
     modelSelect.innerHTML = `<option value="">${modelPlaceholder}</option>`;
     modelSelect.disabled = true;
     activeDatasetId = null;
+
     if (statusKey) {
       setStatus(statusKey, 'info');
     }
   };
+
+  const refreshSpecimenOptions = (statusKey) => {
+    const datasets = filterDatasetsByTaxonomy();
+    updateSpecimenSelect(datasets, statusKey);
+    if (!statusKey) {
+      if (datasets.length > 0) {
+        setStatus('status.selectDatasetAndModel', 'info');
+      } else {
+        setCustomStatus(translate('selector.dataset.none', 'No specimens available'), 'info');
+      }
+    }
+  };
+
+  if (taxonomyToggleButton) {
+    taxonomyToggleButton.addEventListener('click', () => {
+      const nextCollapsed = !isTaxonomyCollapsed();
+      setTaxonomyCollapsed(nextCollapsed);
+      if (!nextCollapsed && taxonomySupported) {
+        refreshTaxonomyFromLevel(0);
+      }
+    });
+  }
 
   const initDatasets = async ({ force = false } = {}) => {
     datasetToken += 1;
@@ -1080,25 +1364,36 @@ export async function initInterface({
     datasetSelect.disabled = true;
     modelSelect.disabled = true;
     reloadButton.disabled = true;
+    taxonomySelectors.clear();
+    taxonomyState.clear();
+    taxonomyLevels = [];
+    taxonomySupported = false;
+    allDatasets = [];
     const loadingDatasetsOption = escapeHtml(
-      translate('selector.dataset.loading', 'Loading datasets...'),
+      translate('selector.dataset.loading', 'Loading specimens...'),
     );
     datasetSelect.innerHTML = `<option value="">${loadingDatasetsOption}</option>`;
     const selectDatasetOption = escapeHtml(
-      translate('selector.model.disabled', 'Select a dataset'),
+      translate('selector.model.disabled', 'Select a specimen'),
     );
     modelSelect.innerHTML = `<option value="">${selectDatasetOption}</option>`;
     viewer.clear();
     renderDatasetMetadata(metadataPanel, null);
     currentMetadataDetail = null;
     updateExternalLinks(null, coraLink, gbifLink, uberonLink);
+    if (taxonomyContainer) {
+      taxonomyContainer.innerHTML = '';
+    }
+    setTaxonomyVisibility(false);
 
     try {
       let datasets = null;
       if (!force) {
         datasets = loadDatasetsFromCache();
         if (datasets && currentToken === datasetToken) {
-          populateDatasetSelect(datasets, 'status.datasetsLoadedFromCache');
+          allDatasets = datasets;
+          initializeTaxonomySelectors(allDatasets);
+          refreshSpecimenOptions('status.datasetsLoadedFromCache');
           reloadButton.disabled = false;
           return;
         }
@@ -1108,7 +1403,9 @@ export async function initInterface({
       if (currentToken !== datasetToken) {
         return;
       }
-      populateDatasetSelect(datasets, 'status.datasetsLoadedFromAPI');
+      allDatasets = datasets;
+      initializeTaxonomySelectors(allDatasets);
+      refreshSpecimenOptions('status.datasetsLoadedFromAPI');
     } catch (error) {
       console.error(error);
       if (currentToken === datasetToken) {
@@ -1128,7 +1425,7 @@ export async function initInterface({
     viewer.clear();
     if (!persistentId) {
       const selectDatasetOption = escapeHtml(
-        translate('selector.model.disabled', 'Select a dataset'),
+        translate('selector.model.disabled', 'Select a specimen'),
       );
       modelSelect.innerHTML = `<option value="">${selectDatasetOption}</option>`;
       modelSelect.disabled = true;
@@ -1238,6 +1535,7 @@ export async function initInterface({
 
   datasetSelect.addEventListener('change', (event) => {
     const persistentId = event.target.value;
+    activeDatasetId = persistentId || null;
     modelSelect.value = '';
     loadDatasetModels(persistentId);
   });
