@@ -75,45 +75,6 @@ function normalizeDirectoryParts(directoryLabel) {
 }
 
 /**
- * Attempts to infer specimen laterality (left/right/bilateral) from common string tokens.
- *
- * @param {string[]} sources - Candidate strings describing the element.
- * @returns {'left'|'right'|'bilateral'|null} Inferred laterality code.
- */
-function inferLateralityFromStrings(sources = []) {
-  if (!sources.length) return null;
-
-  const text = sources
-    .filter(Boolean)
-    .map((value) =>
-      normalizeSlashes(String(value))
-        .replace(/[_\-]+/g, ' ')
-        .replace(/[()]/g, ' ')
-        .toLowerCase()
-    )
-    .join(' ');
-
-  if (!text) return null;
-
-  const bilateralPattern = /\b(bilateral|both sides?|pair(?:ed)?|double)\b/i;
-  if (bilateralPattern.test(text)) {
-    return 'bilateral';
-  }
-
-  const leftPattern = /\b(left|sinist(?:er|ra)|izquierd[ao]?|esquer(?:ra|re)|gauche)\b/i;
-  if (leftPattern.test(text)) {
-    return 'left';
-  }
-
-  const rightPattern = /\b(right|dex(?:ter|tra|tre)|derech[ao]?|dreta|destra|droite)\b/i;
-  if (rightPattern.test(text)) {
-    return 'right';
-  }
-
-  return null;
-}
-
-/**
  * Resolves a relative path against a dataset directory, handling traversal.
  *
  * @param {string} baseDir - Base directory to resolve from.
@@ -326,13 +287,6 @@ function buildModelIndex(files) {
       objEntry,
       mtlEntry,
       directory: directoryLabel,
-      laterality: inferLateralityFromStrings([
-        displayName,
-        directoryLabel,
-        objEntry?.file?.label,
-        objEntry?.path,
-        objEntry?.file?.description
-      ]),
     };
 
     models.push(model);

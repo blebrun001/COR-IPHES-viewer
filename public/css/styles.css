@@ -184,12 +184,6 @@ body {
   cursor: not-allowed;
 }
 
-.selector-note {
-  font-size: var(--font-xs);
-  color: var(--color-text-muted);
-  min-height: 1rem;
-}
-
 /* === Sidebar === */
 .sidebar {
   display: grid;

@@ -19,15 +19,6 @@
       "cora": "Especie (CORA-RDR)",
       "uberon": "Elemento anatómico (OLS UBERON)",
       "about": "Acerca del proyecto"
-    },
-    "laterality": {
-      "label": "Lateralidad",
-      "values": {
-        "left": "Izquierdo",
-        "right": "Derecho",
-        "bilateral": "Bilateral",
-        "unknown": "No especificada"
-      }
     }
   },
   "language": {
