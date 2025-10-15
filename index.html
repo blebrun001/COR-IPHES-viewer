@@ -75,15 +75,6 @@
               </div>
             </div>
           </section>
-          <section class="sidebar-section links-section">
-            <div class="sidebar-heading" data-i18n="sidebar.moreInfoHeading">More infos</div>
-            <div class="external-links">
-              <a id="gbifLink" class="external-link" href="#" target="_blank" rel="noopener noreferrer" hidden data-i18n="sidebar.links.gbif">Species (GBIF)</a>
-              <a id="coraLink" class="external-link" href="#" target="_blank" rel="noopener noreferrer" hidden data-i18n="sidebar.links.cora">Species (CORA-RDR)</a>
-              <a id="uberonLink" class="external-link" href="#" target="_blank" rel="noopener noreferrer" hidden data-i18n="sidebar.links.uberon">Anatomical element (OLS UBERON)</a>
-              <button id="aboutButton" type="button" class="external-link" data-i18n="sidebar.links.about">About the project</button>
-            </div>
-          </section>
           <div class="sidebar-footer">
             <button
               id="optionsButton"
@@ -93,6 +84,15 @@
               data-i18n-attr="aria-label:sidebar.links.options"
             >
               <span class="floating-options-button__icon" aria-hidden="true"></span>
+            </button>
+            <button
+              id="aboutButton"
+              type="button"
+              class="floating-info-button"
+              aria-label="About the project"
+              data-i18n-attr="aria-label:sidebar.links.about"
+            >
+              <span class="floating-info-button__icon" aria-hidden="true">?</span>
             </button>
           </div>
         </aside>
@@ -220,31 +220,26 @@
       <h2 id="optionsDialogTitle" data-i18n="options.title">Options</h2>
       <div class="options-content">
         <div class="options-section">
-          <div class="language-selector" role="group" aria-labelledby="languageSelectLabel">
-            <label
-              id="languageSelectLabel"
-              for="languageSelect"
-              class="language-selector__label"
-              data-i18n="language.selectorLabel"
-            >
-              Language
-            </label>
-            <select
-              id="languageSelect"
-              class="language-selector__control"
-              aria-describedby="languageSelectLabel"
-            ></select>
-          </div>
+          <label
+            class="options-language-label"
+            for="languageSelect"
+            data-i18n="language.selectorLabel"
+          >
+            Langue&nbsp;:
+          </label>
+          <select
+            id="languageSelect"
+            class="options-language-select"
+          ></select>
         </div>
         <div class="options-section">
-          <p class="options-section__label" data-i18n="options.reloadLabel">Specimen lists</p>
           <button
             id="reloadDatasets"
             type="button"
-            class="options-reload-button"
+            class="options-reload-button options-reload-button--link"
             data-i18n="sidebar.reloadButton"
           >
-            Reload lists
+            Reload specimen list
           </button>
         </div>
       </div>

@@ -313,8 +313,8 @@ body {
 .sidebar {
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: 1.75rem;
-  padding: 1.4rem 1.4rem;
+  gap: 1.5rem;
+  padding: 1.4rem 1.4rem 0.2rem;
   background: var(--color-surface);
   border-right: 1px solid var(--color-border);
   width: 360px;
@@ -796,45 +796,60 @@ body {
   gap: 0.75rem;
 }
 
-.options-section__label {
+.options-language-label {
   font-size: var(--font-sm);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
+  color: var(--color-text-primary);
 }
 
-.options-reload-button {
+.options-language-select {
   appearance: none;
-  padding: 0.7rem 1.2rem;
-  border-radius: 0.65rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.55rem;
   border: 1px solid var(--color-border);
-  background: var(--color-accent);
+  background: var(--color-surface-alt);
   color: inherit;
   font-size: var(--font-sm);
   cursor: pointer;
+  min-width: 8.5rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-  align-self: flex-start;
 }
 
-.options-reload-button:hover:not(:disabled) {
-  border-color: var(--color-accent);
-}
-
-.options-reload-button:focus-visible {
+.options-language-select:focus-visible {
   outline: none;
   border-color: var(--color-accent);
   box-shadow: 0 0 0 0.1875rem var(--color-accent);
 }
 
+.options-reload-button {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-accent);
+  font-size: var(--font-sm);
+  cursor: pointer;
+  align-self: flex-start;
+  text-decoration: underline;
+}
+
+.options-reload-button:hover,
+.options-reload-button:focus-visible {
+  color: var(--color-accent-strong, #0ea5e9);
+  outline: none;
+}
+
 .options-reload-button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+  text-decoration: none;
 }
 
 .sidebar-footer {
   display: flex;
   justify-content: flex-start;
+  gap: 0.75rem;
   margin-top: auto;
+  padding-top: 0.2rem;
 }
 
 .floating-options-button {
@@ -861,13 +876,47 @@ body {
 }
 
 .floating-options-button__icon {
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.35rem;
+  height: 1.35rem;
   background-color: currentColor;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M13.45 2.34a1.5 1.5 0 0 0-2.9 0l-.32 1.25a6.06 6.06 0 0 0-.97.56l-1.23-.53a1.5 1.5 0 0 0-1.95.72l-.02.05a1.5 1.5 0 0 0 .7 1.96l1.08.53a5.91 5.91 0 0 0 0 1.16l-1.08.54a1.5 1.5 0 0 0-.7 1.96l.02.05a1.5 1.5 0 0 0 1.95.72l1.23-.53c.3.21.63.4.97.56l.32 1.25a1.5 1.5 0 0 0 2.9 0l.32-1.25c.34-.16.67-.35.97-.56l1.23.53a1.5 1.5 0 0 0 1.95-.72l.02-.05a1.5 1.5 0 0 0-.7-1.96l-1.08-.54c.04-.38.04-.77 0-1.15l1.08-.54a1.5 1.5 0 0 0 .7-1.96l-.02-.05a1.5 1.5 0 0 0-1.95-.72l-1.23.53a6.06 6.06 0 0 0-.97-.56Zm-1.45 8.16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .floating-options-button:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+}
+
+.floating-info-button {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.floating-info-button:hover,
+.floating-info-button:focus-visible {
+  outline: none;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.25);
+  border-color: var(--color-accent);
+}
+
+.floating-info-button__icon {
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.floating-info-button:active {
   transform: translateY(0);
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
 }

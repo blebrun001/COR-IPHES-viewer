@@ -12,7 +12,7 @@
     "modelLabel": "Anatomical element",
     "modelDisabledOption": "Select a specimen",
     "actionsLabel": "Actions",
-    "reloadButton": "Reload lists",
+    "reloadButton": "Reload specimen list",
     "metadataHeading": "Specimen metadata",
     "moreInfoHeading": "More infos",
     "links": {
