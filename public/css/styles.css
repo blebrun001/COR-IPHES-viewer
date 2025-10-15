@@ -740,6 +740,138 @@ body {
   text-justify: inter-word;
 }
 
+.options-dialog {
+  padding: 2rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  width: min(420px, 90vw);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+.options-dialog::backdrop {
+  background: var(--color-bg);
+  opacity: 0.7;
+}
+
+.options-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0.25rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.options-close:hover,
+.options-close:focus-visible {
+  outline: none;
+  color: var(--color-text-primary);
+  background: var(--color-surface-alt);
+}
+
+.options-dialog h2 {
+  font-size: var(--font-md);
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.options-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.options-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.options-section__label {
+  font-size: var(--font-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.options-reload-button {
+  appearance: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-accent);
+  color: inherit;
+  font-size: var(--font-sm);
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  align-self: flex-start;
+}
+
+.options-reload-button:hover:not(:disabled) {
+  border-color: var(--color-accent);
+}
+
+.options-reload-button:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 0.1875rem var(--color-accent);
+}
+
+.options-reload-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.sidebar-footer {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: auto;
+}
+
+.floating-options-button {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.floating-options-button:hover,
+.floating-options-button:focus-visible {
+  outline: none;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.25);
+  border-color: var(--color-accent);
+}
+
+.floating-options-button__icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  background-color: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M13.45 2.34a1.5 1.5 0 0 0-2.9 0l-.32 1.25a6.06 6.06 0 0 0-.97.56l-1.23-.53a1.5 1.5 0 0 0-1.95.72l-.02.05a1.5 1.5 0 0 0 .7 1.96l1.08.53a5.91 5.91 0 0 0 0 1.16l-1.08.54a1.5 1.5 0 0 0-.7 1.96l.02.05a1.5 1.5 0 0 0 1.95.72l1.23-.53c.3.21.63.4.97.56l.32 1.25a1.5 1.5 0 0 0 2.9 0l.32-1.25c.34-.16.67-.35.97-.56l1.23.53a1.5 1.5 0 0 0 1.95-.72l.02-.05a1.5 1.5 0 0 0-.7-1.96l-1.08-.54c.04-.38.04-.77 0-1.15l1.08-.54a1.5 1.5 0 0 0 .7-1.96l-.02-.05a1.5 1.5 0 0 0-1.95-.72l-1.23.53a6.06 6.06 0 0 0-.97-.56Zm-1.45 8.16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.floating-options-button:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+}
+
 .about-banner {
   display: block;
   width: 100%;

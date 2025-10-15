@@ -73,10 +73,6 @@
                   </div>
                 </div>
               </div>
-              <div class="selector-group selector-group--compact">
-                <label for="reloadDatasets" data-i18n="sidebar.actionsLabel">Actions</label>
-                <button id="reloadDatasets" type="button" data-i18n="sidebar.reloadButton">Reload lists</button>
-              </div>
             </div>
           </section>
           <section class="sidebar-section links-section">
@@ -86,12 +82,19 @@
               <a id="coraLink" class="external-link" href="#" target="_blank" rel="noopener noreferrer" hidden data-i18n="sidebar.links.cora">Species (CORA-RDR)</a>
               <a id="uberonLink" class="external-link" href="#" target="_blank" rel="noopener noreferrer" hidden data-i18n="sidebar.links.uberon">Anatomical element (OLS UBERON)</a>
               <button id="aboutButton" type="button" class="external-link" data-i18n="sidebar.links.about">About the project</button>
-              <div class="language-selector" role="group" aria-labelledby="languageSelectLabel">
-                <label id="languageSelectLabel" for="languageSelect" class="language-selector__label" data-i18n="language.selectorLabel">Language</label>
-                <select id="languageSelect" class="language-selector__control" aria-describedby="languageSelectLabel"></select>
-              </div>
             </div>
           </section>
+          <div class="sidebar-footer">
+            <button
+              id="optionsButton"
+              class="floating-options-button"
+              type="button"
+              aria-label="Open options"
+              data-i18n-attr="aria-label:sidebar.links.options"
+            >
+              <span class="floating-options-button__icon" aria-hidden="true"></span>
+            </button>
+          </div>
         </aside>
         <!-- Main area renders the Three.js canvas, status banner, and viewer toolbar -->
         <main class="viewer-area">
@@ -207,10 +210,50 @@
         data-i18n-attr="aria-label:about.closeAria"
       >&times;</button>
     </dialog>
+    <dialog id="optionsDialog" class="options-dialog" aria-labelledby="optionsDialogTitle">
+      <button
+        id="closeOptions"
+        type="button"
+        class="options-close"
+        aria-label="Close options dialog"
+      >&times;</button>
+      <h2 id="optionsDialogTitle" data-i18n="options.title">Options</h2>
+      <div class="options-content">
+        <div class="options-section">
+          <div class="language-selector" role="group" aria-labelledby="languageSelectLabel">
+            <label
+              id="languageSelectLabel"
+              for="languageSelect"
+              class="language-selector__label"
+              data-i18n="language.selectorLabel"
+            >
+              Language
+            </label>
+            <select
+              id="languageSelect"
+              class="language-selector__control"
+              aria-describedby="languageSelectLabel"
+            ></select>
+          </div>
+        </div>
+        <div class="options-section">
+          <p class="options-section__label" data-i18n="options.reloadLabel">Specimen lists</p>
+          <button
+            id="reloadDatasets"
+            type="button"
+            class="options-reload-button"
+            data-i18n="sidebar.reloadButton"
+          >
+            Reload lists
+          </button>
+        </div>
+      </div>
+    </dialog>
 
     <!-- Entry modules: core viewer bootstrap + supporting UI behaviours -->
     <script type="module" src="./public/js/app.js"></script>
     <script type="module" src="./public/js/about.js"></script>
+    <script type="module" src="./public/js/options.js"></script>
     <script type="module" src="./public/js/sidebar.js"></script>
   </body>
 </html>
