@@ -1092,6 +1092,7 @@ export async function initInterface({
   };
 
   const taxonomyContainer = documentRef.getElementById('taxonomySelectors');
+  const taxonomyLevelsContainer = documentRef.getElementById('taxonomyLevels');
   const taxonomyGroup = documentRef.getElementById('taxonomyGroup');
   const taxonomyToggleButton = documentRef.getElementById('toggleTaxonomy');
 
@@ -1102,27 +1103,33 @@ export async function initInterface({
     if (!taxonomyGroup) {
       return;
     }
-    taxonomyGroup.dataset.collapsed = collapsed ? 'true' : 'false';
+    const effectiveCollapsed = taxonomySupported ? collapsed : false;
+    taxonomyGroup.dataset.collapsed = effectiveCollapsed ? 'true' : 'false';
     if (taxonomyToggleButton) {
-      taxonomyToggleButton.setAttribute('aria-expanded', String(!collapsed));
+      taxonomyToggleButton.setAttribute('aria-expanded', String(!effectiveCollapsed));
+    }
+    if (taxonomyLevelsContainer) {
+      taxonomyLevelsContainer.hidden = effectiveCollapsed || !taxonomySupported;
     }
     if (taxonomyContainer) {
-      taxonomyContainer.hidden = collapsed || !taxonomySupported;
+      taxonomyContainer.hidden = taxonomySupported ? effectiveCollapsed : false;
     }
   };
 
   const setTaxonomyVisibility = (visible) => {
     if (taxonomyGroup) {
-      taxonomyGroup.hidden = !visible;
+      taxonomyGroup.hidden = false;
     }
     if (taxonomyToggleButton) {
       taxonomyToggleButton.disabled = !visible;
       taxonomyToggleButton.tabIndex = visible ? 0 : -1;
+      taxonomyToggleButton.hidden = !visible;
     }
-    if (taxonomyContainer && !visible) {
-      taxonomyContainer.hidden = true;
-    } else if (taxonomyContainer && visible) {
-      taxonomyContainer.hidden = isTaxonomyCollapsed();
+    if (taxonomyLevelsContainer) {
+      taxonomyLevelsContainer.hidden = !visible || isTaxonomyCollapsed();
+    }
+    if (taxonomyContainer) {
+      taxonomyContainer.hidden = visible ? isTaxonomyCollapsed() : false;
     }
   };
 
@@ -1217,8 +1224,8 @@ export async function initInterface({
 
     if (!taxonomySupported) {
       setTaxonomyCollapsed(true);
-      if (taxonomyContainer) {
-        taxonomyContainer.innerHTML = '';
+      if (taxonomyLevelsContainer) {
+        taxonomyLevelsContainer.innerHTML = '';
       }
       setTaxonomyVisibility(false);
       return;
@@ -1231,15 +1238,15 @@ export async function initInterface({
     if (!taxonomyLevels.length) {
       taxonomySupported = false;
       setTaxonomyCollapsed(true);
-      if (taxonomyContainer) {
-        taxonomyContainer.innerHTML = '';
+      if (taxonomyLevelsContainer) {
+        taxonomyLevelsContainer.innerHTML = '';
       }
       setTaxonomyVisibility(false);
       return;
     }
 
-    if (taxonomyContainer) {
-      taxonomyContainer.innerHTML = '';
+    if (taxonomyLevelsContainer) {
+      taxonomyLevelsContainer.innerHTML = '';
       taxonomyLevels.forEach((level) => {
         const wrapper = documentRef.createElement('div');
         wrapper.className = 'taxonomy-selectors__item';
@@ -1256,7 +1263,7 @@ export async function initInterface({
 
         wrapper.appendChild(label);
         wrapper.appendChild(select);
-        taxonomyContainer.appendChild(wrapper);
+        taxonomyLevelsContainer.appendChild(wrapper);
 
         taxonomySelectors.set(level.key, select);
         taxonomyState.set(level.key, null);
@@ -1381,8 +1388,8 @@ export async function initInterface({
     renderDatasetMetadata(metadataPanel, null);
     currentMetadataDetail = null;
     updateExternalLinks(null, coraLink, gbifLink, uberonLink);
-    if (taxonomyContainer) {
-      taxonomyContainer.innerHTML = '';
+    if (taxonomyLevelsContainer) {
+      taxonomyLevelsContainer.innerHTML = '';
     }
     setTaxonomyVisibility(false);
 

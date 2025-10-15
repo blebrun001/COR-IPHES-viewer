@@ -40,15 +40,14 @@
         <!-- Sidebar hosts dataset selection, metadata, and external resources -->
         <aside id="appSidebar" class="sidebar" tabindex="-1" aria-expanded="true">
           <section class="sidebar-section selectors-section">
-            <div class="sidebar-heading" data-i18n="sidebar.selectionHeading">Selection</div>
             <div class="sidebar-selectors">
-              <div class="selector-group taxonomy-group" id="taxonomyGroup" data-collapsed="true" hidden>
+              <div class="selector-group taxonomy-group" id="taxonomyGroup" data-collapsed="false">
                 <button
                   id="toggleTaxonomy"
                   class="taxonomy-toggle"
                   type="button"
                   aria-controls="taxonomySelectors"
-                  aria-expanded="false"
+                  aria-expanded="true"
                 >
                   <span class="taxonomy-heading" data-i18n="sidebar.taxonomyHeading">Taxonomy</span>
                   <span class="taxonomy-toggle__icon" aria-hidden="true"></span>
@@ -58,30 +57,27 @@
                   class="taxonomy-selectors"
                   role="group"
                   aria-labelledby="toggleTaxonomy"
-                  hidden
-                ></div>
-              </div>
-              <div class="selector-group">
-                <label for="datasetSelect" data-i18n="sidebar.datasetLabel">Specimen</label>
-                <select id="datasetSelect">
-                  <option value="" data-i18n="sidebar.datasetLoadingOption">Loading datasets...</option>
-                </select>
-              </div>
-              <div class="selector-group">
-                <label for="modelSelect" data-i18n="sidebar.modelLabel">Anatomical element</label>
-                <select id="modelSelect" disabled>
-                  <option value="" data-i18n="sidebar.modelDisabledOption">Select a dataset</option>
-                </select>
+                >
+                  <div id="taxonomyLevels" class="taxonomy-levels"></div>
+                  <div class="selector-group">
+                    <label for="datasetSelect" data-i18n="sidebar.datasetLabel">Specimen</label>
+                    <select id="datasetSelect">
+                      <option value="" data-i18n="sidebar.datasetLoadingOption">Loading datasets...</option>
+                    </select>
+                  </div>
+                  <div class="selector-group">
+                    <label for="modelSelect" data-i18n="sidebar.modelLabel">Anatomical element</label>
+                    <select id="modelSelect" disabled>
+                      <option value="" data-i18n="sidebar.modelDisabledOption">Select a dataset</option>
+                    </select>
+                  </div>
+                </div>
               </div>
               <div class="selector-group selector-group--compact">
                 <label for="reloadDatasets" data-i18n="sidebar.actionsLabel">Actions</label>
                 <button id="reloadDatasets" type="button" data-i18n="sidebar.reloadButton">Reload lists</button>
               </div>
             </div>
-          </section>
-          <section class="sidebar-section metadata-section">
-            <div class="sidebar-heading" data-i18n="sidebar.metadataHeading">Dataset metadata</div>
-            <div id="metadataPanel" class="metadata-scroll"></div>
           </section>
           <section class="sidebar-section links-section">
             <div class="sidebar-heading" data-i18n="sidebar.moreInfoHeading">More infos</div>
