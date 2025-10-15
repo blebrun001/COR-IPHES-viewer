@@ -1728,6 +1728,9 @@ export async function initInterface({
       if (typeof unsubscribe === 'function') {
         unsubscribe();
       }
+      if (viewer && typeof viewer.destroy === 'function') {
+        viewer.destroy();
+      }
     },
   };
 }

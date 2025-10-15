@@ -1,10 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dataverse 3D Viewer</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      (function () {
+        try {
+          const storedTheme = window.localStorage.getItem('ui.theme');
+          if (storedTheme === 'light' || storedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', storedTheme);
+          }
+        } catch (error) {
+          /* Ignore storage access issues */
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="./public/css/styles.css" />
   </head>
   <body>
@@ -30,6 +42,8 @@
         <div class="top-bar__right">
           <img
             src="./public/ressources/iphes.png"
+            data-theme-src-dark="./public/ressources/iphes.png"
+            data-theme-src-light="./public/ressources/ipheslight.png"
             alt="IPHES-CERCA logo"
             class="top-bar__logo"
             decoding="async"
@@ -235,7 +249,12 @@
         </ul>
       </section>
       <div class="about-logos" role="group" aria-label="Project partners">
-        <img src="./public/ressources/iphes.png" alt="IPHES-CERCA logo" />
+        <img
+          src="./public/ressources/iphes.png"
+          data-theme-src-dark="./public/ressources/iphes.png"
+          data-theme-src-light="./public/ressources/ipheslight.png"
+          alt="IPHES-CERCA logo"
+        />
         <img src="./public/ressources/cerca.png" alt="CERCA logo" />
         <img src="./public/ressources/fecyt.jpg" alt="FECYT logo" />
         <img src="./public/ressources/ministerio.png" alt="Ministerio de Ciencia e Innovación logo" />
@@ -269,6 +288,22 @@
             id="languageSelect"
             class="options-language-select"
           ></select>
+        </div>
+        <div class="options-section">
+          <label
+            class="options-theme-label"
+            for="themeSelect"
+            data-i18n="options.theme.label"
+          >
+            Theme&nbsp;:
+          </label>
+          <select
+            id="themeSelect"
+            class="options-theme-select"
+          >
+            <option value="dark" data-i18n="options.theme.dark">Dark</option>
+            <option value="light" data-i18n="options.theme.light">Light</option>
+          </select>
         </div>
         <div class="options-section">
           <button

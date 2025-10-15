@@ -16,6 +16,35 @@ const MEASURE_LINE_COLOR = 0x38bdf8;
 const MEASURE_START_COLOR = 0x404040;
 const MEASURE_END_COLOR = 0x404040;
 const MEASURE_CLICK_DRAG_THRESHOLD = 4;
+const VIEWER_BACKGROUND_CSS_VAR = '--color-viewer-bg';
+const FALLBACK_VIEWER_BACKGROUND = '#111827';
+
+/**
+ * Reads a CSS custom property from the document root and returns a usable colour string.
+ *
+ * @param {string} variableName - CSS variable name to read.
+ * @param {string} fallback - Value to use when the variable is unavailable.
+ * @returns {string} Normalised colour string.
+ */
+function readCssColorVariable(variableName, fallback) {
+  if (typeof window === 'undefined' || !window.getComputedStyle) {
+    return fallback;
+  }
+  try {
+    const styles = window.getComputedStyle(document.documentElement);
+    if (!styles) {
+      return fallback;
+    }
+    const value = styles.getPropertyValue(variableName);
+    if (!value) {
+      return fallback;
+    }
+    const trimmed = value.trim();
+    return trimmed || fallback;
+  } catch (error) {
+    return fallback;
+  }
+}
 
 /**
  * Extracts referenced material library files from an OBJ source.
@@ -285,7 +314,7 @@ class Viewer3D {
     }
     this.fetchImpl = resolvedFetch;
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x111827);
+    this.scene.background = new THREE.Color(FALLBACK_VIEWER_BACKGROUND);
 
     this.perspectiveCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
     this.perspectiveCamera.position.set(0, 0.4, 1.2);
@@ -318,6 +347,7 @@ class Viewer3D {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.25;
+    this.renderer.setClearColor(this.scene.background, 1);
 
     this.controls = null;
     this.controlsType = null;
@@ -337,6 +367,13 @@ class Viewer3D {
     this.size = { width: 1, height: 1 };
 
     this.listeners = new Map();
+    this.updateBackgroundFromTheme();
+    this.handleThemeChange = () => {
+      this.updateBackgroundFromTheme();
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('themechange', this.handleThemeChange);
+    }
 
     this.setupLights();
     this.setupGrid();
@@ -345,6 +382,24 @@ class Viewer3D {
     this.applyOrbitMode(true);
     this.animate = this.animate.bind(this);
     requestAnimationFrame(this.animate);
+  }
+
+  /**
+   * Synchronises the Three.js scene background with the current theme colour.
+   */
+  updateBackgroundFromTheme() {
+    const targetColorValue = readCssColorVariable(VIEWER_BACKGROUND_CSS_VAR, FALLBACK_VIEWER_BACKGROUND);
+    const backgroundColor =
+      this.scene.background instanceof THREE.Color ? this.scene.background : new THREE.Color(FALLBACK_VIEWER_BACKGROUND);
+    try {
+      backgroundColor.set(targetColorValue);
+    } catch (error) {
+      backgroundColor.set(FALLBACK_VIEWER_BACKGROUND);
+    }
+    this.scene.background = backgroundColor;
+    if (this.renderer && typeof this.renderer.setClearColor === 'function') {
+      this.renderer.setClearColor(backgroundColor, 1);
+    }
   }
 
   /**
@@ -1511,6 +1566,16 @@ class Viewer3D {
     );
 
     return result;
+  }
+
+  /**
+   * Cleans up event listeners and renderer resources.
+   */
+  destroy() {
+    if (typeof window !== 'undefined' && this.handleThemeChange) {
+      window.removeEventListener('themechange', this.handleThemeChange);
+    }
+    this.handleThemeChange = null;
   }
 
   /**

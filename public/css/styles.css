@@ -1,15 +1,13 @@
-/* === Global Variables & Base Reset === */
+/* === Global Tokens === */
 :root {
-  color-scheme: dark;
   font-family: "Inter", sans-serif;
-  background-color: var(--color-bg);
-  color: var(--color-text-primary);
   --font-xs: 0.75rem;
   --font-sm: 0.85rem;
   --font-md: 1rem;
   --font-lg: 1.25rem;
   --font-xl: 1.5rem;
   --line-height-base: 1.4;
+  color-scheme: dark;
   --color-bg: #000000;
   --color-surface: #0c131c;
   --color-surface-alt: #0f172a;
@@ -20,6 +18,22 @@
   --color-error: #f87171;
   --color-border: #475569;
   --color-texture-override: #ff9300;
+  --color-viewer-bg: #111827;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-alt: #edf2f7;
+  --color-text-primary: #0f172a;
+  --color-text-muted: #475569;
+  --color-accent: #2563eb;
+  --color-success: #16a34a;
+  --color-error: #dc2626;
+  --color-border: #cbd5f5;
+  --color-texture-override: #ff9300;
+  --color-viewer-bg: #e2e8f0;
 }
 
 * {
@@ -30,13 +44,15 @@ html,
 body {
   margin: 0;
   min-height: 100%;
-  background-color: var(--color-bg);
 }
 
 body {
   min-height: 100vh;
   font-size: var(--font-md);
   line-height: var(--line-height-base);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 /* === Layout Shell === */
@@ -476,7 +492,7 @@ body {
 .viewer-area {
   position: relative;
   min-height: 0;
-  background: var(--color-bg);
+  background: var(--color-viewer-bg);
   overflow: hidden;
 }
 
@@ -796,12 +812,14 @@ body {
   gap: 0.75rem;
 }
 
-.options-language-label {
+.options-language-label,
+.options-theme-label {
   font-size: var(--font-sm);
   color: var(--color-text-primary);
 }
 
-.options-language-select {
+.options-language-select,
+.options-theme-select {
   appearance: none;
   padding: 0.5rem 0.65rem;
   border-radius: 0.55rem;
@@ -814,7 +832,8 @@ body {
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.options-language-select:focus-visible {
+.options-language-select:focus-visible,
+.options-theme-select:focus-visible {
   outline: none;
   border-color: var(--color-accent);
   box-shadow: 0 0 0 0.1875rem var(--color-accent);
