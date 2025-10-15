@@ -638,24 +638,35 @@ export class DataverseClient {
         cacheEntry.files = detail?.data?.latestVersion?.files || [];
         cacheEntry.specimenSummary = specimenSummary;
         cacheEntry.taxonomyPath = taxonomyPath;
-        cacheEntry.models = null;
-        cacheEntry.modelMap = null;
-        cacheEntry.fileMap = null;
-        cacheEntry.fileMapLower = null;
-        cacheEntry.fileNameMap = null;
+        const modelIndex = buildModelIndex(cacheEntry.files || []);
+        if (modelIndex.models.length) {
+          cacheEntry.models = modelIndex.models;
+          cacheEntry.modelMap = modelIndex.modelMap;
+          cacheEntry.fileMap = modelIndex.fileMap;
+          cacheEntry.fileMapLower = modelIndex.fileMapLower;
+          cacheEntry.fileNameMap = modelIndex.fileNameMap;
+        } else {
+          cacheEntry.models = null;
+          cacheEntry.modelMap = null;
+          cacheEntry.fileMap = null;
+          cacheEntry.fileMapLower = null;
+          cacheEntry.fileNameMap = null;
+        }
       } catch (error) {
         cacheEntry.title = cacheEntry.title || item.identifier;
         console.warn(`Failed to fetch dataset details for ${persistentId}`, error);
       }
 
       this.datasetCache.set(persistentId, cacheEntry);
-      datasetInfos.push({
-        label: cacheEntry.title || item.identifier,
-        value: persistentId,
-        identifier: item.identifier,
-        specimenSummary: cacheEntry.specimenSummary || null,
-        taxonomyPath: cacheEntry.taxonomyPath || null,
-      });
+      if (cacheEntry.models && cacheEntry.models.length) {
+        datasetInfos.push({
+          label: cacheEntry.title || item.identifier,
+          value: persistentId,
+          identifier: item.identifier,
+          specimenSummary: cacheEntry.specimenSummary || null,
+          taxonomyPath: cacheEntry.taxonomyPath || null,
+        });
+      }
     }
 
     datasetInfos.sort((a, b) =>
