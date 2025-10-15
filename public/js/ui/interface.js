@@ -313,6 +313,50 @@ function deriveUberonUrlFromModel(modelInfo) {
   return null;
 }
 
+function resolveUberonCodeFromModel(modelInfo) {
+  const url = deriveUberonUrlFromModel(modelInfo);
+  if (!url) {
+    return null;
+  }
+  const match = url.match(/UBERON_(\d+)/i);
+  return match ? match[1] : null;
+}
+
+function formatModelOptionLabel(modelInfo) {
+  const baseLabel = modelInfo?.displayName || '';
+  if (!baseLabel) {
+    return baseLabel;
+  }
+
+  const code = resolveUberonCodeFromModel(modelInfo);
+  if (!code) {
+    return baseLabel;
+  }
+
+  const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const variants = [
+    `uberon[:_\\-\\s]*${escapedCode}`,
+    `UBERON[_\\-\\s]*${escapedCode}`,
+    `\\b${escapedCode}\\b`,
+  ];
+
+  let cleaned = baseLabel;
+  variants.forEach((fragment) => {
+    cleaned = cleaned.replace(
+      new RegExp(`\\s*[\\(\\[\\-_]*\\s*${fragment}\\s*[\\)\\]\\-_]*\\s*`, 'ig'),
+      ' ',
+    );
+  });
+
+  cleaned = cleaned.replace(/[_]+/g, ' ');
+  cleaned = cleaned.replace(/\s{2,}/g, ' ').trim();
+  if (!cleaned) {
+    cleaned = baseLabel;
+  }
+
+  return `${cleaned} (UBERON:${code})`;
+}
+
 /**
  * Extracts an UBERON code from filenames or directory names.
  *
@@ -1474,10 +1518,10 @@ export async function initInterface({
       const options =
         `<option value="">${chooseModelOption}</option>` +
         entry.models
-          .map(
-            (model) =>
-              `<option value="${escapeHtml(model.key)}">${escapeHtml(model.displayName)}</option>`,
-          )
+          .map((model) => {
+            const label = formatModelOptionLabel(model);
+            return `<option value="${escapeHtml(model.key)}">${escapeHtml(label)}</option>`;
+          })
           .join('');
 
       modelSelect.innerHTML = options;
