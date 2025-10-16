@@ -81,7 +81,7 @@
   },
   "status": {
     "loadingDatasets": "Loading specimens...",
-    "datasetsLoadedFromCache": "Loaded from cache",
+    "datasetsLoadedFromCache": "Data loaded from cache",
     "datasetsLoadedFromAPI": "Loaded from API",
     "datasetsLoadError": "Failed to load specimen list.",
     "selectDatasetAndModel": "Select a specimen and a model.",

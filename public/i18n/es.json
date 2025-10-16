@@ -81,7 +81,7 @@
   },
   "status": {
     "loadingDatasets": "Cargando ejemplares...",
-    "datasetsLoadedFromCache": "Cargado desde la caché",
+    "datasetsLoadedFromCache": "Datos cargados desde la caché",
     "datasetsLoadedFromAPI": "Cargado desde la API",
     "datasetsLoadError": "No se pudo cargar la lista de ejemplares.",
     "selectDatasetAndModel": "Selecciona un ejemplar y un modelo.",

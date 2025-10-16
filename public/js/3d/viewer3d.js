@@ -1318,18 +1318,36 @@ class Viewer3D {
     this.emit('loadstart', { source });
     this.clear();
 
+    const progressState = {
+      obj: 0,
+      mtl: 0,
+      final: 0,
+    };
+    const emitLoadProgress = () => {
+      const percent = Math.round(progressState.obj * 70 + progressState.mtl * 20 + progressState.final * 10);
+      this.emit('loadprogress', {
+        loaded: percent,
+        total: 100,
+        percent,
+      });
+    };
+    emitLoadProgress();
+
     try {
-      const objResponse = await this.fetchImpl(source.objUrl);
-      if (!objResponse.ok) {
-        throw new Error(`Failed to load OBJ (${objResponse.status})`);
-      }
-      const objText = await objResponse.text();
+      const objText = await this._fetchTextWithProgress(source.objUrl, (ratio) => {
+        progressState.obj = Math.min(Math.max(ratio, 0), 1);
+        emitLoadProgress();
+      });
       if (this.loadToken !== loadToken) {
         return;
       }
 
       const mtllibRefs = extractMtllibReferences(objText);
       let materialLibrary = null;
+      if (!mtllibRefs.length) {
+        progressState.mtl = 1;
+        emitLoadProgress();
+      }
       if (Array.isArray(mtllibRefs) && mtllibRefs.length && source.resolveMaterialLibrary) {
         for (const ref of mtllibRefs) {
           const resolved = source.resolveMaterialLibrary(ref, {
@@ -1346,19 +1364,25 @@ class Viewer3D {
         materialLibrary = source.defaultMaterialLibrary;
       }
 
+      if (!materialLibrary?.url) {
+        progressState.mtl = 1;
+        emitLoadProgress();
+      }
+
       let materialDefs = new Map();
       let textures = new Map();
 
       if (materialLibrary?.url) {
-        const mtlResponse = await this.fetchImpl(materialLibrary.url);
-        if (!mtlResponse.ok) {
-          throw new Error(`Failed to load MTL (${mtlResponse.status})`);
-        }
-        const mtlText = await mtlResponse.text();
+        const mtlText = await this._fetchTextWithProgress(materialLibrary.url, (ratio) => {
+          progressState.mtl = Math.min(Math.max(ratio, 0), 1);
+          emitLoadProgress();
+        });
         if (this.loadToken !== loadToken) {
           return;
         }
         materialDefs = parseMtl(mtlText);
+        progressState.mtl = 1;
+        emitLoadProgress();
 
         const texturesNeeded = new Map();
 
@@ -1521,6 +1545,8 @@ class Viewer3D {
       this.currentModelGroup = modelGroup;
       this.applyTexturesToCurrentModel();
       this.applyWireframeToCurrentModel();
+      progressState.final = 1;
+      emitLoadProgress();
       if (this.loadToken === loadToken) {
         this.emit('loadend', { source });
       }
@@ -1530,6 +1556,58 @@ class Viewer3D {
       }
       throw error;
     }
+  }
+
+  /**
+   * Télécharge une ressource texte en émettant des informations de progression.
+   *
+   * @param {string} url - Ressource à récupérer.
+   * @param {(ratio: number) => void} [onProgressRatio] - Callback recevant un ratio 0-1.
+   * @returns {Promise<string>} Contenu texte de la ressource.
+   */
+  async _fetchTextWithProgress(url, onProgressRatio) {
+    const response = await this.fetchImpl(url);
+    if (!response || !response.ok) {
+      const status = response ? response.status : 'unknown';
+      throw new Error(`Failed to load resource (${status})`);
+    }
+
+    const lengthHeader = response.headers ? response.headers.get('content-length') : null;
+    const totalBytes = lengthHeader ? Number(lengthHeader) : 0;
+
+    if (!response.body || typeof response.body.getReader !== 'function') {
+      const text = await response.text();
+      if (typeof onProgressRatio === 'function') {
+        onProgressRatio(1);
+      }
+      return text;
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let received = 0;
+    let chunks = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+      if (value) {
+        received += value.length;
+        chunks += decoder.decode(value, { stream: true });
+        if (totalBytes > 0 && typeof onProgressRatio === 'function') {
+          onProgressRatio(Math.min(received / totalBytes, 1));
+        }
+      }
+    }
+
+    chunks += decoder.decode();
+    if (typeof onProgressRatio === 'function') {
+      onProgressRatio(1);
+    }
+
+    return chunks;
   }
 
   /**

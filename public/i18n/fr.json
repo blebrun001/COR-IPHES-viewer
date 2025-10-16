@@ -81,7 +81,7 @@
   },
   "status": {
     "loadingDatasets": "Chargement des spécimens...",
-    "datasetsLoadedFromCache": "Chargé depuis le cache",
+    "datasetsLoadedFromCache": "Données chargées depuis le cache",
     "datasetsLoadedFromAPI": "Chargé depuis l'API",
     "datasetsLoadError": "Échec du chargement de la liste des spécimens.",
     "selectDatasetAndModel": "Sélectionnez un spécimen et un modèle.",

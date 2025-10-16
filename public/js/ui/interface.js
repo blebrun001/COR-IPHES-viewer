@@ -944,35 +944,44 @@ export async function initInterface({
   windowRef.addEventListener('resize', resizeViewer);
   resizeViewer();
 
-  const setStatus = (key, type = 'loading') => {
+  let lastProgressPercent = null;
+
+  const renderStatus = () => {
     if (!statusBanner) return;
-    const message = translate(key, key);
-    statusBanner.textContent = message;
-    statusBanner.className = `viewer-status ${type}`;
-    lastStatus = { key, type };
+    if (!lastStatus) {
+      statusBanner.className = 'viewer-status';
+      statusBanner.textContent = '';
+      return;
+    }
+    const baseMessage = lastStatus.key
+      ? translate(lastStatus.key, lastStatus.fallback)
+      : lastStatus.message || '';
+    const suffix = typeof lastProgressPercent === 'number' ? ` (${lastProgressPercent}%)` : '';
+    statusBanner.className = `viewer-status ${lastStatus.type}`;
+    statusBanner.textContent = `${baseMessage}${suffix}`;
+  };
+
+  const setStatus = (key, type = 'loading') => {
+    lastProgressPercent = null;
+    lastStatus = { key, fallback: key, message: null, type };
+    renderStatus();
   };
 
   const setCustomStatus = (message, type = 'loading') => {
-    if (!statusBanner) return;
-    statusBanner.textContent = message;
-    statusBanner.className = `viewer-status ${type}`;
+    lastProgressPercent = null;
     lastStatus = { key: null, message, type };
+    renderStatus();
   };
 
   const clearStatus = () => {
-    if (!statusBanner) return;
-    statusBanner.className = 'viewer-status';
-    statusBanner.textContent = '';
     lastStatus = null;
+    lastProgressPercent = null;
+    renderStatus();
   };
 
   const reapplyStatus = () => {
     if (!lastStatus) return;
-    if (lastStatus.key) {
-      setStatus(lastStatus.key, lastStatus.type);
-    } else if (lastStatus.message) {
-      setCustomStatus(lastStatus.message, lastStatus.type);
-    }
+    renderStatus();
   };
 
   const updateProjectionButtons = () => {
@@ -1772,11 +1781,20 @@ export async function initInterface({
 
   viewer.on('loadstart', () => {
     setStatus('status.loadingGeometry');
+    lastProgressPercent = 0;
+    renderStatus();
+  });
+  viewer.on('loadprogress', ({ percent }) => {
+    if (typeof percent === 'number' && !Number.isNaN(percent)) {
+      lastProgressPercent = Math.min(100, Math.max(Math.round(percent), 0));
+      renderStatus();
+    }
   });
   viewer.on('loadend', () => {
     clearStatus();
   });
   viewer.on('loaderror', () => {
+    lastProgressPercent = null;
     setStatus('status.modelLoadFailure', 'error');
   });
 

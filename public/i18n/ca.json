@@ -81,7 +81,7 @@
   },
   "status": {
     "loadingDatasets": "S'estan carregant els exemplars...",
-    "datasetsLoadedFromCache": "Carregat des de la memòria cau",
+    "datasetsLoadedFromCache": "Dades carregades des de la memòria cau",
     "datasetsLoadedFromAPI": "Carregat des de l'API",
     "datasetsLoadError": "No s'ha pogut carregar la llista d'exemplars.",
     "selectDatasetAndModel": "Seleccioneu un exemplar i un model.",
