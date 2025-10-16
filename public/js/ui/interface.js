@@ -963,10 +963,12 @@ export async function initInterface({
       const key = texturesEnabled
         ? 'viewer.buttons.disableTextures'
         : 'viewer.buttons.enableTextures';
-      toggleTexturesButton.textContent = translate(
+      const label = translate(
         key,
         texturesEnabled ? 'Disable Textures' : 'Enable Textures',
       );
+      toggleTexturesButton.setAttribute('aria-label', label);
+      toggleTexturesButton.setAttribute('data-tooltip', label);
     }
   };
 
@@ -976,10 +978,12 @@ export async function initInterface({
       const key = wireframeEnabled
         ? 'viewer.buttons.disableWireframe'
         : 'viewer.buttons.enableWireframe';
-      wireframeButton.textContent = translate(
+      const label = translate(
         key,
         wireframeEnabled ? 'Disable Wireframe' : 'Enable Wireframe',
       );
+      wireframeButton.setAttribute('aria-label', label);
+      wireframeButton.setAttribute('data-tooltip', label);
     }
   };
 
@@ -989,10 +993,12 @@ export async function initInterface({
       const key = lightsDimmed
         ? 'viewer.buttons.restoreLights'
         : 'viewer.buttons.dimLights';
-      lightingButton.textContent = translate(
+      const label = translate(
         key,
         lightsDimmed ? 'Restore Lights' : 'Dim Lights',
       );
+      lightingButton.setAttribute('aria-label', label);
+      lightingButton.setAttribute('data-tooltip', label);
     }
   };
 
@@ -1002,10 +1008,12 @@ export async function initInterface({
       const key = measurementEnabled
         ? 'viewer.buttons.exitMeasure'
         : 'viewer.buttons.measure';
-      measureToggleButton.textContent = translate(
+      const label = translate(
         key,
         measurementEnabled ? 'Exit Measure' : 'Measure',
       );
+      measureToggleButton.setAttribute('aria-label', label);
+      measureToggleButton.setAttribute('data-tooltip', label);
     }
   };
 

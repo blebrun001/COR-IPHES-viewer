@@ -177,17 +177,76 @@
                   </select>
                 </div>
                 <div class="toolbar-buttons toolbar-buttons--primary">
-                  <button id="captureScreenshot" type="button" data-i18n="viewer.buttons.capture">Capture</button>
-                  <button id="resetView" type="button" data-i18n="viewer.buttons.resetView">Reset View</button>
+                  <button
+                    id="captureScreenshot"
+                    type="button"
+                    class="viewer-toolbar__button"
+                    aria-label="Capture"
+                    data-tooltip="Capture"
+                    data-i18n-attr="aria-label:viewer.buttons.capture,data-tooltip:viewer.buttons.capture"
+                  >
+                    <span aria-hidden="true" class="viewer-toolbar__icon viewer-toolbar__icon--capture"></span>
+                  </button>
+                  <button
+                    id="resetView"
+                    type="button"
+                    class="viewer-toolbar__button"
+                    aria-label="Reset View"
+                    data-tooltip="Reset View"
+                    data-i18n-attr="aria-label:viewer.buttons.resetView,data-tooltip:viewer.buttons.resetView"
+                  >
+                    <span aria-hidden="true" class="viewer-toolbar__icon viewer-toolbar__icon--reset"></span>
+                  </button>
                 </div>
               </div>
               <div class="viewer-toolbar__group viewer-toolbar__group--secondary" id="viewerToolbarSecondary">
                 <div class="toolbar-buttons toolbar-buttons--secondary">
-                  <button id="toggleTextures" type="button" data-i18n="viewer.buttons.disableTextures">Disable Textures</button>
-                  <button id="toggleWireframe" type="button" data-i18n="viewer.buttons.enableWireframe">Enable Wireframe</button>
-                  <button id="toggleLighting" type="button" data-i18n="viewer.buttons.dimLights">Dim Lights</button>
-                  <button id="toggleMeasure" type="button" data-i18n="viewer.buttons.measure">Measure</button>
-                  <button id="clearMeasurements" type="button" data-i18n="viewer.buttons.clearMeasurements">Clear Measurements</button>
+                  <button
+                    id="toggleTextures"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                    aria-label="Disable Textures"
+                    data-tooltip="Disable Textures"
+                  >
+                    <span aria-hidden="true" class="viewer-toolbar__icon viewer-toolbar__icon--textures"></span>
+                  </button>
+                  <button
+                    id="toggleWireframe"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                    aria-label="Enable Wireframe"
+                    data-tooltip="Enable Wireframe"
+                  >
+                    <span aria-hidden="true" class="viewer-toolbar__icon viewer-toolbar__icon--wireframe"></span>
+                  </button>
+                  <button
+                    id="toggleLighting"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                    aria-label="Dim Lights"
+                    data-tooltip="Dim Lights"
+                  >
+                    <span aria-hidden="true" class="viewer-toolbar__icon viewer-toolbar__icon--lighting"></span>
+                  </button>
+                  <button
+                    id="toggleMeasure"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                    aria-label="Measure"
+                    data-tooltip="Measure"
+                  >
+                    <span aria-hidden="true" class="viewer-toolbar__icon viewer-toolbar__icon--measure"></span>
+                  </button>
+                  <button
+                    id="clearMeasurements"
+                    type="button"
+                    class="viewer-toolbar__button"
+                    aria-label="Clear Measurements"
+                    data-tooltip="Clear Measurements"
+                    data-i18n-attr="aria-label:viewer.buttons.clearMeasurements,data-tooltip:viewer.buttons.clearMeasurements"
+                  >
+                    <span aria-hidden="true" class="viewer-toolbar__icon viewer-toolbar__icon--clear"></span>
+                  </button>
                 </div>
               </div>
               <button
