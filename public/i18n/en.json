@@ -2,7 +2,7 @@
   "header": {
     "toggleSidebar": "Toggle sidebar",
     "title": "Esqueletos en Línea",
-    "subtitle": "COR-IPHES 3D Model Viewer"
+    "subtitle": "COR-IPHES 3D Model Viewer (beta)"
   },
   "sidebar": {
     "selectionHeading": "Selection",
