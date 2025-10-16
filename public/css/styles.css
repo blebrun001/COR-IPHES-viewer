@@ -55,6 +55,37 @@ body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
+.material-icons {
+  font-family: 'Material Icons', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
 /* === Layout Shell === */
 .app-shell {
   min-height: 100vh;
@@ -258,13 +289,17 @@ body {
 
 .taxonomy-toggle__icon,
 .metadata-toggle__icon {
-  width: 0.65rem;
-  height: 0.65rem;
+  width: 1.25rem;
+  height: 1.25rem;
   flex-shrink: 0;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M2 1l3 3-3 3z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
-  background-color: currentColor;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Material Icons', sans-serif;
+  font-size: 1.25rem;
+  line-height: 1;
   transform: rotate(0deg);
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, color 0.2s ease;
   opacity: 0.75;
 }
 
@@ -607,6 +642,12 @@ body {
   position: relative;
 }
 
+.viewer-toolbar__button-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .toolbar-control select:focus-visible,
 .toolbar-buttons button:focus-visible {
   outline: none;
@@ -639,6 +680,17 @@ body {
 .viewer-toolbar__button:hover,
 .viewer-toolbar__button:focus-visible {
   color: var(--color-accent);
+}
+
+.viewer-toolbar__button[aria-pressed='true'] {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+.viewer-toolbar__button[aria-pressed='true']:hover,
+.viewer-toolbar__button[aria-pressed='true']:focus-visible {
+  color: var(--color-text-primary);
 }
 
 .viewer-toolbar__button::after,
@@ -695,41 +747,14 @@ body {
 }
 
 .viewer-toolbar__icon {
-  display: inline-block;
-  width: 1.45rem;
-  height: 1.45rem;
-  background-color: currentColor;
-  mask-size: contain;
-  mask-repeat: no-repeat;
-  mask-position: center;
-}
-
-.viewer-toolbar__icon--capture {
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M4 6h3l1-2h8l1 2h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Zm8 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z'/%3E%3C/svg%3E");
-}
-
-.viewer-toolbar__icon--reset {
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 4a8 8 0 1 1-7.94 7H3a1 1 0 0 1 0-2h4a1 1 0 0 1 1 1v4a1 1 0 1 1-2 0v-1.6a6 6 0 1 0 6-6.4 1 1 0 0 1 0-2Z'/%3E%3C/svg%3E");
-}
-
-.viewer-toolbar__icon--textures {
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M5 5h9v9H5V5Zm12 5H9V7h10v12H11v-6h6v-3Zm-8 9H3V9h2v8h4v2Z'/%3E%3C/svg%3E");
-}
-
-.viewer-toolbar__icon--wireframe {
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 2.5 4 7v10l8 4.5 8-4.5V7L12 2.5Zm6 6.09-6 3.38v7.02l-6-3.38V8.59l6-3.38 6 3.38ZM11 5.46 6.2 8.12l4.8 2.7 4.8-2.7L11 5.46Zm-3 9.77v-4.4L6 9.6v4.4l2 1.13Zm11 0-2 1.13v-4.4l2-1.13v4.4Z'/%3E%3C/svg%3E");
-}
-
-.viewer-toolbar__icon--lighting {
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 2a6 6 0 0 1 4.6 9.84l-.6.66V14a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-1.5l-.6-.66A6 6 0 0 1 12 2Zm-2 18h4a1 1 0 0 1 0 2h-4a1 1 0 0 1 0-2Zm1-3h2a1 1 0 0 1 1 1v1h-4v-1a1 1 0 0 1 1-1Z'/%3E%3C/svg%3E");
-}
-
-.viewer-toolbar__icon--measure {
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M5 5h14a1 1 0 0 1 0 2h-2v2h-2V7h-2v2h-2V7H9v2H7V7H5v10h14a1 1 0 1 1 0 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z'/%3E%3C/svg%3E");
-}
-
-.viewer-toolbar__icon--clear {
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M9 3a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1h4a1 1 0 1 1 0 2h-1v13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6H5a1 1 0 1 1 0-2h4V3Zm2 1v1h2V4h-2Zm5 3H8v13h8V7Zm-6 3a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1Zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1Z'/%3E%3C/svg%3E");
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  font-size: 1.45rem;
+  line-height: 1;
+  color: currentColor;
 }
 
 .toolbar-buttons--primary button {
@@ -1014,10 +1039,12 @@ body {
 }
 
 .floating-options-button__icon {
-  width: 1.35rem;
-  height: 1.35rem;
-  background-color: currentColor;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M13.45 2.34a1.5 1.5 0 0 0-2.9 0l-.32 1.25a6.06 6.06 0 0 0-.97.56l-1.23-.53a1.5 1.5 0 0 0-1.95.72l-.02.05a1.5 1.5 0 0 0 .7 1.96l1.08.53a5.91 5.91 0 0 0 0 1.16l-1.08.54a1.5 1.5 0 0 0-.7 1.96l.02.05a1.5 1.5 0 0 0 1.95.72l1.23-.53c.3.21.63.4.97.56l.32 1.25a1.5 1.5 0 0 0 2.9 0l.32-1.25c.34-.16.67-.35.97-.56l1.23.53a1.5 1.5 0 0 0 1.95-.72l.02-.05a1.5 1.5 0 0 0-.7-1.96l-1.08-.54c.04-.38.04-.77 0-1.15l1.08-.54a1.5 1.5 0 0 0 .7-1.96l-.02-.05a1.5 1.5 0 0 0-1.95-.72l-1.23.53a6.06 6.06 0 0 0-.97-.56Zm-1.45 8.16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  font-family: 'Material Icons', sans-serif;
+  font-size: 1.6rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .floating-options-button:active {
@@ -1049,9 +1076,12 @@ body {
 }
 
 .floating-info-button__icon {
-  font-size: 1.35rem;
-  font-weight: 600;
+  font-family: 'Material Icons', sans-serif;
+  font-size: 1.6rem;
   line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .floating-info-button:active {

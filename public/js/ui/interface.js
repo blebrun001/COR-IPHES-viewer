@@ -833,10 +833,40 @@ export async function initInterface({
   const datasetSelect = documentRef.getElementById('datasetSelect');
   const modelSelect = documentRef.getElementById('modelSelect');
   const reloadButton = documentRef.getElementById('reloadDatasets');
-  const projectionSelect = documentRef.getElementById('projectionMode');
   const toggleTexturesButton = documentRef.getElementById('toggleTextures');
   const resetViewButton = documentRef.getElementById('resetView');
-  const orbitModeSelect = documentRef.getElementById('orbitMode');
+  const projectionModePerspectiveButton = documentRef.getElementById('projectionModePerspective');
+  const projectionModeOrthographicButton = documentRef.getElementById('projectionModeOrthographic');
+  const projectionModeButtons = [
+    {
+      button: projectionModePerspectiveButton,
+      mode: 'perspective',
+      labelKey: 'viewer.projection.perspective',
+      fallback: 'Perspective',
+    },
+    {
+      button: projectionModeOrthographicButton,
+      mode: 'orthographic',
+      labelKey: 'viewer.projection.orthographic',
+      fallback: 'Orthographic',
+    },
+  ];
+  const orbitModeUprightButton = documentRef.getElementById('orbitModeUpright');
+  const orbitModeFreeButton = documentRef.getElementById('orbitModeFree');
+  const orbitModeButtons = [
+    {
+      button: orbitModeUprightButton,
+      mode: 'upright',
+      labelKey: 'viewer.orbit.upright',
+      fallback: 'Upright orbit',
+    },
+    {
+      button: orbitModeFreeButton,
+      mode: 'free',
+      labelKey: 'viewer.orbit.free',
+      fallback: 'Free orbit',
+    },
+  ];
   const statusBanner = documentRef.getElementById('status');
   const metadataPanel = documentRef.getElementById('metadataPanel');
   const viewerContainer = documentRef.getElementById('viewer3D');
@@ -945,16 +975,32 @@ export async function initInterface({
     }
   };
 
-  const updateProjectionSelect = () => {
-    if (projectionSelect) {
-      projectionSelect.value = viewer.getCameraMode();
-    }
+  const updateProjectionButtons = () => {
+    const currentMode = viewer.getCameraMode();
+    projectionModeButtons.forEach(({ button, mode, labelKey, fallback }) => {
+      if (!button) {
+        return;
+      }
+      const isActive = currentMode === mode;
+      const label = translate(labelKey, fallback);
+      button.setAttribute('aria-label', label);
+      button.setAttribute('data-tooltip', label);
+      button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
   };
 
-  const updateOrbitModeSelect = () => {
-    if (orbitModeSelect) {
-      orbitModeSelect.value = viewer.getOrbitMode();
-    }
+  const updateOrbitModeButtons = () => {
+    const currentMode = viewer.getOrbitMode();
+    orbitModeButtons.forEach(({ button, mode, labelKey, fallback }) => {
+      if (!button) {
+        return;
+      }
+      const isActive = currentMode === mode;
+      const label = translate(labelKey, fallback);
+      button.setAttribute('aria-label', label);
+      button.setAttribute('data-tooltip', label);
+      button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
   };
 
   const updateTextureToggleButton = () => {
@@ -1048,8 +1094,8 @@ export async function initInterface({
     refreshLanguageSelector();
     renderDatasetMetadata(metadataPanel, currentMetadataDetail);
     reapplyStatus();
-    updateProjectionSelect();
-    updateOrbitModeSelect();
+    updateProjectionButtons();
+    updateOrbitModeButtons();
     updateTextureToggleButton();
     updateWireframeButton();
     updateLightingButton();
@@ -1636,12 +1682,19 @@ export async function initInterface({
     });
   }
 
-  if (projectionSelect) {
-    projectionSelect.addEventListener('change', (event) => {
-      viewer.setCameraMode(event.target.value);
-      updateProjectionSelect();
+  projectionModeButtons.forEach(({ button, mode }) => {
+    if (!button) {
+      return;
+    }
+    button.addEventListener('click', () => {
+      if (viewer.getCameraMode() === mode) {
+        return;
+      }
+      viewer.setCameraMode(mode);
+      updateProjectionButtons();
     });
-  }
+  });
+  updateProjectionButtons();
 
   if (toggleTexturesButton) {
     toggleTexturesButton.addEventListener('click', () => {
@@ -1706,12 +1759,16 @@ export async function initInterface({
     });
   }
 
-  if (orbitModeSelect) {
-    orbitModeSelect.addEventListener('change', (event) => {
-      viewer.setOrbitMode(event.target.value);
-      updateOrbitModeSelect();
+  orbitModeButtons.forEach(({ button, mode }) => {
+    if (!button) {
+      return;
+    }
+    button.addEventListener('click', () => {
+      viewer.setOrbitMode(mode);
+      updateOrbitModeButtons();
     });
-  }
+  });
+  updateOrbitModeButtons();
 
   viewer.on('loadstart', () => {
     setStatus('status.loadingGeometry');

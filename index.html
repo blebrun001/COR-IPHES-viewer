@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dataverse 3D Viewer</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <script>
       (function () {
         try {
@@ -64,7 +66,7 @@
                   aria-expanded="true"
                 >
                   <span class="taxonomy-heading" data-i18n="sidebar.taxonomyHeading">Taxonomy</span>
-                  <span class="taxonomy-toggle__icon" aria-hidden="true"></span>
+                  <span class="material-icons taxonomy-toggle__icon" aria-hidden="true">chevron_right</span>
                 </button>
                 <div
                   id="taxonomySelectors"
@@ -135,7 +137,7 @@
               aria-label="Open options"
               data-i18n-attr="aria-label:sidebar.links.options"
             >
-              <span class="floating-options-button__icon" aria-hidden="true"></span>
+              <span class="material-icons floating-options-button__icon" aria-hidden="true">settings</span>
             </button>
             <button
               id="aboutButton"
@@ -144,7 +146,7 @@
               aria-label="About the project"
               data-i18n-attr="aria-label:sidebar.links.about"
             >
-              <span class="floating-info-button__icon" aria-hidden="true">?</span>
+              <span class="material-icons floating-info-button__icon" aria-hidden="true">help_outline</span>
             </button>
           </div>
         </aside>
@@ -162,21 +164,65 @@
           <div id="viewerToolbar" class="viewer-toolbar" data-collapsed="true">
             <div class="viewer-toolbar__inner">
               <div class="viewer-toolbar__group viewer-toolbar__group--primary">
-                <div class="toolbar-control">
-                  <label for="projectionMode" data-i18n="viewer.projection.label">Projection</label>
-                  <select id="projectionMode">
-                    <option value="perspective" data-i18n="viewer.projection.perspective">Perspective</option>
-                    <option value="orthographic" data-i18n="viewer.projection.orthographic">Orthographic</option>
-                  </select>
-                </div>
-                <div class="toolbar-control">
-                  <label for="orbitMode" data-i18n="viewer.orbit.label">Orbit</label>
-                  <select id="orbitMode">
-                    <option value="upright" data-i18n="viewer.orbit.upright">Upright</option>
-                    <option value="free" data-i18n="viewer.orbit.free">Free</option>
-                  </select>
-                </div>
                 <div class="toolbar-buttons toolbar-buttons--primary">
+                  <div
+                    class="viewer-toolbar__button-group viewer-toolbar__button-group--projection"
+                    role="group"
+                    aria-label="Projection mode"
+                    data-i18n-attr="aria-label:viewer.projection.label"
+                  >
+                    <button
+                      id="projectionModePerspective"
+                      type="button"
+                      class="viewer-toolbar__button viewer-toolbar__button--toggle viewer-toolbar__button--projection"
+                      aria-label="Perspective"
+                      data-tooltip="Perspective"
+                      data-i18n-attr="aria-label:viewer.projection.perspective,data-tooltip:viewer.projection.perspective"
+                      aria-pressed="true"
+                    >
+                      <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">token</span>
+                    </button>
+                    <button
+                      id="projectionModeOrthographic"
+                      type="button"
+                      class="viewer-toolbar__button viewer-toolbar__button--toggle viewer-toolbar__button--projection"
+                      aria-label="Orthographic"
+                      data-tooltip="Orthographic"
+                      data-i18n-attr="aria-label:viewer.projection.orthographic,data-tooltip:viewer.projection.orthographic"
+                      aria-pressed="false"
+                    >
+                      <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">deployed_code</span>
+                    </button>
+                  </div>
+                  <div
+                    class="viewer-toolbar__button-group viewer-toolbar__button-group--orbit"
+                    role="group"
+                    aria-label="Orbit mode"
+                    data-i18n-attr="aria-label:viewer.orbit.label"
+                  >
+                    <button
+                      id="orbitModeUpright"
+                      type="button"
+                      class="viewer-toolbar__button viewer-toolbar__button--toggle viewer-toolbar__button--orbit"
+                      aria-label="Upright orbit"
+                      data-tooltip="Upright orbit"
+                      data-i18n-attr="aria-label:viewer.orbit.upright,data-tooltip:viewer.orbit.upright"
+                      aria-pressed="true"
+                    >
+                      <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">arrows_outward</span>
+                    </button>
+                    <button
+                      id="orbitModeFree"
+                      type="button"
+                      class="viewer-toolbar__button viewer-toolbar__button--toggle viewer-toolbar__button--orbit"
+                      aria-label="Free orbit"
+                      data-tooltip="Free orbit"
+                      data-i18n-attr="aria-label:viewer.orbit.free,data-tooltip:viewer.orbit.free"
+                      aria-pressed="false"
+                    >
+                      <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">360</span>
+                    </button>
+                  </div>
                   <button
                     id="captureScreenshot"
                     type="button"
@@ -185,7 +231,7 @@
                     data-tooltip="Capture"
                     data-i18n-attr="aria-label:viewer.buttons.capture,data-tooltip:viewer.buttons.capture"
                   >
-                    <span aria-hidden="true" class="viewer-toolbar__icon viewer-toolbar__icon--capture"></span>
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">photo_camera</span>
                   </button>
                   <button
                     id="resetView"
@@ -195,7 +241,7 @@
                     data-tooltip="Reset View"
                     data-i18n-attr="aria-label:viewer.buttons.resetView,data-tooltip:viewer.buttons.resetView"
                   >
-                    <span aria-hidden="true" class="viewer-toolbar__icon viewer-toolbar__icon--reset"></span>
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">restart_alt</span>
                   </button>
                 </div>
               </div>
@@ -208,7 +254,7 @@
                     aria-label="Disable Textures"
                     data-tooltip="Disable Textures"
                   >
-                    <span aria-hidden="true" class="viewer-toolbar__icon viewer-toolbar__icon--textures"></span>
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">texture</span>
                   </button>
                   <button
                     id="toggleWireframe"
@@ -217,7 +263,7 @@
                     aria-label="Enable Wireframe"
                     data-tooltip="Enable Wireframe"
                   >
-                    <span aria-hidden="true" class="viewer-toolbar__icon viewer-toolbar__icon--wireframe"></span>
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">grid_4x4</span>
                   </button>
                   <button
                     id="toggleLighting"
@@ -226,7 +272,7 @@
                     aria-label="Dim Lights"
                     data-tooltip="Dim Lights"
                   >
-                    <span aria-hidden="true" class="viewer-toolbar__icon viewer-toolbar__icon--lighting"></span>
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">wb_incandescent</span>
                   </button>
                   <button
                     id="toggleMeasure"
@@ -235,7 +281,7 @@
                     aria-label="Measure"
                     data-tooltip="Measure"
                   >
-                    <span aria-hidden="true" class="viewer-toolbar__icon viewer-toolbar__icon--measure"></span>
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">straighten</span>
                   </button>
                   <button
                     id="clearMeasurements"
@@ -245,7 +291,7 @@
                     data-tooltip="Clear Measurements"
                     data-i18n-attr="aria-label:viewer.buttons.clearMeasurements,data-tooltip:viewer.buttons.clearMeasurements"
                   >
-                    <span aria-hidden="true" class="viewer-toolbar__icon viewer-toolbar__icon--clear"></span>
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">delete</span>
                   </button>
                 </div>
               </div>
