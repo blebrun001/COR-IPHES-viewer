@@ -79,6 +79,10 @@
       "error": "Erreur de chargement"
     }
   },
+  "combobox": {
+    "toggle": "Basculer la liste",
+    "noResults": "Aucun résultat"
+  },
   "status": {
     "loadingDatasets": "Chargement des spécimens...",
     "datasetsLoadedFromCache": "Données chargées depuis le cache",

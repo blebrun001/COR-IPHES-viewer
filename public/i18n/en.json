@@ -79,6 +79,10 @@
       "error": "Load error"
     }
   },
+  "combobox": {
+    "toggle": "Toggle list",
+    "noResults": "No matching results"
+  },
   "status": {
     "loadingDatasets": "Loading specimens...",
     "datasetsLoadedFromCache": "Data loaded from cache",

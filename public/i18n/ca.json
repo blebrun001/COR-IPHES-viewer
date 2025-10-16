@@ -79,6 +79,10 @@
       "error": "Error de càrrega"
     }
   },
+  "combobox": {
+    "toggle": "Mostra o amaga la llista",
+    "noResults": "Cap coincidència"
+  },
   "status": {
     "loadingDatasets": "S'estan carregant els exemplars...",
     "datasetsLoadedFromCache": "Dades carregades des de la memòria cau",

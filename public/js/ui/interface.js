@@ -831,7 +831,10 @@ export async function initInterface({
   const languageOptionNodes = new Map();
 
   const datasetSelect = documentRef.getElementById('datasetSelect');
-  const modelSelect = documentRef.getElementById('modelSelect');
+  const modelCombobox = documentRef.getElementById('modelCombobox');
+  const modelComboboxInput = documentRef.getElementById('modelComboboxInput');
+  const modelComboboxToggle = documentRef.getElementById('modelComboboxToggle');
+  const modelComboboxList = documentRef.getElementById('modelComboboxList');
   const reloadButton = documentRef.getElementById('reloadDatasets');
   const toggleTexturesButton = documentRef.getElementById('toggleTextures');
   const resetViewButton = documentRef.getElementById('resetView');
@@ -867,6 +870,15 @@ export async function initInterface({
       fallback: 'Free orbit',
     },
   ];
+  const modelComboboxState = {
+    options: [],
+    filteredOptions: [],
+    highlightedIndex: -1,
+    selectedValue: '',
+    open: false,
+    placeholderKey: 'sidebar.modelDisabledOption',
+    placeholderFallback: 'Select a dataset',
+  };
   const statusBanner = documentRef.getElementById('status');
   const metadataPanel = documentRef.getElementById('metadataPanel');
   const viewerContainer = documentRef.getElementById('viewer3D');
@@ -883,7 +895,15 @@ export async function initInterface({
   const viewerToolbar = documentRef.getElementById('viewerToolbar');
   const viewerToolbarToggle = documentRef.getElementById('viewerToolbarToggle');
 
-  if (!datasetSelect || !modelSelect || !reloadButton || !viewerContainer) {
+  if (
+    !datasetSelect ||
+    !modelCombobox ||
+    !modelComboboxInput ||
+    !modelComboboxToggle ||
+    !modelComboboxList ||
+    !reloadButton ||
+    !viewerContainer
+  ) {
     throw new Error('Required UI elements are missing');
   }
 
@@ -983,6 +1003,385 @@ export async function initInterface({
     if (!lastStatus) return;
     renderStatus();
   };
+
+  const updateModelComboboxPlaceholder = (key, fallback) => {
+    if (!modelComboboxInput) return;
+    modelComboboxState.placeholderKey = key;
+    modelComboboxState.placeholderFallback = fallback;
+    modelComboboxInput.setAttribute('data-i18n-attr', `placeholder:${key}`);
+    modelComboboxInput.setAttribute('placeholder', translate(key, fallback));
+  };
+
+  const setModelComboboxDisabled = (
+    disabled,
+    placeholderKey,
+    placeholderFallback,
+    { preserveValue = false } = {},
+  ) => {
+    if (!modelCombobox) return;
+    if (placeholderKey) {
+      updateModelComboboxPlaceholder(placeholderKey, placeholderFallback);
+    }
+    modelCombobox.dataset.disabled = disabled ? 'true' : 'false';
+    modelComboboxInput.disabled = disabled;
+    modelComboboxInput.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+    modelComboboxToggle.disabled = disabled;
+    modelComboboxToggle.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+    modelCombobox.dataset.open = modelComboboxState.open ? 'true' : 'false';
+    if (disabled) {
+      closeModelCombobox({ focusInput: false });
+      if (!preserveValue) {
+        modelComboboxState.selectedValue = '';
+        modelComboboxInput.value = '';
+      }
+    }
+  };
+
+  const getModelOptionByValue = (value) =>
+    modelComboboxState.options.find((option) => option.value === value) || null;
+
+  const getModelOptionId = (index) => `modelComboboxOption-${index}`;
+
+  const renderModelComboboxOptions = () => {
+    if (!modelComboboxList) return;
+    const options = modelComboboxState.filteredOptions;
+    if (!options.length) {
+      const message = translate('combobox.noResults', 'No matching results');
+      modelComboboxList.innerHTML = `<li class="combobox__option combobox__option--empty" role="alert">${escapeHtml(message)}</li>`;
+    } else {
+      const items = options
+        .map((option, index) => {
+          const isActive = index === modelComboboxState.highlightedIndex;
+          const isSelected = option.value === modelComboboxState.selectedValue;
+          const classes = [
+            'combobox__option',
+            isActive ? 'combobox__option--active' : '',
+            isSelected ? 'combobox__option--selected' : '',
+          ]
+            .filter(Boolean)
+            .join(' ');
+          return `<li id="${getModelOptionId(index)}" class="${classes}" role="option" data-index="${index}" data-value="${escapeHtml(option.value)}" aria-selected="${isSelected}">${escapeHtml(option.label)}</li>`;
+        })
+        .join('');
+      modelComboboxList.innerHTML = items;
+    }
+
+    if (!modelComboboxState.open) {
+      modelComboboxList.hidden = true;
+    }
+
+    modelComboboxList.querySelectorAll('[data-index]').forEach((optionEl) => {
+      optionEl.addEventListener('mousedown', (event) => {
+        event.preventDefault();
+      });
+      optionEl.addEventListener('click', () => {
+        const index = Number(optionEl.getAttribute('data-index'));
+        if (Number.isInteger(index)) {
+          selectModelOption(modelComboboxState.filteredOptions[index]);
+        }
+      });
+    });
+  };
+
+  const syncModelComboboxActiveDescendant = () => {
+    if (!modelComboboxInput) return;
+    if (modelComboboxState.highlightedIndex >= 0) {
+      modelComboboxInput.setAttribute(
+        'aria-activedescendant',
+        getModelOptionId(modelComboboxState.highlightedIndex),
+      );
+    } else {
+      modelComboboxInput.removeAttribute('aria-activedescendant');
+    }
+  };
+
+  const openModelCombobox = () => {
+    if (modelCombobox.dataset.disabled === 'true') {
+      return;
+    }
+    modelComboboxState.open = true;
+    modelCombobox.dataset.open = 'true';
+    modelComboboxInput.setAttribute('aria-expanded', 'true');
+    modelComboboxToggle.setAttribute('aria-expanded', 'true');
+    modelComboboxList.hidden = false;
+    renderModelComboboxOptions();
+    syncModelComboboxActiveDescendant();
+  };
+
+  const closeModelCombobox = ({ focusInput = true } = {}) => {
+    modelComboboxState.open = false;
+    modelComboboxState.highlightedIndex = -1;
+    modelCombobox.dataset.open = 'false';
+    modelComboboxInput.setAttribute('aria-expanded', 'false');
+    modelComboboxToggle.setAttribute('aria-expanded', 'false');
+    modelComboboxList.hidden = true;
+    syncModelComboboxActiveDescendant();
+    if (focusInput && !modelComboboxInput.disabled) {
+      modelComboboxInput.focus();
+    }
+  };
+
+  const highlightModelOption = (index) => {
+    if (!modelComboboxState.filteredOptions.length) {
+      modelComboboxState.highlightedIndex = -1;
+      syncModelComboboxActiveDescendant();
+      return;
+    }
+    const clamped = Math.max(0, Math.min(index, modelComboboxState.filteredOptions.length - 1));
+    modelComboboxState.highlightedIndex = clamped;
+    renderModelComboboxOptions();
+    syncModelComboboxActiveDescendant();
+    const activeEl = documentRef.getElementById(getModelOptionId(clamped));
+    if (activeEl && typeof activeEl.scrollIntoView === 'function') {
+      activeEl.scrollIntoView({ block: 'nearest' });
+    }
+  };
+
+  const filterModelComboboxOptions = (query) => {
+    const normalized = query.trim().toLowerCase();
+    if (!normalized) {
+      modelComboboxState.filteredOptions = [...modelComboboxState.options];
+    } else {
+      modelComboboxState.filteredOptions = modelComboboxState.options.filter((option) =>
+        option.label.toLowerCase().includes(normalized),
+      );
+    }
+    modelComboboxState.highlightedIndex = modelComboboxState.filteredOptions.length ? 0 : -1;
+    renderModelComboboxOptions();
+    syncModelComboboxActiveDescendant();
+  };
+
+  const resetModelCombobox = ({
+    placeholderKey,
+    placeholderFallback,
+    disabled = true,
+  } = {}) => {
+    if (modelComboboxBlurTimeout) {
+      windowRef.clearTimeout(modelComboboxBlurTimeout);
+      modelComboboxBlurTimeout = null;
+    }
+    modelComboboxState.options = [];
+    modelComboboxState.filteredOptions = [];
+    modelComboboxState.highlightedIndex = -1;
+    modelComboboxState.selectedValue = '';
+    modelComboboxState.open = false;
+    modelComboboxInput.value = '';
+    setModelComboboxDisabled(disabled, placeholderKey, placeholderFallback);
+    renderModelComboboxOptions();
+  };
+
+  const setModelComboboxOptions = (options, { placeholderKey, placeholderFallback } = {}) => {
+    if (modelComboboxBlurTimeout) {
+      windowRef.clearTimeout(modelComboboxBlurTimeout);
+      modelComboboxBlurTimeout = null;
+    }
+    modelComboboxState.options = options;
+    modelComboboxState.filteredOptions = [...options];
+    modelComboboxState.highlightedIndex = options.length ? 0 : -1;
+    modelComboboxState.selectedValue = '';
+    modelComboboxState.open = false;
+    modelComboboxInput.value = '';
+    setModelComboboxDisabled(false, placeholderKey, placeholderFallback);
+    renderModelComboboxOptions();
+    closeModelCombobox({ focusInput: false });
+  };
+
+  const selectModelOption = (option) => {
+    if (!option) {
+      return;
+    }
+    if (modelComboboxBlurTimeout) {
+      windowRef.clearTimeout(modelComboboxBlurTimeout);
+      modelComboboxBlurTimeout = null;
+    }
+    modelComboboxState.selectedValue = option.value;
+    modelComboboxInput.value = option.label;
+    closeModelCombobox({ focusInput: false });
+    loadModel(datasetSelect.value, option.value);
+  };
+
+  const handleModelCleared = () => {
+    viewer.clear();
+    setStatus('status.selectModel', 'info');
+    const persistentId = datasetSelect.value;
+    currentMetadataDetail = dataClient.getDatasetMetadata(persistentId) || currentMetadataDetail;
+    updateExternalLinks(currentMetadataDetail, coraLink, gbifLink, uberonLink, null);
+    modelComboboxState.selectedValue = '';
+  };
+
+  let modelComboboxBlurTimeout = null;
+
+  const ensureComboboxFiltered = ({ useFullList = false } = {}) => {
+    const query = useFullList ? '' : modelComboboxInput.value || '';
+    filterModelComboboxOptions(query);
+    if (modelComboboxState.selectedValue) {
+      const selectedIndex = modelComboboxState.filteredOptions.findIndex(
+        (option) => option.value === modelComboboxState.selectedValue,
+      );
+      if (selectedIndex >= 0) {
+        modelComboboxState.highlightedIndex = selectedIndex;
+        renderModelComboboxOptions();
+        syncModelComboboxActiveDescendant();
+      }
+    }
+  };
+
+  if (modelComboboxInput) {
+    modelComboboxInput.addEventListener('focus', () => {
+      if (modelCombobox.dataset.disabled === 'true') {
+        return;
+      }
+      if (modelComboboxBlurTimeout) {
+        windowRef.clearTimeout(modelComboboxBlurTimeout);
+        modelComboboxBlurTimeout = null;
+      }
+      ensureComboboxFiltered({ useFullList: true });
+      openModelCombobox();
+      modelComboboxInput.select();
+    });
+
+    modelComboboxInput.addEventListener('input', (event) => {
+      if (modelCombobox.dataset.disabled === 'true') {
+        event.target.value = '';
+        return;
+      }
+      modelComboboxState.selectedValue = '';
+      filterModelComboboxOptions(event.target.value || '');
+      openModelCombobox();
+    });
+
+    modelComboboxInput.addEventListener('keydown', (event) => {
+      if (modelCombobox.dataset.disabled === 'true') {
+        return;
+      }
+      const { key } = event;
+      const total = modelComboboxState.filteredOptions.length;
+      switch (key) {
+        case 'ArrowDown':
+          event.preventDefault();
+          if (!modelComboboxState.open) {
+            ensureComboboxFiltered({ useFullList: true });
+            openModelCombobox();
+          } else if (total) {
+            const next =
+              modelComboboxState.highlightedIndex >= 0
+                ? modelComboboxState.highlightedIndex + 1
+                : 0;
+            highlightModelOption(Math.min(next, total - 1));
+          }
+          break;
+        case 'ArrowUp':
+          event.preventDefault();
+          if (!modelComboboxState.open) {
+            ensureComboboxFiltered({ useFullList: true });
+            openModelCombobox();
+          } else if (total) {
+            const previous =
+              modelComboboxState.highlightedIndex >= 0
+                ? modelComboboxState.highlightedIndex - 1
+                : total - 1;
+            highlightModelOption(Math.max(previous, 0));
+          }
+          break;
+        case 'Home':
+          event.preventDefault();
+          if (!modelComboboxState.open) {
+            ensureComboboxFiltered({ useFullList: true });
+            openModelCombobox();
+          }
+          if (total) {
+            highlightModelOption(0);
+          }
+          break;
+        case 'End':
+          event.preventDefault();
+          if (!modelComboboxState.open) {
+            ensureComboboxFiltered({ useFullList: true });
+            openModelCombobox();
+          }
+          if (total) {
+            highlightModelOption(total - 1);
+          }
+          break;
+        case 'Enter':
+          if (modelComboboxState.open && total && modelComboboxState.highlightedIndex >= 0) {
+            event.preventDefault();
+            selectModelOption(
+              modelComboboxState.filteredOptions[modelComboboxState.highlightedIndex],
+            );
+          }
+          break;
+        case 'Escape':
+          if (modelComboboxState.open) {
+            event.preventDefault();
+            closeModelCombobox({ focusInput: true });
+            const selectedOption = getModelOptionByValue(modelComboboxState.selectedValue);
+            modelComboboxInput.value = selectedOption ? selectedOption.label : '';
+          }
+          break;
+        case 'Tab':
+          closeModelCombobox({ focusInput: false });
+          break;
+        default:
+          break;
+      }
+    });
+
+    modelComboboxInput.addEventListener('blur', () => {
+      if (modelComboboxBlurTimeout) {
+        windowRef.clearTimeout(modelComboboxBlurTimeout);
+      }
+      modelComboboxBlurTimeout = windowRef.setTimeout(() => {
+        const active = documentRef.activeElement;
+        if (!modelCombobox.contains(active)) {
+          closeModelCombobox({ focusInput: false });
+          if (!modelComboboxState.selectedValue) {
+            modelComboboxInput.value = '';
+            if (datasetSelect.value) {
+              handleModelCleared();
+            }
+          } else {
+            const selectedOption = getModelOptionByValue(modelComboboxState.selectedValue);
+            if (selectedOption) {
+              modelComboboxInput.value = selectedOption.label;
+            }
+          }
+        }
+        modelComboboxBlurTimeout = null;
+      }, 120);
+    });
+  }
+
+  if (modelComboboxToggle) {
+    modelComboboxToggle.addEventListener('click', () => {
+      if (modelCombobox.dataset.disabled === 'true') {
+        return;
+      }
+      if (modelComboboxBlurTimeout) {
+        windowRef.clearTimeout(modelComboboxBlurTimeout);
+        modelComboboxBlurTimeout = null;
+      }
+      if (modelComboboxState.open) {
+        closeModelCombobox();
+      } else {
+        ensureComboboxFiltered({ useFullList: true });
+        openModelCombobox();
+        modelComboboxInput.focus();
+        modelComboboxInput.select();
+      }
+    });
+  }
+
+  const handleDocumentPointerForCombobox = (event) => {
+    if (!modelComboboxState.open) {
+      return;
+    }
+    if (!modelCombobox.contains(event.target)) {
+      closeModelCombobox({ focusInput: false });
+    }
+  };
+
+  documentRef.addEventListener('mousedown', handleDocumentPointerForCombobox);
 
   const updateProjectionButtons = () => {
     const currentMode = viewer.getCameraMode();
@@ -1110,6 +1509,11 @@ export async function initInterface({
     updateLightingButton();
     updateMeasureButton();
     i18n.applyTranslations(documentRef);
+    updateModelComboboxPlaceholder(
+      modelComboboxState.placeholderKey,
+      modelComboboxState.placeholderFallback,
+    );
+    renderModelComboboxOptions();
     updateToolbarToggle();
     if (taxonomySupported) {
       refreshTaxonomyFromLevel(0);
@@ -1436,11 +1840,11 @@ export async function initInterface({
     datasetSelect.disabled = datasets.length === 0;
     datasetSelect.value = '';
 
-    const modelPlaceholder = escapeHtml(
-      translate('selector.model.disabled', 'Select a specimen'),
-    );
-    modelSelect.innerHTML = `<option value="">${modelPlaceholder}</option>`;
-    modelSelect.disabled = true;
+    resetModelCombobox({
+      placeholderKey: 'sidebar.modelDisabledOption',
+      placeholderFallback: 'Select a specimen',
+      disabled: true,
+    });
     activeDatasetId = null;
 
     if (statusKey) {
@@ -1478,7 +1882,7 @@ export async function initInterface({
     lastProgressPercent = 0;
     renderStatus();
     datasetSelect.disabled = true;
-    modelSelect.disabled = true;
+    setModelComboboxDisabled(true, 'model.loading', 'Loading models...');
     reloadButton.disabled = true;
     taxonomySelectors.clear();
     taxonomyState.clear();
@@ -1489,10 +1893,11 @@ export async function initInterface({
       translate('selector.dataset.loading', 'Loading specimens...'),
     );
     datasetSelect.innerHTML = `<option value="">${loadingDatasetsOption}</option>`;
-    const selectDatasetOption = escapeHtml(
-      translate('selector.model.disabled', 'Select a specimen'),
-    );
-    modelSelect.innerHTML = `<option value="">${selectDatasetOption}</option>`;
+    resetModelCombobox({
+      placeholderKey: 'model.loading',
+      placeholderFallback: 'Loading models...',
+      disabled: true,
+    });
     viewer.clear();
     renderDatasetMetadata(metadataPanel, null);
     currentMetadataDetail = null;
@@ -1510,6 +1915,8 @@ export async function initInterface({
           allDatasets = datasets;
           initializeTaxonomySelectors(allDatasets);
           refreshSpecimenOptions('status.datasetsLoadedFromCache');
+          lastProgressPercent = null;
+          renderStatus();
           reloadButton.disabled = false;
           return;
         }
@@ -1542,6 +1949,7 @@ export async function initInterface({
       if (currentToken === datasetToken) {
         lastProgressPercent = null;
         reloadButton.disabled = false;
+        renderStatus();
       }
     }
   };
@@ -1552,11 +1960,11 @@ export async function initInterface({
 
     viewer.clear();
     if (!persistentId) {
-      const selectDatasetOption = escapeHtml(
-        translate('selector.model.disabled', 'Select a specimen'),
-      );
-      modelSelect.innerHTML = `<option value="">${selectDatasetOption}</option>`;
-      modelSelect.disabled = true;
+      resetModelCombobox({
+        placeholderKey: 'sidebar.modelDisabledOption',
+        placeholderFallback: 'Select a specimen',
+        disabled: true,
+      });
       renderDatasetMetadata(metadataPanel, null);
       currentMetadataDetail = null;
       updateExternalLinks(null, coraLink, gbifLink, uberonLink);
@@ -1565,11 +1973,7 @@ export async function initInterface({
     }
     try {
       setStatus('status.loadingDataset');
-      modelSelect.disabled = true;
-      const loadingModelsOption = escapeHtml(
-        translate('selector.model.loading', 'Loading models...'),
-      );
-      modelSelect.innerHTML = `<option value="">${loadingModelsOption}</option>`;
+      setModelComboboxDisabled(true, 'model.loading', 'Loading models...', { preserveValue: true });
 
       const entry = await dataClient.ensureDatasetPrepared(persistentId);
       if (currentModelToken !== modelToken) {
@@ -1580,38 +1984,32 @@ export async function initInterface({
       updateExternalLinks(currentMetadataDetail, coraLink, gbifLink, uberonLink);
 
       if (!entry.models?.length) {
-        const noModelsOption = escapeHtml(
-          translate('selector.model.none', 'No OBJ/MTL model found'),
-        );
-        modelSelect.innerHTML = `<option value="">${noModelsOption}</option>`;
-        modelSelect.disabled = true;
+        resetModelCombobox({
+          placeholderKey: 'model.none',
+          placeholderFallback: 'No OBJ/MTL model found',
+          disabled: true,
+        });
         setStatus('status.noModelsInDataset', 'info');
         return;
       }
 
-      const chooseModelOption = escapeHtml(
-        translate('selector.model.placeholder', 'Choose a model...'),
-      );
-      const options =
-        `<option value="">${chooseModelOption}</option>` +
-        entry.models
-          .map((model) => {
-            const label = formatModelOptionLabel(model);
-            return `<option value="${escapeHtml(model.key)}">${escapeHtml(label)}</option>`;
-          })
-          .join('');
-
-      modelSelect.innerHTML = options;
-      modelSelect.disabled = false;
+      const options = entry.models.map((model) => ({
+        value: model.key,
+        label: formatModelOptionLabel(model),
+      }));
+      setModelComboboxOptions(options, {
+        placeholderKey: 'model.placeholder',
+        placeholderFallback: 'Choose a model...',
+      });
       setStatus('status.selectModel', 'info');
     } catch (error) {
       console.error(error);
       if (currentModelToken === modelToken) {
-        const loadErrorOption = escapeHtml(
-          translate('selector.model.error', 'Load error'),
-        );
-        modelSelect.innerHTML = `<option value="">${loadErrorOption}</option>`;
-        modelSelect.disabled = true;
+        resetModelCombobox({
+          placeholderKey: 'selector.model.error',
+          placeholderFallback: 'Load error',
+          disabled: true,
+        });
         setStatus('status.datasetLoadFailure', 'error');
       }
     }
@@ -1628,6 +2026,14 @@ export async function initInterface({
 
     try {
       setStatus('status.loadingGeometry');
+      setModelComboboxDisabled(
+        true,
+        modelComboboxState.placeholderKey,
+        modelComboboxState.placeholderFallback,
+        {
+          preserveValue: true,
+        },
+      );
       const entry = await dataClient.ensureDatasetPrepared(persistentId);
       const modelInfo = entry.modelMap ? entry.modelMap.get(modelKey) : null;
       const source = await dataClient.createModelSource(persistentId, modelKey);
@@ -1658,28 +2064,36 @@ export async function initInterface({
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setModelComboboxDisabled(
+        false,
+        modelComboboxState.placeholderKey,
+        modelComboboxState.placeholderFallback,
+        {
+          preserveValue: true,
+        },
+      );
     }
   };
 
   datasetSelect.addEventListener('change', (event) => {
     const persistentId = event.target.value;
     activeDatasetId = persistentId || null;
-    modelSelect.value = '';
-    loadDatasetModels(persistentId);
-  });
-
-  modelSelect.addEventListener('change', (event) => {
-    const modelKey = event.target.value;
-    if (!modelKey) {
-      viewer.clear();
-      setStatus('status.selectModel', 'info');
-      const persistentId = datasetSelect.value;
-      currentMetadataDetail = dataClient.getDatasetMetadata(persistentId) || currentMetadataDetail;
-      updateExternalLinks(currentMetadataDetail, coraLink, gbifLink, uberonLink, null);
-      return;
+    if (persistentId) {
+      resetModelCombobox({
+        placeholderKey: 'model.loading',
+        placeholderFallback: 'Loading models...',
+        disabled: true,
+      });
+    } else {
+      resetModelCombobox({
+        placeholderKey: 'sidebar.modelDisabledOption',
+        placeholderFallback: 'Select a specimen',
+        disabled: true,
+      });
+      handleModelCleared();
     }
-    const persistentId = datasetSelect.value;
-    loadModel(persistentId, modelKey);
+    loadDatasetModels(persistentId);
   });
 
   reloadButton.addEventListener('click', () => {
@@ -1827,6 +2241,11 @@ export async function initInterface({
       }
       if (viewer && typeof viewer.destroy === 'function') {
         viewer.destroy();
+      }
+      documentRef.removeEventListener('mousedown', handleDocumentPointerForCombobox);
+      if (modelComboboxBlurTimeout) {
+        windowRef.clearTimeout(modelComboboxBlurTimeout);
+        modelComboboxBlurTimeout = null;
       }
     },
   };

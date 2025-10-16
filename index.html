@@ -82,10 +82,46 @@
                     </select>
                   </div>
                   <div class="selector-group">
-                    <label for="modelSelect" data-i18n="sidebar.modelLabel">Anatomical element</label>
-                    <select id="modelSelect" disabled>
-                      <option value="" data-i18n="sidebar.modelDisabledOption">Select a dataset</option>
-                    </select>
+                    <label for="modelComboboxInput" data-i18n="sidebar.modelLabel">Anatomical element</label>
+                    <div id="modelCombobox" class="combobox" data-disabled="true">
+                      <div class="combobox__control">
+                        <input
+                          id="modelComboboxInput"
+                          type="text"
+                          class="combobox__input"
+                          role="combobox"
+                          aria-autocomplete="list"
+                          aria-expanded="false"
+                          aria-haspopup="listbox"
+                          aria-controls="modelComboboxList"
+                          aria-owns="modelComboboxList"
+                          aria-disabled="true"
+                          autocomplete="off"
+                          spellcheck="false"
+                          placeholder="Select a dataset"
+                          data-i18n-attr="placeholder:sidebar.modelDisabledOption"
+                          disabled
+                        />
+                        <button
+                          id="modelComboboxToggle"
+                          type="button"
+                          class="combobox__toggle"
+                          aria-label="Toggle list"
+                          data-i18n-attr="aria-label:combobox.toggle"
+                          aria-expanded="false"
+                          aria-controls="modelComboboxList"
+                          disabled
+                        >
+                          <span aria-hidden="true" class="material-icons">expand_more</span>
+                        </button>
+                      </div>
+                      <ul
+                        id="modelComboboxList"
+                        class="combobox__list"
+                        role="listbox"
+                        hidden
+                      ></ul>
+                    </div>
                   </div>
                 </div>
               </div>

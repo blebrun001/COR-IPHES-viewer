@@ -79,6 +79,10 @@
       "error": "Error al cargar"
     }
   },
+  "combobox": {
+    "toggle": "Mostrar u ocultar la lista",
+    "noResults": "Sin coincidencias"
+  },
   "status": {
     "loadingDatasets": "Cargando ejemplares...",
     "datasetsLoadedFromCache": "Datos cargados desde la caché",
