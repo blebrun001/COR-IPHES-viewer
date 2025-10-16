@@ -1164,8 +1164,8 @@ export async function initInterface({
   const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
   const CACHE_VERSION = 2;
 
-  const loadDatasetsFromAPI = async ({ force = false } = {}) => {
-    const datasets = await dataClient.listDatasets({ force });
+  const loadDatasetsFromAPI = async ({ force = false, onProgress } = {}) => {
+    const datasets = await dataClient.listDatasets({ force, onProgress });
     const payload = {
       datasets,
       timestamp: Date.now(),
@@ -1475,6 +1475,8 @@ export async function initInterface({
     const currentToken = datasetToken;
 
     setStatus('status.loadingDatasets');
+    lastProgressPercent = 0;
+    renderStatus();
     datasetSelect.disabled = true;
     modelSelect.disabled = true;
     reloadButton.disabled = true;
@@ -1513,7 +1515,18 @@ export async function initInterface({
         }
       }
 
-      datasets = await loadDatasetsFromAPI({ force: true });
+      datasets = await loadDatasetsFromAPI({
+        force: true,
+        onProgress: (ratio) => {
+          if (currentToken !== datasetToken) {
+            return;
+          }
+          if (typeof ratio === 'number' && !Number.isNaN(ratio)) {
+            lastProgressPercent = Math.min(100, Math.max(Math.round(ratio * 100), 0));
+            renderStatus();
+          }
+        },
+      });
       if (currentToken !== datasetToken) {
         return;
       }
@@ -1527,6 +1540,7 @@ export async function initInterface({
       }
     } finally {
       if (currentToken === datasetToken) {
+        lastProgressPercent = null;
         reloadButton.disabled = false;
       }
     }

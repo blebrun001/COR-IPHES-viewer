@@ -604,9 +604,17 @@ export class DataverseClient {
    * @param {boolean} [options.force=false] - When true, bypasses the cache.
    * @returns {Promise<Array<{label: string, value: string, identifier: string}>>}
    */
-  async listDatasets({ force = false } = {}) {
+  async listDatasets({ force = false, onProgress } = {}) {
     if (force) {
       this.resetCache();
+    }
+
+    if (typeof onProgress === 'function') {
+      try {
+        onProgress(0, { phase: 'list' });
+      } catch (error) {
+        console.warn('Dataset progress callback failed', error);
+      }
     }
 
     const contents = await this.fetchJson(
@@ -614,9 +622,19 @@ export class DataverseClient {
     );
     const datasets = contents?.data?.filter((item) => item.type === 'dataset') || [];
 
+    const totalDatasets = datasets.length;
+    if (!totalDatasets && typeof onProgress === 'function') {
+      try {
+        onProgress(1, { phase: 'details', current: 0, total: 0 });
+      } catch (error) {
+        console.warn('Dataset progress callback failed', error);
+      }
+    }
+
     const datasetInfos = [];
 
-    for (const item of datasets) {
+    for (let index = 0; index < datasets.length; index += 1) {
+      const item = datasets[index];
       const persistentId = `${item.protocol}:${item.authority}/${item.identifier}`;
       const cacheEntry = this.datasetCache.get(persistentId) || {
         textureCache: new Map(),
@@ -667,11 +685,31 @@ export class DataverseClient {
           taxonomyPath: cacheEntry.taxonomyPath || null,
         });
       }
+
+      if (typeof onProgress === 'function' && totalDatasets > 0) {
+        try {
+          onProgress(Math.min((index + 1) / totalDatasets, 1), {
+            phase: 'details',
+            current: index + 1,
+            total: totalDatasets,
+          });
+        } catch (error) {
+          console.warn('Dataset progress callback failed', error);
+        }
+      }
     }
 
     datasetInfos.sort((a, b) =>
       a.label.localeCompare(b.label, 'en', { sensitivity: 'base' })
     );
+
+    if (typeof onProgress === 'function') {
+      try {
+        onProgress(1, { phase: 'complete', current: totalDatasets, total: totalDatasets });
+      } catch (error) {
+        console.warn('Dataset progress callback failed', error);
+      }
+    }
 
     return datasetInfos;
   }
