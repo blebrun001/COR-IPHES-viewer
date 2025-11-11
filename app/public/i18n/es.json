@@ -1,0 +1,213 @@
+{
+  "header": {
+    "toggleSidebar": "Mostrar/ocultar la barra lateral",
+    "title": "Esqueletos en Línea",
+    "subtitle": "Visor de modelos 3D de COR-IPHES"
+  },
+  "sidebar": {
+    "selectionHeading": "Selección",
+    "taxonomyHeading": "Taxonomía",
+    "datasetLabel": "Ejemplar",
+    "datasetLoadingOption": "Cargando ejemplares...",
+    "modelLabel": "Elemento anatómico",
+    "modelDisabledOption": "Selecciona un ejemplar",
+    "actionsLabel": "Acciones",
+    "reloadButton": "Recargar lista de especímenes",
+    "metadataHeading": "Metadatos del ejemplar",
+    "moreInfoHeading": "Más información",
+    "links": {
+      "gbif": "Especie (GBIF)",
+      "cora": "Especie (CORA-RDR)",
+      "uberon": "Elemento anatómico (OLS UBERON)",
+      "options": "Abrir configuración",
+      "reset": "Restablecer la interfaz",
+      "about": "Acerca del proyecto"
+    },
+    "tooltips": {
+      "settings": "Configuración",
+      "reload": "Recargar página",
+      "about": "Acerca de"
+    }
+  },
+  "search": {
+    "label": "Buscar",
+    "placeholder": "Buscar especímenes o elementos anatómicos...",
+    "noResults": "Sin coincidencias"
+  },
+  "language": {
+    "selectorLabel": "Idioma",
+    "names": {
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "ca": "Català"
+    }
+  },
+  "viewer": {
+    "projection": {
+      "label": "Proyección",
+      "perspective": "Perspectiva",
+      "orthographic": "Ortográfica"
+    },
+    "orbit": {
+      "label": "Órbita",
+      "upright": "Vertical",
+      "free": "Libre"
+    },
+    "rotation": {
+      "enableGizmo": "Activar gizmo de rotación",
+      "disableGizmo": "Desactivar gizmo de rotación",
+      "gizmoTooltip": "Gizmo de rotación"
+    },
+    "buttons": {
+      "disableTextures": "Desactivar texturas",
+      "enableTextures": "Activar texturas",
+      "disableWireframe": "Desactivar modo malla",
+      "enableWireframe": "Activar modo malla",
+      "restoreLights": "Restaurar iluminación",
+      "dimLights": "Atenuar luces",
+      "exitMeasure": "Salir de medición",
+      "measure": "Medir",
+      "clearMeasurements": "Borrar medidas",
+      "capture": "Capturar",
+      "resetView": "Restablecer vista",
+      "enableClipping": "Activar corte",
+      "disableClipping": "Desactivar corte",
+      "clippingTooltip": "Vista en sección",
+      "disableLabels": "Ocultar etiquetas",
+      "enableLabels": "Mostrar etiquetas",
+      "enableNormalizeComparisonScale": "Normalizar el tamaño en comparación",
+      "disableNormalizeComparisonScale": "Desactivar la normalización de tamaño",
+      "normalizeComparisonScaleTooltip": "Normalizar escalas",
+      "enableScaleReference": "Mostrar escala",
+      "disableScaleReference": "Ocultar escala",
+      "scaleReferenceTooltip": "Cubo de referencia",
+      "enableAnaglyph": "Activar vista anáglifa",
+      "disableAnaglyph": "Desactivar vista anáglifa"
+    },
+    "toolbar": {
+      "showMore": "Más controles",
+      "showLess": "Menos controles"
+    }
+  },
+  "metadata": {
+    "itemLabel": "Elemento",
+    "emptySelection": "Selecciona un ejemplar para mostrar los metadatos.",
+    "emptyData": "No hay metadatos disponibles para este ejemplar."
+  },
+  "selector": {
+    "dataset": {
+      "placeholder": "Selecciona un ejemplar...",
+      "loading": "Cargando ejemplares...",
+      "none": "No hay ejemplares disponibles"
+    },
+    "model": {
+      "disabled": "Selecciona un ejemplar",
+      "loading": "Cargando modelos...",
+      "none": "No se encontró ningún modelo OBJ/MTL",
+      "placeholder": "Elegir un modelo...",
+      "error": "Error de carga",
+      "comparePrompt": "Elegir un modelo para comparar..."
+    }
+  },
+  "comparison": {
+    "enterMode": "Comparar",
+    "exitMode": "Salir del modo comparación",
+    "modelA": "Modelo A",
+    "modelB": "Modelo B",
+    "sameModelError": "Por favor seleccione un modelo diferente para comparar",
+    "loadError": "Error al cargar el modelo de comparación"
+  },
+  "status": {
+    "loadingDatasets": "Cargando ejemplares...",
+    "datasetsLoadedFromCache": "Datos cargados desde la caché",
+    "datasetsLoadedFromAPI": "Cargado desde la API",
+    "selectDatasetAndModel": "Selecciona un ejemplar y un modelo.",
+    "loadingDataset": "Cargando ejemplar...",
+    "loadingModelList": "Cargando lista de modelos...",
+    "noModelsInDataset": "No hay modelos OBJ/MTL para este ejemplar.",
+    "selectModel": "Selecciona un modelo 3D para cargar.",
+    "datasetLoadFailure": "No se pudo cargar el ejemplar.",
+    "loadingGeometry": "Cargando modelo 3D...",
+    "screenshotFailed": "No se pudo capturar la imagen.",
+    "modelLoadFailure": "No se pudo cargar el modelo 3D.",
+    "screenshotSaved": "Captura guardada"
+  },
+  "taxonomy": {
+    "select": "Seleccionar",
+    "unknown": "Desconocido",
+    "kingdom": "Reino",
+    "phylum": "Filo",
+    "class": "Clase",
+    "order": "Orden",
+    "family": "Familia",
+    "subfamily": "Subfamilia",
+    "genus": "Género",
+    "species": "Especie"
+  },
+  "about": {
+    "title": "Acerca del proyecto",
+    "bannerAlt": "Banner con especímenes de Esqueletos en Línea",
+    "sectionIntro": {
+      "heading": "Descripción del proyecto",
+      "paragraph1": "Este visor 3D en línea forma parte del proyecto Esqueletos en Línea, liderado por la Dra. Palmira Saladié Ballesté. Permite explorar modelos 3D detallados y metadatos de la colección osteológica de referencia del IPHES-CERCA."
+    },
+    "sectionPartners": {
+      "heading": "Socios institucionales",
+      "items": {
+        "item1": "Organización colaboradora provisional 1",
+        "item2": "Organización colaboradora provisional 2",
+        "item3": "Organización colaboradora provisional 3"
+      }
+    },
+    "sectionContributors": {
+      "heading": "Personas colaboradoras",
+      "items": {
+        "item1": "Nombre de colaborador provisional 1",
+        "item2": "Nombre de colaborador provisional 2",
+      "item3": "Nombre de colaborador provisional 3"
+      }
+    },
+    "closeButton": "×",
+    "closeAria": "Cerrar el diálogo de información",
+    "logos": {
+      "ariaLabel": "Socios del proyecto",
+      "iphesAlt": "Logotipo de IPHES-CERCA",
+      "cercaAlt": "Logotipo de CERCA",
+      "fecytAlt": "Logotipo de FECYT",
+      "ministryAlt": "Logotipo del Ministerio de Ciencia e Innovación"
+    }
+  },
+  "clipping": {
+    "title": "Vista en sección",
+    "description": "Utiliza los controles deslizantes o arrastra las asas del plano en la escena para revelar cortes.",
+    "instruction": "Arrastra el plano activo o ajusta los controles deslizantes para seccionar el modelo.",
+    "plane": {
+      "x": "Plano X",
+      "y": "Plano Y",
+      "z": "Plano Z"
+    },
+    "actions": {
+      "enable": "Activar",
+      "control": "Tomar el control",
+      "controlling": "Control activo",
+      "invert": "Invertir",
+      "reset": "Reiniciar corte",
+      "close": "Cerrar controles de corte"
+    },
+    "inactive": "Activa al menos un plano para cortar el modelo."
+  },
+  "options": {
+    "title": "Opciones",
+    "closeAria": "Cerrar el diálogo de opciones",
+    "theme": {
+      "label": "Tema",
+      "dark": "Oscuro",
+      "light": "Claro"
+    }
+  },
+  "option": {
+    "screenshotBackground": "Fondo visible en las capturas",
+    "anaglyphSeparation": "Profundidad anáglifa"
+  }
+}

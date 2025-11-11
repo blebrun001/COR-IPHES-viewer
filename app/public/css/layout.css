@@ -1,0 +1,33 @@
+/* Defines the structural layout skeleton for the embedded 3D viewer application, including sidebar handling. */
+/* Overall application wrapper that reserves space for the top bar and main grid. */
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at top, var(--color-accent), transparent 45%), var(--color-bg);
+}
+
+/* Main grid splits the UI between the sidebar and viewer canvas. */
+.app-layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+}
+
+/* Hide navigation chrome when fullscreen mode is activated. */
+body.is-fullscreen .top-bar {
+  display: none;
+}
+
+body.is-fullscreen .app-layout {
+  grid-template-columns: 1fr;
+}
+
+body.is-fullscreen .sidebar {
+  display: none;
+}
+
+body.is-fullscreen #sidebarOverlay {
+  display: none !important;
+}

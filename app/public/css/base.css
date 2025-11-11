@@ -1,0 +1,57 @@
+/* Establishes global defaults for the viewer application, standardizing typography, colors, and layout primitives. */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  font-size: var(--font-md);
+  line-height: var(--line-height-base);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Prevent scrolling when overlays request fullscreen presentation. */
+body.is-fullscreen {
+  overflow: hidden;
+}
+
+/* Utility classes to align Material icon fonts with text baseline. */
+.material-icons {
+  font-family: 'Material Icons', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Support Google's outlined icon set with consistent feature settings. */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}

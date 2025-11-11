@@ -1,0 +1,488 @@
+<!-- Bootstraps the interactive 3D viewer application, wiring layout, controls, and localization assets. -->
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dataverse 3D Viewer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    <script>
+      (function () {
+        try {
+          const storedTheme = window.localStorage.getItem('ui.theme');
+          if (storedTheme === 'light' || storedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', storedTheme);
+          }
+        } catch (error) {
+          /* Ignore storage access issues */
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="./public/css/styles.css" />
+  </head>
+  <body>
+    <!-- Application shell grouping header, sidebar, and 3D viewer surface -->
+    <div class="app-shell">
+      <!-- Header keeps project identity and controls global actions -->
+      <header class="top-bar">
+        <div class="top-bar__left">
+          <button
+            id="toggleSidebar"
+            type="button"
+            class="top-bar__toggle"
+            aria-controls="appSidebar"
+            aria-expanded="true"
+            data-i18n-attr="aria-label:header.toggleSidebar"
+          >
+            ☰
+          </button>
+          <h1 class="project-title" data-i18n="header.title">Esqueletos en Línea</h1>
+          <p class="project-subtitle" data-i18n="header.subtitle">COR-IPHES 3D Model Viewer (beta)</p>
+        </div>
+        <div class="top-bar__center"></div>
+        <div class="top-bar__right">
+        <img
+          src="./public/ressources/iphes.png"
+          data-theme-src-dark="./public/ressources/iphes.png"
+          data-theme-src-light="./public/ressources/ipheslight.png"
+          alt="IPHES-CERCA logo"
+          data-i18n-attr="alt:about.logos.iphesAlt"
+          class="top-bar__logo"
+          decoding="async"
+        />
+        </div>
+      </header>
+      <div class="app-layout">
+        <!-- Sidebar hosts dataset selection, metadata, and external resources -->
+        <aside id="appSidebar" class="sidebar" tabindex="-1" aria-expanded="true">
+          <section class="sidebar-section selectors-section">
+            <div class="sidebar-selectors">
+              <div class="selector-group search-group">
+                <label for="searchInput" data-i18n="search.label">Search</label>
+                <input
+                  type="search"
+                  id="searchInput"
+                  class="search-input"
+                  placeholder="Search specimens or anatomical elements..."
+                  data-i18n-attr="placeholder:search.placeholder"
+                  autocomplete="off"
+                />
+                <div id="searchResults" class="search-results" hidden></div>
+              </div>
+              <div class="selector-group taxonomy-group" id="taxonomyGroup">
+                <div class="taxonomy-heading" data-i18n="sidebar.taxonomyHeading">Taxonomy</div>
+                <div
+                  id="taxonomySelectors"
+                  class="taxonomy-selectors"
+                  role="group"
+                >
+                  <div id="taxonomyLevels" class="taxonomy-levels"></div>
+                  <div class="selector-group">
+                    <label for="datasetSelect" data-i18n="sidebar.datasetLabel">Specimen</label>
+                    <select id="datasetSelect">
+                      <option value="" data-i18n="sidebar.datasetLoadingOption">Loading datasets...</option>
+                    </select>
+                  </div>
+                  <div class="selector-group">
+                    <label for="modelSelect" data-i18n="sidebar.modelLabel">Anatomical element</label>
+                    <select id="modelSelect" disabled>
+                      <option value="" data-i18n="sidebar.modelDisabledOption">Select a dataset</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="selector-group">
+                <button
+                  id="compareButton"
+                  class="compare-button"
+                  type="button"
+                  disabled
+                  data-i18n="comparison.enterMode"
+                >
+                  Compare
+                </button>
+              </div>
+            </div>
+          </section>
+          <section class="sidebar-section links-section">
+            <div class="sidebar-heading" data-i18n="sidebar.moreInfoHeading">More infos</div>
+            <div class="external-links">
+              <a
+                id="gbifLink"
+                class="external-link"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                hidden
+                data-i18n="sidebar.links.gbif"
+              >
+                Species (GBIF)
+              </a>
+              <a
+                id="coraLink"
+                class="external-link"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                hidden
+                data-i18n="sidebar.links.cora"
+              >
+                Species (CORA-RDR)
+              </a>
+              <a
+                id="uberonLink"
+                class="external-link"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                hidden
+                data-i18n="sidebar.links.uberon"
+              >
+                Anatomical element (OLS UBERON)
+              </a>
+            </div>
+          </section>
+          <div class="sidebar-footer">
+            <button
+              id="optionsButton"
+              class="floating-options-button tooltip-host"
+              type="button"
+              data-i18n-attr="aria-label:sidebar.links.options,data-tooltip:sidebar.tooltips.settings"
+            >
+              <span class="material-icons floating-options-button__icon" aria-hidden="true">settings</span>
+            </button>
+            <button
+              id="resetInterfaceButton"
+              type="button"
+              class="floating-reset-button tooltip-host"
+              data-i18n-attr="aria-label:sidebar.links.reset,data-tooltip:sidebar.tooltips.reload"
+            >
+              <span class="material-icons floating-reset-button__icon" aria-hidden="true">refresh</span>
+            </button>
+            <button
+              id="aboutButton"
+              type="button"
+              class="floating-info-button tooltip-host"
+              data-i18n-attr="aria-label:sidebar.links.about,data-tooltip:sidebar.tooltips.about"
+            >
+              <span class="material-icons floating-info-button__icon" aria-hidden="true">help_outline</span>
+            </button>
+          </div>
+        </aside>
+        <!-- Main area renders the Three.js canvas, status banner, and viewer toolbar -->
+        <main class="viewer-area">
+          <div id="viewer3D" class="viewer-surface"></div>
+          <div id="status" class="viewer-status"></div>
+          <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-overlay-content">
+              <div class="loading-overlay-spinner">
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_qM83{animation:spinner_8HQG 1.05s infinite}.spinner_oXPr{animation-delay:.1s}.spinner_ZTLf{animation-delay:.2s}@keyframes spinner_8HQG{0%,57.14%{animation-timing-function:cubic-bezier(0.33,.66,.66,1);transform:translate(0)}28.57%{animation-timing-function:cubic-bezier(0.33,0,.66,.33);transform:translateY(-6px)}100%{transform:translate(0)}}</style><circle class="spinner_qM83" cx="4" cy="12" r="3"/><circle class="spinner_qM83 spinner_oXPr" cx="12" cy="12" r="3"/><circle class="spinner_qM83 spinner_ZTLf" cx="20" cy="12" r="3"/></svg>
+              </div>
+              <div class="loading-overlay-status"></div>
+              <div class="loading-overlay-phrase"></div>
+            </div>
+          </div>
+          <div id="measurementOverlay" class="measurement-overlay"></div>
+          <div id="labelOverlay" class="measurement-overlay"></div>
+          <img
+            src="./public/ressources/cc.png"
+            alt="Creative Commons logo"
+            class="viewer-watermark"
+            decoding="async"
+          />
+          <button
+            id="exitFullscreen"
+            type="button"
+            class="viewer-fullscreen-exit"
+            aria-label="Exit fullscreen"
+            hidden
+          >
+            <span aria-hidden="true" class="material-icons">close</span>
+          </button>
+          <div id="viewerToolbar" class="viewer-toolbar" data-collapsed="true">
+            <div class="viewer-toolbar__inner">
+              <div class="viewer-toolbar__group viewer-toolbar__group--primary">
+                <div class="toolbar-buttons toolbar-buttons--primary">
+              <div
+                class="viewer-toolbar__button-group viewer-toolbar__button-group--projection"
+                role="group"
+                data-i18n-attr="aria-label:viewer.projection.label"
+              >
+                    <button
+                      id="projectionModePerspective"
+                      type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle viewer-toolbar__button--projection"
+                    data-i18n-attr="aria-label:viewer.projection.perspective,data-tooltip:viewer.projection.perspective"
+                    aria-pressed="true"
+                    >
+                      <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">token</span>
+                    </button>
+                    <button
+                      id="projectionModeOrthographic"
+                      type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle viewer-toolbar__button--projection"
+                    data-i18n-attr="aria-label:viewer.projection.orthographic,data-tooltip:viewer.projection.orthographic"
+                    aria-pressed="false"
+                    >
+                      <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">deployed_code</span>
+                    </button>
+                  </div>
+                  <div
+                class="viewer-toolbar__button-group viewer-toolbar__button-group--orbit"
+                role="group"
+                data-i18n-attr="aria-label:viewer.orbit.label"
+              >
+                    <button
+                      id="orbitModeUpright"
+                      type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle viewer-toolbar__button--orbit"
+                    data-i18n-attr="aria-label:viewer.orbit.upright,data-tooltip:viewer.orbit.upright"
+                    aria-pressed="true"
+                    >
+                      <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">arrows_outward</span>
+                    </button>
+                    <button
+                      id="orbitModeFree"
+                      type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle viewer-toolbar__button--orbit"
+                    data-i18n-attr="aria-label:viewer.orbit.free,data-tooltip:viewer.orbit.free"
+                    aria-pressed="false"
+                    >
+                      <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">360</span>
+                    </button>
+                  </div>
+                  <button
+                    id="resetView"
+                    type="button"
+                    class="viewer-toolbar__button"
+                    data-i18n-attr="aria-label:viewer.buttons.resetView,data-tooltip:viewer.buttons.resetView"
+                  >
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">restart_alt</span>
+                  </button>
+                  <button
+                    id="captureScreenshot"
+                    type="button"
+                    class="viewer-toolbar__button"
+                    data-i18n-attr="aria-label:viewer.buttons.capture,data-tooltip:viewer.buttons.capture"
+                  >
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">photo_camera</span>
+                  </button>
+                  <button
+                    id="toggleFullscreen"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                    data-i18n-attr="aria-label:viewer.buttons.enterFullscreen,data-tooltip:viewer.buttons.enterFullscreen"
+                    aria-pressed="false"
+                  >
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">fullscreen</span>
+                  </button>
+                </div>
+              </div>
+              <div class="viewer-toolbar__group viewer-toolbar__group--secondary" id="viewerToolbarSecondary">
+                <div class="toolbar-buttons toolbar-buttons--secondary">
+                  <button
+                    id="toggleRotationGizmo"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                    data-i18n-attr="aria-label:viewer.rotation.enableGizmo,data-tooltip:viewer.rotation.gizmoTooltip"
+                    aria-pressed="false"
+                    disabled
+                  >
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">3d_rotation</span>
+                  </button>
+                  <button
+                    id="toggleTextures"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                    data-i18n-attr="aria-label:viewer.buttons.disableTextures,data-tooltip:viewer.buttons.disableTextures"
+                  >
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">texture</span>
+                  </button>
+                  <button
+                    id="toggleWireframe"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                    data-i18n-attr="aria-label:viewer.buttons.enableWireframe,data-tooltip:viewer.buttons.enableWireframe"
+                  >
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">grid_4x4</span>
+                  </button>
+                  <button
+                    id="toggleLighting"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                    data-i18n-attr="aria-label:viewer.buttons.dimLights,data-tooltip:viewer.buttons.dimLights"
+                  >
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">wb_incandescent</span>
+                  </button>
+                  <button
+                    id="toggleAnaglyph"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                    data-i18n-attr="aria-label:viewer.buttons.enableAnaglyph,data-tooltip:viewer.buttons.enableAnaglyph"
+                    aria-pressed="false"
+                  >
+                    <span aria-hidden="true" class="material-symbols-outlined">eyeglasses_2</span>
+                  </button>
+                  <button
+                    id="toggleMeasure"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                    data-i18n-attr="aria-label:viewer.buttons.measure,data-tooltip:viewer.buttons.measure"
+                  >
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">straighten</span>
+                  </button>
+                  <button
+                    id="clearMeasurements"
+                    type="button"
+                    class="viewer-toolbar__button"
+                    data-i18n-attr="aria-label:viewer.buttons.clearMeasurements,data-tooltip:viewer.buttons.clearMeasurements"
+                  >
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">delete</span>
+                  </button>
+                  <button
+                    id="toggleClipping"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                data-i18n-attr="aria-label:viewer.buttons.enableClipping,data-tooltip:viewer.buttons.clippingTooltip"
+                    aria-pressed="false"
+                  >
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">content_cut</span>
+                  </button>
+                  <button
+                    id="toggleLabels"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                    data-i18n-attr="aria-label:viewer.buttons.enableLabels,data-tooltip:viewer.buttons.enableLabels"
+                    aria-pressed="false"
+                    hidden
+                  >
+                    <span aria-hidden="true" class="material-icons viewer-toolbar__icon">label</span>
+                  </button>
+                  <button
+                    id="toggleNormalizeScale"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                    data-i18n-attr="aria-label:viewer.buttons.enableNormalizeComparisonScale,data-tooltip:viewer.buttons.normalizeComparisonScaleTooltip"
+                    hidden
+                  >
+                    <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">view_real_size</span>
+                  </button>
+                  <button
+                    id="toggleScaleReference"
+                    type="button"
+                    class="viewer-toolbar__button viewer-toolbar__button--toggle"
+                    data-i18n-attr="aria-label:viewer.buttons.enableScaleReference,data-tooltip:viewer.buttons.scaleReferenceTooltip"
+                    data-i18n-attr="aria-label:viewer.buttons.enableScaleReference,data-tooltip:viewer.buttons.scaleReferenceTooltip"
+                    aria-pressed="false"
+                  >
+                    <span aria-hidden="true" class="material-symbols-outlined">view_in_ar</span>
+                  </button>
+              </div>
+              <button
+                id="viewerToolbarToggle"
+                class="viewer-toolbar__toggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="viewerToolbarSecondary"
+                data-i18n="viewer.toolbar.showMore"
+              >
+                More controls
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+      <div id="sidebarOverlay" hidden></div>
+    </div>
+
+    <!-- Import map resolves Three.js modules when running without a bundler -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+          "three/examples/jsm/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+        }
+      }
+    </script>
+    <dialog id="optionsDialog" class="options-dialog" aria-labelledby="optionsDialogTitle">
+      <button
+        id="closeOptions"
+        type="button"
+        class="options-close"
+        data-i18n-attr="aria-label:options.closeAria"
+      >&times;</button>
+      <h2 id="optionsDialogTitle" data-i18n="options.title">Options</h2>
+      <div class="options-content">
+        <div class="options-section">
+          <label
+            class="options-language-label"
+            for="languageSelect"
+            data-i18n="language.selectorLabel"
+          >
+            Langue&nbsp;:
+          </label>
+          <select
+            id="languageSelect"
+            class="options-language-select"
+          ></select>
+        </div>
+        <div class="options-section">
+          <label
+            class="options-theme-label"
+            for="themeSelect"
+            data-i18n="options.theme.label"
+          >
+            Theme&nbsp;:
+          </label>
+          <select
+            id="themeSelect"
+            class="options-theme-select"
+          >
+            <option value="dark" data-i18n="options.theme.dark">Dark</option>
+            <option value="light" data-i18n="options.theme.light">Light</option>
+          </select>
+        </div>
+        <div class="options-section">
+          <label class="options-theme-label" for="screenshot-bg-toggle">
+            <input type="checkbox" id="screenshot-bg-toggle" checked />
+            <span data-i18n="option.screenshotBackground">Background visible in screenshots</span>
+          </label>
+        </div>
+        <div class="options-section">
+          <div class="options-range-label">
+            <span class="options-theme-label" data-i18n="option.anaglyphSeparation">Anaglyph depth</span>
+            <span id="anaglyphEyeSeparationValue" class="options-range-value">0.064</span>
+          </div>
+          <input
+            type="range"
+            id="anaglyphEyeSeparation"
+            class="options-range-input"
+            min="0.01"
+            max="0.2"
+            step="0.001"
+            value="0.064"
+            aria-describedby="anaglyphEyeSeparationValue"
+          />
+        </div>
+        <div class="options-section">
+          <button
+            id="reloadDatasets"
+            type="button"
+            class="options-reload-button options-reload-button--link"
+            data-i18n="sidebar.reloadButton"
+          >
+            Reload specimen list
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Entry modules: core viewer bootstrap + supporting UI behaviours -->
+    <script type="module" src="./public/js/app.js"></script>
+    <script type="module" src="./public/js/about.js"></script>
+    <script type="module" src="./public/js/options.js"></script>
+    <script type="module" src="./public/js/sidebar.js"></script>
+  </body>
+</html>

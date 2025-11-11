@@ -1,0 +1,151 @@
+/* Responsive overrides tuning layout, toolbar ergonomics, and typography across breakpoints. */
+/* Align header content centrally on medium screens for clarity. */
+@media (max-width: 1280px) {
+  .top-bar {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .top-bar__right {
+    text-align: center;
+    align-items: center;
+  }
+}
+
+/* Slightly shrink sidebar footprint on large tablets. */
+@media (max-width: 1200px) {
+  .app-layout {
+    grid-template-columns: 320px minmax(0, 1fr);
+  }
+
+  .sidebar {
+    width: 320px;
+    padding: 1.5rem 1.35rem;
+    gap: 1.5rem;
+  }
+
+  .metadata-section {
+    max-height: 24vh;
+  }
+}
+
+/* Collapse layout into a drawer-style sidebar on smaller devices. */
+@media (max-width: 1024px) {
+  .top-bar__toggle {
+    display: inline-flex;
+  }
+
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(320px, 80vw);
+    transform: translateX(-100%);
+    padding: 1.5rem 1.4rem;
+    box-shadow: 0 20px 45px var(--color-surface-alt);
+    z-index: 22;
+    overflow-y: auto;
+  }
+
+  .metadata-section {
+    max-height: 26vh;
+  }
+
+  .top-bar__logo {
+    display: none;
+  }
+}
+
+/* Tighten spacing for controls when horizontal space is limited. */
+@media (max-width: 900px) {
+  .sidebar {
+    width: min(300px, 78vw);
+  }
+
+  .viewer-toolbar__inner {
+    padding: 0.8rem 1rem;
+    gap: 0.7rem;
+  }
+
+  .viewer-toolbar__group {
+    gap: 0.6rem;
+  }
+
+  .metadata-section {
+    max-height: 30vh;
+  }
+}
+
+/* Stack ancillary controls vertically for handheld use. */
+@media (max-width: 768px) {
+  .external-links {
+    flex-direction: column;
+  }
+
+  .language-selector {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .toolbar-control label {
+    display: none;
+  }
+
+  .toolbar-control select,
+  .toolbar-buttons button {
+    min-width: clamp(4.75rem, 24vw, 6.5rem);
+  }
+
+  .metadata-section {
+    max-height: 22vh;
+  }
+}
+
+/* Adjust typography and control sizing for very small screens. */
+@media (max-width: 520px) {
+  :root {
+    --font-md: 0.95rem;
+    --font-sm: 0.78rem;
+    --font-xs: 0.68rem;
+  }
+
+  .sidebar {
+    width: min(260px, 88vw);
+  }
+
+  .selector-group select,
+  .selector-group button {
+    padding: 0.5rem 0.65rem;
+  }
+
+  .external-link {
+    min-width: auto;
+    padding: 0.45rem 0.6rem;
+  }
+
+  .language-selector {
+    padding: 0.45rem 0.6rem;
+  }
+
+  .language-selector__control {
+    min-width: 0;
+  }
+
+  .viewer-toolbar__inner {
+    padding: 0.7rem 0.75rem;
+  }
+
+  .toolbar-control select,
+  .toolbar-buttons button {
+    padding: 0.5rem 0.65rem;
+  }
+
+  .metadata-section {
+    max-height: 18vh;
+  }
+}

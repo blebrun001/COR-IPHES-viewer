@@ -1,0 +1,152 @@
+/* Responsive stylesheet orchestrating breakpoints and touch optimizations for the landing experience. */
+
+/* Fine-tune the main content stack for comfortable reading on small screens. */
+.content {
+  gap: 4rem;
+  padding: 4rem 1.5rem 0rem;
+}
+
+/* Hero block balances vertical rhythm and typography on narrow viewports. */
+.hero {
+  min-height: 90vh;
+  gap: 1.5rem;
+  padding: 2rem 0;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+}
+
+.hero h2 {
+  font-size: 1rem;
+}
+
+/* Buttons expand to full width on mobile for accessible tap targets. */
+.hero-actions {
+  width: 100%;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+.btn {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  min-height: 44px; /* Minimum target height for comfortable tapping. */
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Panels receive generous padding and rounded corners on smaller screens. */
+.panel {
+  border-radius: 20px;
+  padding: 1.75rem 1.5rem;
+}
+
+.panel h3 {
+  font-size: 1.5rem;
+}
+
+.panel p,
+.panel ul {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Logo grids adapt column counts based on available width. */
+.funders-logos {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.funders-logos img {
+  max-height: 60px;
+}
+
+/* Tablet and up: reflow spacing and typography for wider layouts. */
+@media (min-width: 480px) {
+  .funders-logos {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+}
+
+/* Desktop: restore horizontal alignment and upscale hero typography. */
+@media (min-width: 768px) {
+  .content {
+    gap: 6rem;
+    padding: 6rem clamp(1.5rem, 5vw, 5rem) 0rem;
+  }
+
+  .hero {
+    min-height: 100vh;
+    padding: 0;
+    gap: 1rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(3rem, 4vw, 8rem);
+  }
+
+  .hero h2 {
+    font-size: clamp(0.8rem, 1.5vw, 1.5rem);
+  }
+
+  .hero-actions {
+    flex-direction: row;
+    width: auto;
+  }
+
+  .btn {
+    width: auto;
+    padding: 0.85rem 1.8rem;
+  }
+
+  .panel {
+    border-radius: 24px;
+    padding: 2.5rem 2.25rem;
+  }
+
+  .panel h3 {
+    font-size: clamp(1.5rem, 2.5vw, 2.75rem);
+  }
+
+  .funders-logos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .funders-logos img {
+    max-height: 72px;
+  }
+}
+
+/* Large desktop: ease off padding to avoid oversized gutters. */
+@media (min-width: 1024px) {
+  .panel {
+    padding: clamp(2rem, 4vw, 3.5rem);
+  }
+}
+
+/* Touch devices: ensure links respond predictably to gesture input. */
+@media (hover: none) {
+  a {
+    touch-action: manipulation;
+  }
+}
+
+/* Honour user preference for reduced motion by disabling transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
