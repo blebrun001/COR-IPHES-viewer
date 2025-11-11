@@ -265,6 +265,7 @@ export async function initInterface({
   const viewerArea = documentRef.querySelector('.viewer-area');
   const topBar = documentRef.querySelector('.top-bar');
   const sidebar = documentRef.getElementById('appSidebar');
+  const toggleSidebarButton = documentRef.getElementById('toggleSidebar');
 
   if (
     !datasetSelect ||
@@ -384,6 +385,23 @@ export async function initInterface({
 
   initializeInterfaceControls();
 
+  // Ensure the floating toolbar is horizontally centered over the 3D viewer area
+  // even when a left sidebar is present or its state changes.
+  const positionToolbar = () => {
+    if (!viewerToolbar || !viewerArea) return;
+    const rect = viewerArea.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    // Pin the toolbar to the visual center of the viewer area
+    viewerToolbar.style.left = `${centerX}px`;
+    // Constrain toolbar width to the viewer width (max 1100px)
+    const maxWidth = 1100;
+    const width = Math.min(rect.width, maxWidth);
+    viewerToolbar.style.width = `${width}px`;
+  };
+
+  // Initial position after mount
+  positionToolbar();
+
   const getFullscreenElement = () =>
     documentRef.fullscreenElement ||
     documentRef.webkitFullscreenElement ||
@@ -446,6 +464,7 @@ export async function initInterface({
     }
     updateFullscreenUI(true);
     resizeViewer();
+    positionToolbar();
   };
 
   const exitFullscreenMode = async () => {
@@ -465,6 +484,7 @@ export async function initInterface({
     }
     updateFullscreenUI(false);
     resizeViewer();
+    positionToolbar();
   };
 
   const handleFullscreenToggle = () => {
@@ -486,6 +506,7 @@ export async function initInterface({
     const active = getFullscreenElement() === viewerArea;
     updateFullscreenUI(active);
     resizeViewer();
+    positionToolbar();
   };
 
   updateFullscreenUI(false);
@@ -858,7 +879,25 @@ export async function initInterface({
       viewerToolbarToggle.addEventListener('click', handleViewerToolbarToggleClick);
     }
 
-    windowRef.addEventListener('resize', resizeViewer);
+    windowRef.addEventListener('resize', () => {
+      resizeViewer();
+      positionToolbar();
+    });
+
+    // Re-center the toolbar when the sidebar opens/closes on mobile
+    if (toggleSidebarButton) {
+      toggleSidebarButton.addEventListener('click', () => {
+        // allow layout class changes to apply first
+        setTimeout(positionToolbar, 0);
+      });
+    }
+    if (sidebar) {
+      sidebar.addEventListener('transitionend', (e) => {
+        if (e.propertyName === 'transform' || e.propertyName === 'left') {
+          positionToolbar();
+        }
+      });
+    }
 
     datasetSelect.addEventListener('change', handleDatasetSelectChange);
     modelSelect.addEventListener('change', controllers.handleModelSelectChange);

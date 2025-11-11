@@ -1,7 +1,7 @@
 /* Styles the floating viewer toolbar, covering control layout, tooltips, and responsive behaviors. */
 /* Toolbar anchors to the bottom center above the viewer canvas. */
 .viewer-toolbar {
-  position: absolute;
+  position: fixed;
   left: 50%;
   bottom: 1.25rem;
   transform: translateX(-50%);
