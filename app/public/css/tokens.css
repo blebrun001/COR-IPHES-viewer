@@ -1,0 +1,39 @@
+/* Declares design tokens such as typography scale and color palettes for dark and light themes. */
+:root {
+  /* Default dark theme variables driving the viewer UI. */
+  font-family: "Inter", sans-serif;
+  --font-xs: 0.75rem;
+  --font-sm: 0.85rem;
+  --font-md: 1rem;
+  --font-lg: 1.25rem;
+  --font-xl: 1.5rem;
+  --line-height-base: 1.4;
+  color-scheme: dark;
+  --color-bg: #000000;
+  --color-surface: #0c131c;
+  --color-surface-alt: #0f172a;
+  --color-text-primary: #f8fafc;
+  --color-text-muted: #94a3b8;
+  --color-accent: #38bdf8;
+  --color-success: #86efac;
+  --color-error: #f87171;
+  --color-border: #475569;
+  --color-texture-override: #ff9300;
+  --color-viewer-bg: #111827;
+}
+
+:root[data-theme='light'] {
+  /* Light theme overrides activated when users switch appearance. */
+  color-scheme: light;
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-alt: #edf2f7;
+  --color-text-primary: #0f172a;
+  --color-text-muted: #475569;
+  --color-accent: #2563eb;
+  --color-success: #16a34a;
+  --color-error: #dc2626;
+  --color-border: #cbd5f5;
+  --color-texture-override: #ff9300;
+  --color-viewer-bg: #e2e8f0;
+}

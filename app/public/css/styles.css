@@ -1,0 +1,12 @@
+/* Central manifest aggregating modular CSS partials for the viewer application. */
+@import url("./tokens.css");
+@import url("./base.css");
+@import url("./layout.css");
+@import url("./top-bar.css");
+@import url("./selectors.css");
+@import url("./sidebar.css");
+@import url("./viewer.css");
+@import url("./toolbar.css");
+@import url("./dialogs.css");
+@import url("./metadata.css");
+@import url("./responsive.css");

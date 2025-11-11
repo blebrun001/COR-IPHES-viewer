@@ -1,0 +1,214 @@
+{
+  "header": {
+    "toggleSidebar": "Mostra/amaga la barra lateral",
+    "title": "Esqueletos en Línea",
+    "subtitle": "Visor de models 3D de COR-IPHES"
+  },
+  "sidebar": {
+    "selectionHeading": "Selecció",
+    "taxonomyHeading": "Taxonomia",
+    "datasetLabel": "Exemplar",
+    "datasetLoadingOption": "S'estan carregant els exemplars...",
+    "modelLabel": "Element anatòmic",
+    "modelDisabledOption": "Seleccioneu un exemplar",
+    "actionsLabel": "Accions",
+    "reloadButton": "Torna a carregar la llista d'espècimens",
+    "metadataHeading": "Metadades de l'exemplar",
+    "moreInfoHeading": "Més informació",
+    "links": {
+      "gbif": "Espècie (GBIF)",
+      "cora": "Espècie (CORA-RDR)",
+      "uberon": "Element anatòmic (OLS UBERON)",
+      "options": "Obrir la configuració",
+      "reset": "Restablir la interfície",
+      "about": "Sobre el projecte"
+    },
+    "tooltips": {
+      "settings": "Configuració",
+      "reload": "Torna a carregar la pàgina",
+      "about": "Sobre"
+    }
+  },
+  "search": {
+    "label": "Cerca",
+    "placeholder": "Cerca exemplars o elements anatòmics...",
+    "noResults": "Sense coincidències"
+  },
+  "language": {
+    "selectorLabel": "Idioma",
+    "names": {
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "ca": "Català"
+    }
+  },
+  "viewer": {
+    "projection": {
+      "label": "Projecció",
+      "perspective": "Perspectiva",
+      "orthographic": "Ortogràfica"
+    },
+    "orbit": {
+      "label": "Òrbita",
+      "upright": "Vertical",
+      "free": "Lliure"
+    },
+    "rotation": {
+      "enableGizmo": "Activa el gizmo de rotació",
+      "disableGizmo": "Desactiva el gizmo de rotació",
+      "gizmoTooltip": "Gizmo de rotació"
+    },
+    "buttons": {
+      "disableTextures": "Desactiva les textures",
+      "enableTextures": "Activa les textures",
+      "disableWireframe": "Desactiva el mode filferro",
+      "enableWireframe": "Activa el mode filferro",
+      "restoreLights": "Restaura la il·luminació",
+      "dimLights": "Atenua les llums",
+      "exitMeasure": "Surt de la mesura",
+      "measure": "Mesura",
+      "clearMeasurements": "Esborrar mesures",
+      "capture": "Capturar",
+      "resetView": "Restablir vista",
+      "enableClipping": "Activar la secció",
+      "disableClipping": "Desactivar la secció",
+      "clippingTooltip": "Vista en secció",
+      "disableLabels": "Amagar etiquetes",
+      "enableLabels": "Mostrar etiquetes",
+      "enableNormalizeComparisonScale": "Normalitzar la mida en comparació",
+      "disableNormalizeComparisonScale": "Desactivar la normalització de mida",
+      "normalizeComparisonScaleTooltip": "Normalitzar les escales",
+      "enableScaleReference": "Mostrar escala",
+      "disableScaleReference": "Amagar escala",
+      "scaleReferenceTooltip": "Cub de referència",
+      "enableAnaglyph": "Activar la vista anaglifa",
+      "disableAnaglyph": "Desactivar la vista anaglifa"
+    },
+    "toolbar": {
+      "showMore": "Més controls",
+      "showLess": "Menys controls"
+    }
+  },
+  "metadata": {
+    "itemLabel": "Element",
+    "emptySelection": "Seleccioneu un exemplar per mostrar les metadades.",
+    "emptyData": "No hi ha metadades disponibles per a aquest exemplar."
+  },
+  "selector": {
+    "dataset": {
+      "placeholder": "Seleccioneu un exemplar...",
+      "loading": "S'estan carregant els exemplars...",
+      "none": "No hi ha exemplars disponibles"
+    },
+    "model": {
+      "disabled": "Seleccioneu un exemplar",
+      "loading": "Carregant models...",
+      "none": "No s'ha trobat cap model OBJ/MTL",
+      "placeholder": "Triar un model...",
+      "error": "Error de càrrega",
+      "comparePrompt": "Triar un model per comparar..."
+    }
+  },
+  "comparison": {
+    "enterMode": "Comparar",
+    "exitMode": "Sortir del mode comparació",
+    "modelA": "Model A",
+    "modelB": "Model B",
+    "sameModelError": "Si us plau seleccioneu un model diferent per comparar",
+    "loadError": "Error en carregar el model de comparació"
+  },
+  "status": {
+    "loadingDatasets": "S'estan carregant els exemplars...",
+    "datasetsLoadedFromCache": "Dades carregades des de la memòria cau",
+    "datasetsLoadedFromAPI": "Carregat des de l'API",
+    "datasetsLoadError": "No s'ha pogut carregar la llista d'exemplars.",
+    "selectDatasetAndModel": "Seleccioneu un exemplar i un model.",
+    "loadingDataset": "Carregant l'exemplar...",
+    "loadingModelList": "Carregant la llista de models...",
+    "noModelsInDataset": "No hi ha cap model OBJ/MTL per a aquest exemplar.",
+    "selectModel": "Seleccioneu un model 3D per carregar.",
+    "datasetLoadFailure": "No s'ha pogut carregar l'exemplar.",
+    "loadingGeometry": "Carregant el model 3D...",
+    "screenshotFailed": "No s'ha pogut capturar la imatge.",
+    "modelLoadFailure": "No s'ha pogut carregar el model 3D.",
+    "screenshotSaved": "Captura desada"
+  },
+  "taxonomy": {
+    "select": "Seleccioneu",
+    "unknown": "Desconegut",
+    "kingdom": "Regne",
+    "phylum": "Fílum",
+    "class": "Classe",
+    "order": "Ordre",
+    "family": "Família",
+    "subfamily": "Subfamília",
+    "genus": "Gènere",
+    "species": "Espècie"
+  },
+  "about": {
+    "title": "Sobre el projecte",
+    "bannerAlt": "Bàner amb exemplars d'Esqueletos en Línea",
+    "sectionIntro": {
+      "heading": "Presentació del projecte",
+      "paragraph1": "Aquest visor 3D en línia forma part del projecte Esqueletos en Línea, liderat per la Dra. Palmira Saladié Ballesté. Permet explorar models 3D detallats i les metadades de la col·lecció osteològica de referència de l'IPHES-CERCA."
+    },
+    "sectionPartners": {
+      "heading": "Socis institucionals",
+      "items": {
+        "item1": "Organització col·laboradora provisional 1",
+        "item2": "Organització col·laboradora provisional 2",
+        "item3": "Organització col·laboradora provisional 3"
+      }
+    },
+    "sectionContributors": {
+      "heading": "Persones col·laboradores",
+      "items": {
+        "item1": "Nom de col·laborador provisional 1",
+        "item2": "Nom de col·laborador provisional 2",
+      "item3": "Nom de col·laborador provisional 3"
+      }
+    },
+    "closeButton": "×",
+    "closeAria": "Tanca el diàleg d'informació",
+    "logos": {
+      "ariaLabel": "Socis del projecte",
+      "iphesAlt": "Logotip de l'IPHES-CERCA",
+      "cercaAlt": "Logotip del CERCA",
+      "fecytAlt": "Logotip de la FECYT",
+      "ministryAlt": "Logotip del Ministeri de Ciència i Innovació"
+    }
+  },
+  "clipping": {
+    "title": "Vista en secció",
+    "description": "Utilitza els controls lliscants o arrossega les nanses del pla a l'escena per revelar seccions.",
+    "instruction": "Arrossega el pla actiu o ajusta els controls lliscants per seccionar el model.",
+    "plane": {
+      "x": "Pla X",
+      "y": "Pla Y",
+      "z": "Pla Z"
+    },
+    "actions": {
+      "enable": "Activar",
+      "control": "Prendre el control",
+      "controlling": "Control actiu",
+      "invert": "Invertir",
+      "reset": "Reinicia la secció",
+      "close": "Tanca els controls de secció"
+    },
+    "inactive": "Activa com a mínim un pla per seccionar el model."
+  },
+  "options": {
+    "title": "Opcions",
+    "closeAria": "Tanca el diàleg d'opcions",
+    "theme": {
+      "label": "Tema",
+      "dark": "Fosc",
+      "light": "Clar"
+    }
+  },
+  "option": {
+    "screenshotBackground": "Fons visible a les captures",
+    "anaglyphSeparation": "Profunditat anaglifa"
+  }
+}

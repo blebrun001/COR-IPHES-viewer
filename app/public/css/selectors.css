@@ -1,0 +1,327 @@
+/* Styles dropdowns, search, and taxonomy selectors that drive the viewer's dataset filtering. */
+/* Generic selector group stacks labels and inputs with consistent spacing. */
+.selector-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 12.5rem;
+}
+
+.selector-group--compact {
+  min-width: 10rem;
+}
+
+/* Labels adopt subtle uppercase styling to separate them from results. */
+.selector-group label {
+  font-size: var(--font-sm);
+  letter-spacing: 0.08em;
+  text-transform: capitalize;
+  color: var(--color-text-muted);
+}
+
+/* Primary selector appearance used across dropdowns and action buttons. */
+.selector-group select,
+.selector-group button:not(.taxonomy-toggle) {
+  appearance: none;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+  color: inherit;
+  font-size: var(--font-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  width: 100%;
+}
+
+/* Compare button reuses the selector styling but emphasises interactivity. */
+.compare-button {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.compare-button:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+.compare-button:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 0.1875rem var(--color-accent);
+}
+
+.compare-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.search-input {
+  appearance: none;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+  color: inherit;
+  font-size: var(--font-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  width: 100%;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 0.1875rem var(--color-accent);
+}
+
+/* Search wrapper positions autocomplete results beneath the input. */
+.search-group {
+  position: relative;
+}
+
+/* Dropdown displaying filtered search options with scrollable content. */
+.search-results {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  z-index: 100;
+}
+
+.search-results::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+.search-results::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 999px;
+}
+
+.search-results-section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Each result behaves like a button to trigger selection. */
+.search-result-item {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0.85rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: var(--font-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover,
+.search-result-item:focus {
+  background: var(--color-surface-alt);
+  outline: none;
+}
+
+/* Truncated label can scroll horizontally to expose long names. */
+.search-result-label {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.search-result-label span {
+  display: inline-block;
+  transform: translateX(0);
+  will-change: transform;
+  animation: none;
+}
+
+.search-result-item:hover .search-result-label span.scrolling,
+.search-result-item:focus .search-result-label span.scrolling {
+  animation: search-result-scroll var(--scroll-duration, 1.8s) linear forwards;
+}
+
+.search-result-item:not(:hover):not(:focus) .search-result-label span {
+  animation: none;
+  transform: translateX(0);
+}
+
+@keyframes search-result-scroll {
+  0%,
+  10% {
+    transform: translateX(0);
+  }
+  90%,
+  100% {
+    transform: translateX(var(--scroll-distance, 0));
+  }
+}
+
+.search-no-results {
+  padding: 1rem 0.85rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-sm);
+}
+
+/* Focus styles help keyboard users navigate selectors. */
+.selector-group select:focus-visible,
+.selector-group button:not(.taxonomy-toggle):focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 0.1875rem var(--color-accent);
+}
+
+/* Action buttons share height with dropdowns for visual harmony. */
+.selector-group button:not(.taxonomy-toggle) {
+  cursor: pointer;
+  background: var(--color-accent);
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  padding: 0.65rem 0.85rem;
+  width: 100%;
+  color: inherit;
+  font-size: var(--font-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.selector-group button:not(.taxonomy-toggle):hover:not(:disabled) {
+  border-color: var(--color-accent);
+}
+
+/* Disabled states reduce opacity and remove pointer cues. */
+.selector-group button:disabled,
+.selector-group select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Taxonomy and metadata groups. */
+.taxonomy-group,
+.metadata-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.metadata-group {
+  min-height: 0;
+  gap: 0.75rem;
+}
+
+/* Toggle headers include chevrons and respond to pointer/keyboard input. */
+.metadata-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  padding: 0.3rem 0;
+  color: inherit;
+  cursor: pointer;
+  width: 100%;
+}
+
+.metadata-toggle:hover .metadata-heading {
+  color: var(--color-text-primary);
+}
+
+.metadata-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* Headings share typography with the main selector labels. */
+.taxonomy-heading,
+.metadata-heading {
+  font-size: var(--font-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Icons rotate to indicate expanded or collapsed state. */
+.metadata-toggle__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Material Icons', sans-serif;
+  font-size: 1.25rem;
+  line-height: 1;
+  transform: rotate(0deg);
+  transition: transform 0.2s ease, color 0.2s ease;
+  opacity: 0.75;
+}
+
+.metadata-group[data-collapsed='false'] .metadata-toggle__icon {
+  transform: rotate(90deg);
+  opacity: 1;
+}
+
+/* Container controlling spacing within taxonomy selectors. */
+.taxonomy-selectors {
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* Each taxonomy item contains a label and corresponding select input. */
+.taxonomy-selectors__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+}
+
+.metadata-group[data-collapsed='true'] .metadata-scroll {
+  display: none;
+}
+
+.metadata-group[data-collapsed='false'] .metadata-scroll {
+  display: block;
+}
+
+.taxonomy-selectors__item label {
+  font-size: var(--font-sm);
+  letter-spacing: 0.08em;
+  text-transform: capitalize;
+  color: var(--color-text-muted);
+}
+
+.taxonomy-selectors__item select {
+  appearance: none;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+  color: inherit;
+  font-size: var(--font-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  width: 100%;
+}
+
+.taxonomy-selectors__item select:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 0.1875rem var(--color-accent);
+}

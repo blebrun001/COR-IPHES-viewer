@@ -1,0 +1,207 @@
+/* Styles the 3D viewer canvas, HUD overlays, and fullscreen controls to keep interactions unobtrusive. */
+/* Primary container that holds the Three.js surface and overlays. */
+.viewer-area {
+  position: relative;
+  min-height: 0;
+  background: var(--color-viewer-bg);
+  overflow: hidden;
+}
+
+/* Canvas surface is absolutely positioned to fill the viewport region. */
+.viewer-surface {
+  position: absolute;
+  inset: 0;
+}
+
+/* Status toast displays loading or error messages near the top-right corner. */
+.viewer-status {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-sm);
+  display: none;
+  max-width: 17.5rem;
+  z-index: 7;
+}
+
+/* Toggle visibility by applying state-specific classes on the status element. */
+.viewer-status.loading,
+.viewer-status.info,
+.viewer-status.error {
+  display: block;
+}
+
+.viewer-status.info {
+  border-color: var(--color-border);
+  background: var(--color-surface-alt);
+}
+
+.viewer-status.error {
+  border-color: var(--color-error);
+  background: var(--color-error);
+  color: var(--color-text-primary);
+}
+
+/* Measurement HUD layer letting the viewer place labels without blocking input */
+/* Measurement layer captures labels without interfering with pointer events. */
+.measurement-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Individual measurement labels are styled to stand out against the model. */
+.measurement-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 0.3rem 0.55rem;
+  border-radius: 0.5rem;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-text-primary);
+  color: var(--color-text-primary);
+  font-size: var(--font-xs);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  box-shadow: 0 10px 20px var(--color-surface-alt);
+}
+
+.measurement-label.hidden {
+  display: none;
+}
+
+/* Watermark ensures project attribution even in screenshots. */
+.viewer-watermark {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  width: clamp(72px, 12vw, 96px);
+  max-width: 96px;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 3;
+  mix-blend-mode: screen;
+}
+
+/* Floating exit control appears when the viewer enters fullscreen mode. */
+.viewer-fullscreen-exit {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  z-index: 8;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.35);
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.viewer-fullscreen-exit .material-icons {
+  font-size: 1.35rem;
+}
+
+.viewer-fullscreen-exit:hover,
+.viewer-fullscreen-exit:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* Adjust layout when fullscreen mode restructures the viewport. */
+body.is-fullscreen .viewer-fullscreen-exit {
+  display: inline-flex;
+}
+
+body.is-fullscreen .viewer-area {
+  height: 100vh;
+}
+
+body.is-fullscreen .viewer-toolbar {
+  bottom: 1.75rem;
+}
+
+/* Centered loading overlay with animated spinner and tech phrases */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-viewer-bg) 85%, transparent);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.loading-overlay.visible {
+  display: flex;
+  opacity: 1;
+}
+
+.loading-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  max-width: 90%;
+}
+
+.loading-overlay-content > .loading-overlay-status {
+  margin-bottom: -0.75rem;
+}
+
+.loading-overlay-spinner {
+  width: 48px;
+  height: 48px;
+  opacity: 0.8;
+}
+
+.loading-overlay-spinner svg {
+  width: 100%;
+  height: 100%;
+}
+
+.loading-overlay-spinner svg circle {
+  fill: var(--color-text-primary);
+}
+
+.loading-overlay-phrase {
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  text-align: center;
+  min-height: 1.5rem;
+  opacity: 0.7;
+  letter-spacing: 0.02em;
+  animation: fadeInOut 2s ease-in-out infinite;
+}
+
+.loading-overlay-status {
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  text-align: center;
+  opacity: 0.8;
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}

@@ -1,0 +1,214 @@
+{
+  "header": {
+    "toggleSidebar": "Toggle sidebar",
+    "title": "Esqueletos en Línea",
+    "subtitle": "COR-IPHES 3D Model Viewer (beta)"
+  },
+  "sidebar": {
+    "selectionHeading": "Selection",
+    "taxonomyHeading": "Taxonomy",
+    "datasetLabel": "Specimen",
+    "datasetLoadingOption": "Loading specimens...",
+    "modelLabel": "Anatomical element",
+    "modelDisabledOption": "Select a specimen",
+    "actionsLabel": "Actions",
+    "reloadButton": "Reload specimen list",
+    "metadataHeading": "Specimen metadata",
+    "moreInfoHeading": "More infos",
+    "links": {
+      "gbif": "Species (GBIF)",
+      "cora": "Species (CORA-RDR)",
+      "uberon": "Anatomical element (OLS UBERON)",
+      "options": "Open settings",
+      "reset": "Reset interface",
+      "about": "About the project"
+    },
+    "tooltips": {
+      "settings": "Settings",
+      "reload": "Reload page",
+      "about": "About"
+    }
+  },
+  "search": {
+    "label": "Search",
+    "placeholder": "Search specimens or anatomical elements...",
+    "noResults": "No matches found"
+  },
+  "language": {
+    "selectorLabel": "Language",
+    "names": {
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "ca": "Català"
+    }
+  },
+  "viewer": {
+    "projection": {
+      "label": "Projection",
+      "perspective": "Perspective",
+      "orthographic": "Orthographic"
+    },
+    "orbit": {
+      "label": "Orbit",
+      "upright": "Upright",
+      "free": "Free"
+    },
+    "rotation": {
+      "enableGizmo": "Enable rotation gizmo",
+      "disableGizmo": "Disable rotation gizmo",
+      "gizmoTooltip": "Rotation gizmo"
+    },
+    "buttons": {
+      "disableTextures": "Disable Textures",
+      "enableTextures": "Enable Textures",
+      "disableWireframe": "Disable Wireframe",
+      "enableWireframe": "Enable Wireframe",
+      "restoreLights": "Restore Lights",
+      "dimLights": "Dim Lights",
+      "exitMeasure": "Exit Measure",
+      "measure": "Measure",
+      "clearMeasurements": "Clear Measurements",
+      "capture": "Capture",
+      "resetView": "Reset View",
+      "enableClipping": "Enable section view",
+      "disableClipping": "Disable section view",
+      "clippingTooltip": "Section view",
+      "disableLabels": "Disable Labels",
+      "enableLabels": "Enable Labels",
+      "enableNormalizeComparisonScale": "Normalize comparison scale",
+      "disableNormalizeComparisonScale": "Disable comparison scale normalisation",
+      "normalizeComparisonScaleTooltip": "Normalize scales",
+      "enableScaleReference": "Display Scale",
+      "disableScaleReference": "Hide Scale",
+      "scaleReferenceTooltip": "Reference cube",
+      "enableAnaglyph": "Enable anaglyph view",
+      "disableAnaglyph": "Disable anaglyph view"
+    },
+    "toolbar": {
+      "showMore": "More controls",
+      "showLess": "Fewer controls"
+    }
+  },
+  "metadata": {
+    "itemLabel": "Item",
+    "emptySelection": "Select a specimen to display metadata.",
+    "emptyData": "No metadata available for this specimen."
+  },
+  "selector": {
+    "dataset": {
+      "placeholder": "Select a specimen...",
+      "loading": "Loading specimens...",
+      "none": "No specimens available"
+    },
+    "model": {
+      "disabled": "Select a specimen",
+      "loading": "Loading models...",
+      "none": "No OBJ/MTL model found",
+      "placeholder": "Choose a model...",
+      "error": "Load error",
+      "comparePrompt": "Choose a model to compare..."
+    }
+  },
+  "comparison": {
+    "enterMode": "Compare",
+    "exitMode": "Exit comparison mode",
+    "modelA": "Model A",
+    "modelB": "Model B",
+    "sameModelError": "Please select a different model to compare",
+    "loadError": "Failed to load comparison model"
+  },
+  "status": {
+    "loadingDatasets": "Loading specimens...",
+    "datasetsLoadedFromCache": "Data loaded from cache",
+    "datasetsLoadedFromAPI": "Loaded from API",
+    "datasetsLoadError": "Failed to load specimen list.",
+    "selectDatasetAndModel": "Select a specimen and a model.",
+    "loadingDataset": "Loading specimen...",
+    "loadingModelList": "Loading model list...",
+    "noModelsInDataset": "No OBJ/MTL model for this specimen.",
+    "selectModel": "Select a 3D model to load.",
+    "datasetLoadFailure": "Failed to load specimen.",
+    "loadingGeometry": "Loading 3D model...",
+    "screenshotFailed": "Unable to capture screenshot.",
+    "modelLoadFailure": "Failed to load the 3D model.",
+    "screenshotSaved": "Screenshot saved"
+  },
+  "taxonomy": {
+    "select": "Select",
+    "unknown": "Unknown",
+    "kingdom": "Kingdom",
+    "phylum": "Phylum",
+    "class": "Class",
+    "order": "Order",
+    "family": "Family",
+    "subfamily": "Subfamily",
+    "genus": "Genus",
+    "species": "Species"
+  },
+  "about": {
+    "title": "About the project",
+    "bannerAlt": "Banner featuring Esqueletos en Línea specimens",
+    "sectionIntro": {
+      "heading": "Project overview",
+      "paragraph1": "This online 3D viewer is part of the Esqueletos en Línea initiative led by Dr. Palmira Saladié Ballesté. It showcases detailed 3D models and metadata from the IPHES-CERCA osteological reference collection."
+    },
+    "sectionPartners": {
+      "heading": "Institutional partners",
+      "items": {
+        "item1": "Partner Organisation Placeholder 1",
+        "item2": "Partner Organisation Placeholder 2",
+        "item3": "Partner Organisation Placeholder 3"
+      }
+    },
+    "sectionContributors": {
+      "heading": "Contributors",
+      "items": {
+        "item1": "Contributor Name Placeholder 1",
+        "item2": "Contributor Name Placeholder 2",
+      "item3": "Contributor Name Placeholder 3"
+      }
+    },
+    "closeButton": "×",
+    "closeAria": "Close about dialog",
+    "logos": {
+      "ariaLabel": "Project partners",
+      "iphesAlt": "IPHES-CERCA logo",
+      "cercaAlt": "CERCA logo",
+      "fecytAlt": "FECYT logo",
+      "ministryAlt": "Ministerio de Ciencia e Innovación logo"
+    }
+  },
+  "clipping": {
+    "title": "Section view",
+    "description": "Use sliders or drag the plane handles in the scene to reveal cross-sections.",
+    "instruction": "Drag the active plane handle or adjust the sliders to slice the model.",
+    "plane": {
+      "x": "X plane",
+      "y": "Y plane",
+      "z": "Z plane"
+    },
+    "actions": {
+      "enable": "Enable",
+      "control": "Take control",
+      "controlling": "Controlling",
+      "invert": "Invert",
+      "reset": "Reset section",
+      "close": "Close clipping controls"
+    },
+    "inactive": "Enable at least one plane to slice the model."
+  },
+  "options": {
+    "title": "Options",
+    "closeAria": "Close options dialog",
+    "theme": {
+      "label": "Theme",
+      "dark": "Dark",
+      "light": "Light"
+    }
+  },
+  "option": {
+    "screenshotBackground": "Background visible in screenshots",
+    "anaglyphSeparation": "Anaglyph depth"
+  }
+}

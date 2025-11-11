@@ -1,0 +1,81 @@
+/* Styles the top navigation bar, balancing branding, controls, and responsive affordances. */
+/* Fixed bar at the top that holds navigation actions and project branding. */
+.top-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.1rem;
+  padding: 0.85rem clamp(1.2rem, 4vw, 2rem);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+/* Left section bundles the navigation toggle with title metadata. */
+.top-bar__left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Mobile-only toggle button reveals the sidebar on compact screens. */
+.top-bar__toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+  color: var(--color-text-primary);
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.top-bar__toggle:hover,
+.top-bar__toggle:focus-visible {
+  outline: none;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+/* Title typography scales fluidly across viewport widths. */
+.project-title {
+  margin: 0;
+  font-size: clamp(var(--font-lg), 2vw, var(--font-xl));
+  letter-spacing: 0.02em;
+}
+
+.project-subtitle {
+  margin: 0.3rem 0 0;
+  font-size: clamp(var(--font-sm), 1.2vw, var(--font-md));
+  opacity: 0.75;
+}
+
+.top-bar__center {
+  display: none;
+}
+
+/* Right-aligned block stacks auxiliary information such as logos. */
+.top-bar__right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  text-align: right;
+  align-items: flex-end;
+}
+
+/* Logos maintain aspect ratio while fitting inside the header. */
+.top-bar__logo {
+  display: block;
+  height: 56px;
+  max-width: 160px;
+  width: auto;
+  object-fit: contain;
+}
