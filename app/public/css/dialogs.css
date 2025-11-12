@@ -109,6 +109,10 @@
   gap: 0.75rem;
 }
 
+.options-section--hidden {
+  display: none !important;
+}
+
 .options-language-label,
 .options-theme-label {
   font-size: var(--font-sm);
