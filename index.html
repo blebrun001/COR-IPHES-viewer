@@ -1,6 +1,6 @@
 <!-- Landing page for the project website, providing hero content, partner information, and entry point to the 3D viewer. -->
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="ca">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -15,6 +15,34 @@
     <link rel="stylesheet" href="./responsive.css" />
   </head>
   <body>
+    <div class="language-switcher" data-language-switcher>
+      <button
+        class="language-switcher__button"
+        type="button"
+        data-language-toggle
+        data-i18n-attr="aria-label:landing.language.toggleAria"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <span class="language-switcher__label" data-language-current-label>English</span>
+        <svg class="language-switcher__icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+          <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" />
+        </svg>
+      </button>
+      <div
+        class="language-switcher__menu"
+        data-language-menu
+        role="menu"
+        hidden
+        data-i18n-attr="aria-label:landing.language.menuLabel"
+      >
+        <button type="button" role="menuitemradio" data-language-option="en" aria-checked="false"></button>
+        <button type="button" role="menuitemradio" data-language-option="ca" aria-checked="false"></button>
+        <button type="button" role="menuitemradio" data-language-option="es" aria-checked="false"></button>
+        <button type="button" role="menuitemradio" data-language-option="fr" aria-checked="false"></button>
+      </div>
+    </div>
+
     <div class="viewer">
       <!-- Container that hosts the embedded 3D viewer application. -->
       <div id="app"></div>
@@ -23,35 +51,32 @@
     <div class="content">
       <!-- Hero section introducing the project and offering quick navigation actions. -->
       <section class="hero">
-        <h1>Esqueletos en línea</h1>
-        <h2>a project by IPHES-CERCA</h2>
+        <h1 data-i18n="landing.hero.title">Esqueletos en Línea</h1>
+        <h2 data-i18n="landing.hero.subtitle">A project by IPHES-CERCA</h2>
         <div class="hero-actions">
-          <button class="btn btn-secondary" type="button" data-scroll="infos">More info</button>
-          <a class="btn" href="app/index.html" target="_blank" rel="noopener">Access 3D viewer</a>
+          <button class="btn btn-secondary" type="button" data-scroll="infos" data-i18n="landing.hero.ctaMoreInfo">More info</button>
+          <a class="btn" href="app/index.html" target="_blank" rel="noopener" data-i18n="landing.hero.ctaViewer">Access 3D viewer</a>
         </div>
       </section>
 
       <!-- Informational section describing the COR-IPHES collection. -->
       <section id="infos" class="panel">
-        <h3>What is COR-IPHES?</h3>
-        <p>
+        <h3 data-i18n="landing.cor.heading">What is COR-IPHES?</h3>
+        <p data-i18n="landing.cor.paragraph1">
           The COR-IPHES (Osteological Reference Collection of IPHES-CERCA) is a comprehensive comparative anatomy collection housed at the Institut Català de Paleoecologia Humana i Evolució Social in Tarragona, Spain.
         </p>
-        <p>
-          It comprises over 300 complete or partial skeletons of mammals and birds from Europe and Africa, including both common taxa and rare or endangered species such as the Iberian lynx (Lynx pardinus),
-          European bison (Bison bonasus), and bearded vulture (Gypaetus barbatus). The specimens were obtained ethically through natural deaths, accidental causes, or institutional donations, and have been
-          carefully prepared and catalogued for research and teaching purposes.
+        <p data-i18n="landing.cor.paragraph2">
+          It comprises over 300 complete or partial skeletons of mammals and birds from Europe and Africa, including both common taxa and rare or endangered species such as the Iberian lynx (Lynx pardinus), European bison (Bison bonasus), and bearded vulture (Gypaetus barbatus). The specimens were obtained ethically through natural deaths, accidental causes, or institutional donations, and have been carefully prepared and catalogued for research and teaching purposes.
         </p>
-        <p>
-          Serving as a fundamental tool for zooarchaeology, taphonomy, and paleontology, the collection supports the identification and
-          interpretation of faunal remains from prehistoric sites.
+        <p data-i18n="landing.cor.paragraph3">
+          Serving as a fundamental tool for zooarchaeology, taphonomy, and paleontology, the collection supports the identification and interpretation of faunal remains from prehistoric sites.
         </p>
       </section>
 
       <!-- Partner acknowledgment block listing contributing institutions. -->
       <section class="panel">
-        <h3>Partners</h3>
-        <p>Several institutions have contributed to the richness of the COR-IPHES.</p>
+        <h3 data-i18n="landing.partners.heading">Partners</h3>
+        <p data-i18n="landing.partners.intro">Several institutions have contributed to the richness of the COR-IPHES.</p>
         <ul class="partners-list">
           <li><a href="https://agricultura.gencat.cat/ca/ambits/medi-natural/casa/terrenys-cinegetics/reserves-nacionals-casa/boumort/" target="_blank" rel="noopener">Boumort</a></li>
           <li><a href="https://www.lacuniacha.es/" target="_blank" rel="noopener">Parque Faunístico Lacuniacha</a></li>
@@ -70,20 +95,18 @@
 
       <!-- Project overview summarizing the goals and methods behind Esqueletos en Línea. -->
       <section class="panel">
-        <h3>Esqueletos en Línea</h3>
-        <p>
-          Esqueletos en Línea is a digital infrastructure project developed at the Institut Català de Paleoecologia Humana i Evolució Social (IPHES-CERCA) to promote open science through the 3D digitization
-          and online publication of the COR-IPHES osteological reference collection. This project has been made possible thanks to funding from the Spanish Foundation for Science and Technology - FECYT (María de Guzmán, MDG-23-11591).
+        <h3 data-i18n="landing.project.heading">Esqueletos en Línea</h3>
+        <p data-i18n="landing.project.paragraph1">
+          Esqueletos en Línea is a digital infrastructure project developed at the Institut Català de Paleoecologia Humana i Evolució Social (IPHES-CERCA) to promote open science through the 3D digitization and online publication of the COR-IPHES osteological reference collection. This project has been made possible thanks to funding from the Spanish Foundation for Science and Technology - FECYT (María de Guzmán, MDG-23-11591).
         </p>
-        <p>
-          To achieve this, we utilize cutting-edge technologies such as photogrammetry and 3D scanning to create high-resolution digital models of the specimens.
-          For instance, we have developped our own photogrammetry software, IPA (integrated Photogrammetry Assistant) to streamline and optimize the 3D reconstruction process.
+        <p data-i18n="landing.project.paragraph2">
+          To achieve this, we utilize cutting-edge technologies such as photogrammetry and 3D scanning to create high-resolution digital models of the specimens. For instance, we have developed our own photogrammetry software, IPA (Integrated Photogrammetry Assistant), to streamline and optimize the 3D reconstruction process.
         </p>
-        <p>
+        <p data-i18n="landing.project.paragraph3">
           These models are then made accessible through a dedicated Dataverse hosted by CORA-RDR, allowing researchers, educators, and the general public to explore and study the collection remotely.
         </p>
         <div class="hero-actions">
-          <a class="btn" href="app/index.html" target="_blank" rel="noopener">Access 3D viewer</a>
+          <a class="btn" href="app/index.html" target="_blank" rel="noopener" data-i18n="landing.hero.ctaViewer">Access 3D viewer</a>
         </div>
       </section>
 
@@ -91,12 +114,16 @@
         <div class="footer-inner">
           <div class="footer-logos">
             <!-- Credit the institutions supporting the initiative. -->
-            <img src="./ressources/logos/iphes.png" alt="IPHES-CERCA" />
-            <img src="./ressources/logos/cerca.png" alt="CERCA" />
-            <img src="./ressources/logos/ministerio.jpg" alt="Ministerio de Ciencia e Innovación d'Espagne" />
+            <img src="./ressources/logos/iphes.png" data-i18n-attr="alt:about.logos.iphesAlt" alt="IPHES-CERCA" />
+            <img src="./ressources/logos/cerca.png" data-i18n-attr="alt:about.logos.cercaAlt" alt="CERCA" />
+            <img src="./ressources/logos/ministerio.jpg" data-i18n-attr="alt:about.logos.ministryAlt" alt="Ministerio de Ciencia e Innovación" />
           </div>
           <div class="footer-meta">
-            <p class="footer-credit">distributed under Creative Commons CC BY-NC 4.0 licence · made by Brice Lebrun</p>
+            <p class="footer-credit" data-i18n="landing.footer.licence">Distributed under Creative Commons CC BY-NC 4.0 licence. · Made by Brice Lebrun</p>
+            <p class="footer-credit" data-i18n="landing.footer.address">IPHES-CERCA Zona Educacional, 4, Campus Sescelades URV (Edifici W3), 43007 Tarragona (España) · info@iphes.cat | (+34) 977 943 003</p>
+            <p class="footer-credit" data-i18n="landing.footer.privacy">This website does not collect your data, no cookies are used.</p>
+            <p class="footer-credit" data-i18n="landing.footer.disclaimer">We are not responsible for the content of third-party websites linked to from this site.</p>
+          </div>
           </div>
         </div>
       </footer>

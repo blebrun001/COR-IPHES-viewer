@@ -43,6 +43,40 @@
       "ca": "Català"
     }
   },
+  "landing": {
+    "language": {
+      "toggleAria": "Cambiar idioma",
+      "menuLabel": "Selecciona un idioma"
+    },
+    "hero": {
+      "title": "Esqueletos en Línea",
+      "subtitle": "Un proyecto de IPHES-CERCA",
+      "ctaMoreInfo": "Más información",
+      "ctaViewer": "Acceder al visor 3D"
+    },
+    "cor": {
+      "heading": "¿Qué es el COR-IPHES?",
+      "paragraph1": "El COR-IPHES (Colección Osteológica de Referencia del IPHES-CERCA) es una amplia colección de anatomía comparada conservada en el Institut Català de Paleoecologia Humana i Evolució Social, en Tarragona (España).",
+      "paragraph2": "Reúne más de 300 esqueletos completos o parciales de mamíferos y aves de Europa y África, incluyendo tanto taxones comunes como especies raras o amenazadas, como el lince ibérico (Lynx pardinus), el bisonte europeo (Bison bonasus) o el quebrantahuesos (Gypaetus barbatus). Los ejemplares se obtuvieron de forma ética mediante muertes naturales, causas accidentales o donaciones institucionales, y se han preparado y catalogado cuidadosamente para la investigación y la docencia.",
+      "paragraph3": "Como herramienta fundamental para la zooarqueología, la tafonomía y la paleontología, la colección facilita la identificación e interpretación de restos faunísticos procedentes de yacimientos prehistóricos."
+    },
+    "partners": {
+      "heading": "Colaboradores",
+      "intro": "Diversas instituciones han contribuido a la riqueza del COR-IPHES."
+    },
+    "project": {
+      "heading": "Esqueletos en Línea",
+      "paragraph1": "Esqueletos en Línea es un proyecto de infraestructura digital desarrollado en el Institut Català de Paleoecologia Humana i Evolució Social (IPHES-CERCA) para impulsar la ciencia abierta mediante la digitalización 3D y la publicación en línea de la colección osteológica COR-IPHES. El proyecto cuenta con el apoyo de la Fundación Española para la Ciencia y la Tecnología - FECYT (María de Guzmán, MDG-23-11591).",
+      "paragraph2": "Para ello empleamos tecnologías punteras como la fotogrametría y la digitalización 3D con el fin de crear modelos digitales de alta resolución. Incluso hemos desarrollado nuestro propio software de fotogrametría, IPA (Integrated Photogrammetry Assistant), para optimizar el proceso de reconstrucción 3D.",
+      "paragraph3": "Estos modelos se publican en un Dataverse específico alojado en CORA-RDR, lo que permite a investigadores, docentes y público general explorar la colección a distancia."
+    },
+    "footer": {
+      "licence": "Distribuido bajo licencia Creative Commons CC BY-NC 4.0 · Realizado por Brice Lebrun",
+      "address": "IPHES-CERCA Zona Educacional, 4, Campus Sescelades URV (Edifici W3), 43007 Tarragona (España) · info@iphes.cat | (+34) 977 943 003",
+      "privacy": "Este sitio web no recopila datos ni utiliza cookies.",
+      "disclaimer": "No nos responsabilizamos del contenido de los sitios de terceros enlazados desde aquí."
+    }
+  },
   "viewer": {
     "projection": {
       "label": "Proyección",

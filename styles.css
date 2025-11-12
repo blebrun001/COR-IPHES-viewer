@@ -16,6 +16,84 @@ body {
   overflow-x: hidden;
 }
 
+.language-switcher {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 3;
+  font-family: "Inter", sans-serif;
+}
+
+.language-switcher__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  background: rgba(12, 19, 28, 0.85);
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.language-switcher__button:hover,
+.language-switcher__button:focus-visible {
+  border-color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.language-switcher__icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  pointer-events: none;
+}
+
+.language-switcher__menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  background: rgba(6, 10, 15, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.75rem;
+  padding: 0.25rem;
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.35);
+  min-width: 11rem;
+}
+
+.language-switcher__menu[hidden] {
+  display: none;
+}
+
+.language-switcher__menu button {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: left;
+  padding: 0.55rem 0.85rem;
+  border-radius: 0.6rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.language-switcher__menu button[aria-checked="true"] {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.language-switcher__menu button:hover,
+.language-switcher__menu button:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
 /* Anchor the hero viewer beneath the transparent content shell. */
 .viewer {
   position: fixed;

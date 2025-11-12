@@ -2,8 +2,20 @@
 import * as THREE from "https://esm.sh/three@0.160.0";
 import { OrbitControls } from "https://esm.sh/three@0.160.0/examples/jsm/controls/OrbitControls";
 import { OBJLoader } from "https://esm.sh/three@0.160.0/examples/jsm/loaders/OBJLoader";
+import { I18nService } from "./app/public/js/i18n/translator.js";
 
 const container = document.getElementById("app");
+const landingI18n = new I18nService({
+  translationRoot: "./app/public/i18n",
+  storageKey: "landingLanguage",
+  defaultLanguage: "ca",
+});
+const languageSwitcher = document.querySelector("[data-language-switcher]");
+const languageToggleButton = document.querySelector("[data-language-toggle]");
+const languageMenu = document.querySelector("[data-language-menu]");
+const languageButtons = Array.from(document.querySelectorAll("[data-language-option]"));
+const languageCurrentLabel = document.querySelector("[data-language-current-label]");
+initLandingTranslations();
 
 // Core Three.js scene configuration tailored for a transparent embedded viewer.
 const scene = new THREE.Scene();
@@ -199,4 +211,102 @@ function updateModelScale() {
   const scaleFactor = 1 + 0.5 * THREE.MathUtils.clamp(progress, 0, 1);
   const targetScale = baseModelScale * scaleFactor;
   currentModel.scale.setScalar(targetScale);
+}
+
+async function initLandingTranslations() {
+  try {
+    await landingI18n.init();
+  } catch (error) {
+    console.error("Unable to initialize landing translations", error);
+  } finally {
+    applyLandingTranslations();
+    hydrateLanguageMenu();
+  }
+
+  landingI18n.onChange(() => {
+    applyLandingTranslations();
+    hydrateLanguageMenu();
+  });
+
+  setupLanguageMenu();
+}
+
+function applyLandingTranslations() {
+  document.documentElement.setAttribute("lang", landingI18n.currentLanguage || landingI18n.defaultLanguage);
+  landingI18n.applyTranslations(document);
+}
+
+function hydrateLanguageMenu() {
+  if (!languageButtons.length) {
+    return;
+  }
+  const current = landingI18n.currentLanguage || landingI18n.defaultLanguage || "en";
+  const currentLabel = landingI18n.translate(`language.names.${current}`, {
+    defaultValue: current.toUpperCase(),
+  });
+  if (languageCurrentLabel) {
+    languageCurrentLabel.textContent = currentLabel;
+  }
+  languageButtons.forEach((button) => {
+    const code = button.dataset.languageOption;
+    const label = landingI18n.translate(`language.names.${code}`, {
+      defaultValue: code.toUpperCase(),
+    });
+    button.textContent = label;
+    button.setAttribute("aria-checked", code === current ? "true" : "false");
+  });
+}
+
+function setupLanguageMenu() {
+  if (!languageToggleButton || !languageMenu) {
+    return;
+  }
+
+  languageToggleButton.addEventListener("click", () => {
+    toggleLanguageMenu();
+  });
+
+  document.addEventListener("click", (event) => {
+    if (languageSwitcher && languageSwitcher.contains(event.target)) {
+      return;
+    }
+    toggleLanguageMenu(false);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      toggleLanguageMenu(false);
+      languageToggleButton.focus();
+    }
+  });
+
+  languageButtons.forEach((button) => {
+    button.addEventListener("click", async (event) => {
+      event.preventDefault();
+      const { languageOption } = button.dataset;
+      toggleLanguageMenu(false);
+      if (languageOption && languageOption !== landingI18n.currentLanguage) {
+        try {
+          await landingI18n.setLanguage(languageOption);
+        } catch (error) {
+          console.error(`Unable to switch to language ${languageOption}`, error);
+        }
+      }
+    });
+  });
+}
+
+function toggleLanguageMenu(forceState) {
+  if (!languageMenu || !languageToggleButton) {
+    return;
+  }
+  const isHidden = languageMenu.hasAttribute("hidden");
+  const shouldOpen = typeof forceState === "boolean" ? forceState : isHidden;
+  if (shouldOpen) {
+    languageMenu.removeAttribute("hidden");
+    languageToggleButton.setAttribute("aria-expanded", "true");
+  } else {
+    languageMenu.setAttribute("hidden", "");
+    languageToggleButton.setAttribute("aria-expanded", "false");
+  }
 }

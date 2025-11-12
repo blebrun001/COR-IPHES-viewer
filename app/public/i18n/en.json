@@ -43,6 +43,40 @@
       "ca": "Català"
     }
   },
+  "landing": {
+    "language": {
+      "toggleAria": "Change language",
+      "menuLabel": "Select a language"
+    },
+    "hero": {
+      "title": "Esqueletos en Línea",
+      "subtitle": "A project by IPHES-CERCA",
+      "ctaMoreInfo": "More info",
+      "ctaViewer": "Access 3D viewer"
+    },
+    "cor": {
+      "heading": "What is COR-IPHES?",
+      "paragraph1": "The COR-IPHES (Osteological Reference Collection of IPHES-CERCA) is a comprehensive comparative anatomy collection housed at the Institut Català de Paleoecologia Humana i Evolució Social in Tarragona, Spain.",
+      "paragraph2": "It comprises over 300 complete or partial skeletons of mammals and birds from Europe and Africa, including both common taxa and rare or endangered species such as the Iberian lynx (Lynx pardinus), European bison (Bison bonasus), and bearded vulture (Gypaetus barbatus). The specimens were obtained ethically through natural deaths, accidental causes, or institutional donations, and have been carefully prepared and catalogued for research and teaching purposes.",
+      "paragraph3": "Serving as a fundamental tool for zooarchaeology, taphonomy, and paleontology, the collection supports the identification and interpretation of faunal remains from prehistoric sites."
+    },
+    "partners": {
+      "heading": "Partners",
+      "intro": "Several institutions have contributed to the richness of the COR-IPHES."
+    },
+    "project": {
+      "heading": "Esqueletos en Línea",
+      "paragraph1": "Esqueletos en Línea is a digital infrastructure project developed at the Institut Català de Paleoecologia Humana i Evolució Social (IPHES-CERCA) to promote open science through the 3D digitization and online publication of the COR-IPHES osteological reference collection. This project has been made possible thanks to funding from the Spanish Foundation for Science and Technology - FECYT (María de Guzmán, MDG-23-11591).",
+      "paragraph2": "To achieve this, we utilize cutting-edge technologies such as photogrammetry and 3D scanning to create high-resolution digital models of the specimens. For instance, we have developed our own photogrammetry software, IPA (Integrated Photogrammetry Assistant), to streamline and optimize the 3D reconstruction process.",
+      "paragraph3": "These models are then made accessible through a dedicated Dataverse hosted by CORA-RDR, allowing researchers, educators, and the general public to explore and study the collection remotely."
+    },
+    "footer": {
+      "licence": "Distributed under Creative Commons CC BY-NC 4.0 licence. · Made by Brice Lebrun",
+      "address": "IPHES-CERCA Zona Educacional, 4, Campus Sescelades URV (Edifici W3), 43007 Tarragona (España) · info@iphes.cat | (+34) 977 943 003",
+      "privacy": "This website does not collect your data, no cookies are used.",
+      "disclaimer": "We are not responsible for the content of third-party websites linked to from this site."
+    }
+  },
   "viewer": {
     "projection": {
       "label": "Projection",
