@@ -905,9 +905,13 @@ export async function initInterface({
     if (searchInput && searchHandlers) {
       searchInput.addEventListener('input', searchHandlers.handleSearchInput);
       searchInput.addEventListener('focus', searchHandlers.handleSearchInputFocus);
+      searchInput.addEventListener('keydown', searchHandlers.handleSearchKeyNavigation);
     }
 
     if (searchHandlers) {
+      if (searchResults) {
+        searchResults.addEventListener('keydown', searchHandlers.handleSearchKeyNavigation);
+      }
       documentRef.addEventListener('click', searchHandlers.handleDocumentClick);
     }
     if (taxonomyLevelsContainer && searchHandlers?.handleTaxonomyLevelChange) {

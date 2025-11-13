@@ -289,6 +289,17 @@ export function initSearch(deps = {}) {
     return Array.isArray(datasets) ? datasets : [];
   };
 
+  if (searchInput && searchResults?.id) {
+    searchInput.setAttribute('role', 'combobox');
+    searchInput.setAttribute('aria-autocomplete', 'list');
+    searchInput.setAttribute('aria-controls', searchResults.id);
+    searchInput.setAttribute('aria-expanded', 'false');
+  }
+  if (searchResults) {
+    searchResults.setAttribute('role', 'listbox');
+    searchResults.setAttribute('aria-hidden', 'true');
+  }
+
   if (appStateAccessors) {
     appStateAccessors.getTaxonomySelectors = () => selectTaxonomySelectors();
     appStateAccessors.setTaxonomySelectors = (value) => {
@@ -333,6 +344,155 @@ export function initSearch(deps = {}) {
     if (timer) {
       windowRef.clearTimeout(timer);
       dispatchResetSearchDebounceTimer();
+    }
+  };
+
+  let activeResultIndex = -1;
+  let resultIdCounter = 0;
+
+  const getResultButtons = () => {
+    if (!searchResults) {
+      return [];
+    }
+    return Array.from(searchResults.querySelectorAll('.search-result-item'));
+  };
+
+  const clearActiveResult = () => {
+    activeResultIndex = -1;
+    getResultButtons().forEach((button) => {
+      button.classList.remove('is-active');
+      button.setAttribute('aria-selected', 'false');
+    });
+    if (searchInput) {
+      searchInput.removeAttribute('aria-activedescendant');
+    }
+  };
+
+  const setPopupVisibility = (visible) => {
+    if (!searchResults) {
+      return;
+    }
+    if (visible) {
+      searchResults.hidden = false;
+      searchResults.removeAttribute('hidden');
+      searchResults.removeAttribute('aria-hidden');
+      if (searchInput) {
+        searchInput.setAttribute('aria-expanded', 'true');
+      }
+    } else {
+      searchResults.hidden = true;
+      searchResults.setAttribute('hidden', '');
+      searchResults.setAttribute('aria-hidden', 'true');
+      if (searchInput) {
+        searchInput.setAttribute('aria-expanded', 'false');
+        searchInput.removeAttribute('aria-activedescendant');
+      }
+    }
+  };
+
+  const getActiveElement = () => {
+    if (documentRef && documentRef.activeElement) {
+      return documentRef.activeElement;
+    }
+    if (typeof document !== 'undefined') {
+      return document.activeElement;
+    }
+    return null;
+  };
+
+  const isSearchInteractionFocused = () => {
+    const activeElement = getActiveElement();
+    if (!activeElement) {
+      return false;
+    }
+    if (searchInput && activeElement === searchInput) {
+      return true;
+    }
+    if (searchResults && searchResults.contains(activeElement)) {
+      return true;
+    }
+    return false;
+  };
+
+  const isSearchEventTarget = (target) => {
+    if (!target) {
+      return false;
+    }
+    if (searchInput && (target === searchInput || searchInput.contains?.(target))) {
+      return true;
+    }
+    if (searchResults && searchResults.contains(target)) {
+      return true;
+    }
+    return false;
+  };
+
+  const setActiveResult = (nextIndex) => {
+    const buttons = getResultButtons();
+    if (!buttons.length) {
+      clearActiveResult();
+      return null;
+    }
+
+    const clampedIndex = Math.max(0, Math.min(nextIndex, buttons.length - 1));
+    buttons.forEach((button, idx) => {
+      if (idx === clampedIndex) {
+        button.classList.add('is-active');
+        button.setAttribute('aria-selected', 'true');
+        if (typeof button.scrollIntoView === 'function') {
+          button.scrollIntoView({ block: 'nearest' });
+        }
+        if (searchInput) {
+          const id = button.id;
+          if (id) {
+            searchInput.setAttribute('aria-activedescendant', id);
+          } else {
+            searchInput.removeAttribute('aria-activedescendant');
+          }
+        }
+      } else {
+        button.classList.remove('is-active');
+        button.setAttribute('aria-selected', 'false');
+      }
+    });
+    activeResultIndex = clampedIndex;
+    return buttons[clampedIndex];
+  };
+
+  const handleSearchKeyNavigation = (event) => {
+    if (!isSearchInteractionFocused() && !isSearchEventTarget(event.target)) {
+      return;
+    }
+
+    if (!searchResults || searchResults.hidden) {
+      return;
+    }
+
+    const buttons = getResultButtons();
+    if (!buttons.length) {
+      return;
+    }
+
+    const key = event.key;
+    const isArrowDown = key === 'ArrowDown' || key === 'Down';
+    const isArrowUp = key === 'ArrowUp' || key === 'Up';
+
+    if (isArrowDown || isArrowUp) {
+      event.preventDefault();
+      const direction = isArrowDown ? 1 : -1;
+      const nextIndex =
+        activeResultIndex === -1
+          ? direction === 1
+            ? 0
+            : buttons.length - 1
+          : activeResultIndex + direction;
+      setActiveResult(nextIndex);
+      return;
+    }
+
+    if ((key === 'Enter' || key === 'Return') && activeResultIndex >= 0 && buttons[activeResultIndex]) {
+      event.preventDefault();
+      buttons[activeResultIndex].click();
     }
   };
 
@@ -488,7 +648,9 @@ export function initSearch(deps = {}) {
       return;
     }
     searchResults.innerHTML = '';
-    searchResults.hidden = true;
+    setPopupVisibility(false);
+    clearActiveResult();
+    resultIdCounter = 0;
   };
 
   const handleSearchResultClick = (event) => {
@@ -564,12 +726,13 @@ export function initSearch(deps = {}) {
     }
 
     const hasResults = results.specimens.length > 0 || results.elements.length > 0;
+    resultIdCounter = 0;
     if (!hasResults) {
       const noResultsMessage = escapeHtml(
         translate ? translate('search.noResults', 'No matches found') : 'No matches found',
       );
       searchResults.innerHTML = `<div class="search-no-results">${noResultsMessage}</div>`;
-      searchResults.hidden = false;
+      setPopupVisibility(true);
       return;
     }
 
@@ -579,7 +742,8 @@ export function initSearch(deps = {}) {
       html += '<div class="search-results-section">';
       results.specimens.forEach((specimen) => {
         const displayLabel = formatSpecimenLabel(specimen.label, specimen.summary);
-        html += `<button type="button" class="search-result-item" data-type="specimen" data-id="${escapeHtml(
+        const buttonId = `search-result-${resultIdCounter += 1}`;
+        html += `<button type="button" id="${buttonId}" class="search-result-item" role="option" aria-selected="false" data-type="specimen" data-id="${escapeHtml(
           specimen.id,
         )}">`;
         html += `<span class="search-result-label"><span>${escapeHtml(displayLabel)}</span></span>`;
@@ -591,7 +755,8 @@ export function initSearch(deps = {}) {
     if (results.elements.length > 0) {
       html += '<div class="search-results-section">';
       results.elements.forEach((element) => {
-        html += `<button type="button" class="search-result-item" data-type="element" data-dataset-id="${escapeHtml(
+        const buttonId = `search-result-${resultIdCounter += 1}`;
+        html += `<button type="button" id="${buttonId}" class="search-result-item" role="option" aria-selected="false" data-type="element" data-dataset-id="${escapeHtml(
           element.datasetId,
         )}" data-model-key="${escapeHtml(element.modelKey)}">`;
         html += `<span class="search-result-label"><span>${escapeHtml(element.display)}</span></span>`;
@@ -601,7 +766,8 @@ export function initSearch(deps = {}) {
     }
 
     searchResults.innerHTML = html;
-    searchResults.hidden = false;
+    setPopupVisibility(true);
+    clearActiveResult();
 
     searchResults.querySelectorAll('.search-result-item').forEach((button) => {
       button.addEventListener('click', handleSearchResultClick);
@@ -992,6 +1158,7 @@ export function initSearch(deps = {}) {
     buildSearchIndex,
     handleSearchInput,
     handleSearchInputFocus,
+    handleSearchKeyNavigation,
     handleDocumentClick,
     handleTaxonomyLevelChange,
     initializeTaxonomySelectors,

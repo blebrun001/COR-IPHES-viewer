@@ -138,6 +138,16 @@
   outline: none;
 }
 
+.search-result-item.is-active {
+  background: color-mix(in srgb, var(--color-accent, #8ab4ff) 25%, transparent);
+  box-shadow: inset 0 0 0 1px var(--color-accent, #8ab4ff);
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .search-result-item.is-active {
+  background: color-mix(in srgb, var(--color-accent, #8ab4ff) 35%, transparent);
+}
+
 /* Truncated label can scroll horizontally to expose long names. */
 .search-result-label {
   flex: 1;
