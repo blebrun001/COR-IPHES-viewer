@@ -755,6 +755,15 @@ export async function initInterface({
 
     console.log('📋 Dataset changed to:', persistentId);
 
+    if (persistentId && typeof searchHandlers?.syncTaxonomyWithDataset === 'function') {
+      const dataset = getAllDatasets().find(
+        (entry) => entry?.persistentId === persistentId || entry?.value === persistentId,
+      );
+      if (dataset) {
+        searchHandlers.syncTaxonomyWithDataset(dataset);
+      }
+    }
+
     setActiveModelKey(null);
 
     if (searchInput) {

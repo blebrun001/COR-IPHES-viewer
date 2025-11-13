@@ -349,6 +349,16 @@ export function initSearch(deps = {}) {
 
   let activeResultIndex = -1;
   let resultIdCounter = 0;
+  let suppressSpecimenOptionsRefresh = false;
+
+  const runWithoutSpecimenRefresh = (fn) => {
+    suppressSpecimenOptionsRefresh = true;
+    try {
+      fn();
+    } finally {
+      suppressSpecimenOptionsRefresh = false;
+    }
+  };
 
   const getResultButtons = () => {
     if (!searchResults) {
@@ -998,7 +1008,9 @@ export function initSearch(deps = {}) {
       }
     }
     dispatchSetTaxonomyState(stateMap);
-    refreshSpecimenOptions();
+    if (!suppressSpecimenOptionsRefresh) {
+      refreshSpecimenOptions();
+    }
   };
 
   const filterDatasetsByTaxonomy = () => {
@@ -1065,6 +1077,46 @@ export function initSearch(deps = {}) {
         setStatus('status.noSpecimensMatchTaxonomy', 'info');
       }
     }
+  };
+
+  const syncTaxonomyWithDataset = (dataset) => {
+    if (!dataset || !selectTaxonomySupported()) {
+      return;
+    }
+
+    const levels = selectTaxonomyLevels();
+    if (!levels.length) {
+      return;
+    }
+
+    const selectorsMap = selectTaxonomySelectors();
+    if (!selectorsMap.size) {
+      return;
+    }
+
+    const taxonomyPath = dataset.taxonomyPath || {};
+    const nextState = new Map(selectTaxonomyState());
+    levels.forEach((level) => {
+      const normalizedValue = normalizeTaxonomyValue(taxonomyPath[level.key]) || null;
+      nextState.set(level.key, normalizedValue);
+    });
+
+    runWithoutSpecimenRefresh(() => {
+      dispatchSetTaxonomyState(nextState);
+      refreshTaxonomyFromLevel(0);
+    });
+
+    const confirmedState = selectTaxonomyState();
+    levels.forEach((level) => {
+      const select = selectorsMap.get(level.key);
+      if (!select) {
+        return;
+      }
+      const value = confirmedState.get(level.key) || '';
+      if (select.value !== value) {
+        select.value = value;
+      }
+    });
   };
 
   function handleTaxonomyLevelChange(event) {
@@ -1170,5 +1222,6 @@ export function initSearch(deps = {}) {
     resetTaxonomyState,
     cancelPendingSearch,
     resetSearchResults,
+    syncTaxonomyWithDataset,
   };
 }
