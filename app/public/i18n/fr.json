@@ -60,6 +60,17 @@
       "paragraph2": "Elle rassemble plus de 300 squelettes complets ou partiels de mammifères et d'oiseaux d'Europe et d'Afrique, couvrant des taxons communs ainsi que des espèces rares ou menacées telles que le lynx ibérique (Lynx pardinus), le bison d'Europe (Bison bonasus) ou le gypaète barbu (Gypaetus barbatus). Les spécimens proviennent de décès naturels, d'accidents ou de dons institutionnels, et ont été préparés et catalogués avec soin pour la recherche et l'enseignement.",
       "paragraph3": "Outil essentiel pour la zooarchéologie, la taphonomie et la paléontologie, la collection facilite l'identification et l'interprétation des vestiges fauniques issus de sites préhistoriques."
     },
+    "credits": {
+      "heading": "Crédits",
+      "scientificDirection": "<strong>Direction scientifique:</strong> Palmira Saladié",
+      "scientificCommittee": "<strong>Comité scientifique:</strong> Antonio Rodríguez-Hidalgo, Rosa Huguet",
+      "websiteDevelopment": "<strong>Développement du site web:</strong> Brice Lebrun",
+      "webSupport": "<strong>Support technique web et open access:</strong> Xabier Sopesens, Óscar Moreno",
+      "ipaDevelopment": "<strong>Développement de l'IPA:</strong> Brice Lebrun",
+      "modelProduction": "<strong>Production de modèles 3D:</strong> Brice Lebrun, Karen Fortuny, Deborah Broitman",
+      "labSupport": "<strong>Soutien de laboratoire:</strong> Maria Boada, Javier Villalobos, Mario Marqueta, Antonio Pineda, Clara Mielgo, Francesc Marginedas",
+      "citation": "<strong>Comment citer :</strong> Saladié, P., Lebrun, B., Rodríguez-Hidalgo, A., &amp; Huguet, R. (2025). Esqueletos en línea. Consulté sur <a href=\"https://cor.iphes.cat/\" target=\"_blank\" rel=\"noopener\">https://cor.iphes.cat/</a>"
+    },
     "partners": {
       "heading": "Partenaires",
       "intro": "Plusieurs institutions ont contribué à la richesse du COR-IPHES."

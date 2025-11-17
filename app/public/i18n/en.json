@@ -60,6 +60,17 @@
       "paragraph2": "It comprises over 300 complete or partial skeletons of mammals and birds from Europe and Africa, including both common taxa and rare or endangered species such as the Iberian lynx (Lynx pardinus), European bison (Bison bonasus), and bearded vulture (Gypaetus barbatus). The specimens were obtained ethically through natural deaths, accidental causes, or institutional donations, and have been carefully prepared and catalogued for research and teaching purposes.",
       "paragraph3": "Serving as a fundamental tool for zooarchaeology, taphonomy, and paleontology, the collection supports the identification and interpretation of faunal remains from prehistoric sites."
     },
+    "credits": {
+      "heading": "Credits",
+      "scientificDirection": "<strong>Scientific direction:</strong> Palmira Saladié",
+      "scientificCommittee": "<strong>Scientific committee:</strong> Antonio Rodríguez-Hidalgo, Rosa Huguet",
+      "websiteDevelopment": "<strong>Website development:</strong> Brice Lebrun",
+      "webSupport": "<strong>Web and open-access technical support:</strong> Xabier Sopesens, Óscar Moreno",
+      "ipaDevelopment": "<strong>IPA development:</strong> Brice Lebrun",
+      "modelProduction": "<strong>3D model production:</strong> Brice Lebrun, Karen Fortuny, Deborah Broitman",
+      "labSupport": "<strong>Laboratory support:</strong> Maria Boada, Javier Villalobos, Mario Marqueta, Antonio Pineda, Clara Mielgo, Francesc Marginedas",
+      "citation": "<strong>How to cite:</strong> Saladié, P., Lebrun, B., Rodríguez-Hidalgo, A., &amp; Huguet, R. (2025). Esqueletos en línea. Retrieved from <a href=\"https://cor.iphes.cat/\" target=\"_blank\" rel=\"noopener\">https://cor.iphes.cat/</a>"
+    },
     "partners": {
       "heading": "Partners",
       "intro": "Several institutions have contributed to the richness of the COR-IPHES."

@@ -60,6 +60,17 @@
       "paragraph2": "Inclou més de 300 esquelets complets o parcials de mamífers i ocells d'Europa i d'Àfrica, tant de tàxons comuns com d'espècies rares o amenaçades com el linx ibèric (Lynx pardinus), el bisó europeu (Bison bonasus) o el trencalòs (Gypaetus barbatus). Els exemplars s'han obtingut de manera ètica mitjançant morts naturals, causes accidentals o donacions institucionals, i s'han preparat i catalogat amb cura per a la recerca i la docència.",
       "paragraph3": "Com a eina clau per a la zooarqueologia, la tafonomia i la paleontologia, la col·lecció facilita la identificació i la interpretació de restes faunístiques procedents de jaciments prehistòrics."
     },
+    "credits": {
+      "heading": "Crèdits",
+      "scientificDirection": "<strong>Direcció científica:</strong> Palmira Saladié",
+      "scientificCommittee": "<strong>Comitè científic:</strong> Antonio Rodríguez-Hidalgo, Rosa Huguet",
+      "websiteDevelopment": "<strong>Desenvolupament del lloc web:</strong> Brice Lebrun",
+      "webSupport": "<strong>Suport tècnic web i d'accés obert:</strong> Xabier Sopesens, Óscar Moreno",
+      "ipaDevelopment": "<strong>Desenvolupament de l'IPA:</strong> Brice Lebrun",
+      "modelProduction": "<strong>Producció de models 3D:</strong> Brice Lebrun, Karen Fortuny, Deborah Broitman",
+      "labSupport": "<strong>Suport de laboratori:</strong> Maria Boada, Javier Villalobos, Mario Marqueta, Antonio Pineda, Clara Mielgo, Francesc Marginedas",
+      "citation": "<strong>Com citar-ho:</strong> Saladié, P., Lebrun, B., Rodríguez-Hidalgo, A., &amp; Huguet, R. (2025). Esqueletos en línia. Recuperat de <a href=\"https://cor.iphes.cat/\" target=\"_blank\" rel=\"noopener\">https://cor.iphes.cat/</a>"
+    },
     "partners": {
       "heading": "Col·laboradors",
       "intro": "Diverses institucions han contribuït a la riquesa del COR-IPHES."

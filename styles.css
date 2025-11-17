@@ -212,6 +212,17 @@ body {
   line-height: 1.7;
 }
 
+.panel a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+}
+
+.panel a:hover,
+.panel a:focus-visible {
+  color: #fff;
+  text-decoration-color: #fff;
+}
+
 /* Display contributing partners in a compact list for easy scanning. */
 .partners-list {
   list-style: none;
