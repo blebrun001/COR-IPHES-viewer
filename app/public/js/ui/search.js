@@ -10,6 +10,7 @@ import {
   resetSearchDebounceTimer as dispatchResetSearchDebounceTimer,
   resetTaxonomyState as dispatchResetTaxonomyState,
 } from '../state/actions.js';
+import { UberonSynonymsClient } from '../data/uberonSynonymsClient.js';
 import {
   selectTaxonomySelectors,
   selectTaxonomyState,
@@ -288,6 +289,12 @@ export function initSearch(deps = {}) {
     const datasets = typeof getAllDatasets === 'function' ? getAllDatasets() : [];
     return Array.isArray(datasets) ? datasets : [];
   };
+  let uberonClient = null;
+  try {
+    uberonClient = deps.uberonClient || new UberonSynonymsClient();
+  } catch (error) {
+    console.warn('UBERON synonym client unavailable', error);
+  }
 
   if (searchInput && searchResults?.id) {
     searchInput.setAttribute('role', 'combobox');
@@ -350,6 +357,7 @@ export function initSearch(deps = {}) {
   let activeResultIndex = -1;
   let resultIdCounter = 0;
   let suppressSpecimenOptionsRefresh = false;
+  let searchBuildToken = 0;
 
   const runWithoutSpecimenRefresh = (fn) => {
     suppressSpecimenOptionsRefresh = true;
@@ -510,8 +518,109 @@ export function initSearch(deps = {}) {
     dispatchClearSearchIndex();
   };
 
-  const buildSearchIndex = async () => {
+  const normalizeSearchTerm = (text) => {
+    if (!text || typeof text !== 'string') {
+      return '';
+    }
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  };
+
+  const normalizeSearchValue = (text) => {
+    const normalized = normalizeSearchTerm(text);
+    if (!normalized) {
+      return '';
+    }
+    return normalized.replace(/[^a-z0-9]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+  };
+
+  const buildSearchTarget = (values = []) => {
+    const phrases = [];
+    const tokens = new Set();
+
+    values.forEach((value) => {
+      const normalizedPhrase = normalizeSearchValue(value);
+      if (!normalizedPhrase) {
+        return;
+      }
+      phrases.push(normalizedPhrase);
+      normalizedPhrase.split(/\s+/).forEach((token) => tokens.add(token));
+    });
+
+    return {
+      searchText: phrases.join(' | '),
+      searchTokens: Array.from(tokens),
+    };
+  };
+
+  const levenshteinDistance = (a, b) => {
+    const left = a || '';
+    const right = b || '';
+    const lenA = left.length;
+    const lenB = right.length;
+    if (!lenA) return lenB;
+    if (!lenB) return lenA;
+
+    const prevRow = new Array(lenB + 1);
+    for (let j = 0; j <= lenB; j += 1) {
+      prevRow[j] = j;
+    }
+
+    for (let i = 1; i <= lenA; i += 1) {
+      let prev = prevRow[0];
+      prevRow[0] = i;
+      for (let j = 1; j <= lenB; j += 1) {
+        const temp = prevRow[j];
+        const cost = left.charAt(i - 1) === right.charAt(j - 1) ? 0 : 1;
+        prevRow[j] = Math.min(prevRow[j] + 1, prevRow[j - 1] + 1, prev + cost);
+        prev = temp;
+      }
+    }
+
+    return prevRow[lenB];
+  };
+
+  const isLooseTokenMatch = (needle, candidate) => {
+    if (!needle || !candidate) {
+      return false;
+    }
+    if (candidate.includes(needle)) {
+      return true;
+    }
+    const lengthGap = Math.abs(candidate.length - needle.length);
+    const maxDistance = needle.length > 7 ? 3 : needle.length > 4 ? 2 : 1;
+    if (lengthGap > maxDistance) {
+      return false;
+    }
+    return levenshteinDistance(needle, candidate) <= maxDistance;
+  };
+
+  const matchesSearchTarget = (normalizedQuery, queryTokens, target) => {
+    const haystack = target?.searchText || '';
+    const tokens = Array.isArray(target?.searchTokens) ? target.searchTokens : [];
+    const fallbackTokens =
+      !tokens.length && haystack ? haystack.split(/\s+/).filter(Boolean) : [];
+    const candidates = tokens.length ? tokens : fallbackTokens;
+
+    if (haystack && normalizedQuery && haystack.includes(normalizedQuery)) {
+      return true;
+    }
+    if (!candidates.length) {
+      return false;
+    }
+    return queryTokens.every((token) =>
+      candidates.some((candidate) => isLooseTokenMatch(token, candidate)),
+    );
+  };
+
+  const buildSearchIndex = async (options = {}) => {
+    const { skipSynonymRefresh = false, forceSynonymRefresh = false } = options || {};
     clearSearchIndex();
+
+    const buildToken = (searchBuildToken += 1);
 
     const datasets = getDatasets();
     console.log('=== Building search index ===');
@@ -538,13 +647,28 @@ export function initSearch(deps = {}) {
       elements: [],
     };
 
+    const uberonCodes = new Set();
+    const getUberonEntry = (code) => {
+      if (!code || !uberonClient?.getEntryFromCache) {
+        return null;
+      }
+      return uberonClient.getEntryFromCache(code);
+    };
+
     datasets.forEach((dataset) => {
       console.log('\n--- Processing dataset:', dataset.label, '(', dataset.value, ')');
+
+      const specimenSearch = buildSearchTarget([
+        dataset.label,
+        formatSpecimenAttributes(dataset.specimenSummary),
+      ]);
 
       nextIndex.specimens.push({
         id: dataset.value,
         label: dataset.label,
         summary: dataset.specimenSummary || null,
+        searchText: specimenSearch.searchText,
+        searchTokens: specimenSearch.searchTokens,
       });
 
       const cachedEntry = dataClient?.getCachedDatasetEntry?.(dataset.value);
@@ -578,6 +702,21 @@ export function initSearch(deps = {}) {
           dataset.label,
           dataset.specimenSummary,
         );
+        const uberonCode = resolveUberonCodeFromModel(modelInfo);
+        if (uberonCode) {
+          uberonCodes.add(uberonCode);
+        }
+        const uberonEntry = uberonCode ? getUberonEntry(uberonCode) : null;
+        const searchFields = [
+          label,
+          displayLabel,
+          baseLabel,
+          dataset.label,
+          uberonEntry?.label,
+          ...(uberonEntry?.synonyms || []),
+          uberonCode ? `uberon ${uberonCode}` : null,
+        ];
+        const elementSearch = buildSearchTarget(searchFields);
 
         nextIndex.elements.push({
           datasetId: dataset.value,
@@ -585,6 +724,10 @@ export function initSearch(deps = {}) {
           label,
           display: displayLabel,
           summary: dataset.specimenSummary || null,
+          uberonCode: uberonCode || null,
+          uberonLabel: uberonEntry?.label || null,
+          searchText: elementSearch.searchText,
+          searchTokens: elementSearch.searchTokens,
         });
         elementCount += 1;
       });
@@ -598,25 +741,28 @@ export function initSearch(deps = {}) {
     console.log('Specimens:', nextIndex.specimens.length);
     console.log('Elements:', nextIndex.elements.length);
     console.log('===========================\n');
-  };
 
-  const normalizeSearchTerm = (text) => {
-    if (!text || typeof text !== 'string') {
-      return '';
+    if (uberonClient && !skipSynonymRefresh && uberonCodes.size > 0) {
+      uberonClient
+        .refreshEntries(Array.from(uberonCodes), { force: forceSynonymRefresh })
+        .then(({ updated }) => {
+          if (updated && buildToken === searchBuildToken) {
+            buildSearchIndex({ skipSynonymRefresh: true });
+          }
+        })
+        .catch((error) => {
+          console.warn('Failed to refresh UBERON synonyms', error);
+        });
     }
-    return text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .trim();
   };
 
   const performSearch = (query) => {
-    const normalized = normalizeSearchTerm(query);
+    const normalized = normalizeSearchValue(query);
     if (!normalized) {
       return { specimens: [], elements: [] };
     }
 
+    const queryTokens = normalized.split(/\s+/).filter(Boolean);
     const indexSnapshot = selectSearchIndex();
 
     console.log('\n🔍 Search query:', query, '(normalized:', `${normalized})`);
@@ -625,16 +771,13 @@ export function initSearch(deps = {}) {
       elements: indexSnapshot.elements.length,
     });
 
-    const matchingSpecimens = indexSnapshot.specimens.filter((specimen) => {
-      const labelNorm = normalizeSearchTerm(specimen.label);
-      return labelNorm.includes(normalized);
-    });
+    const matchingSpecimens = indexSnapshot.specimens.filter((specimen) =>
+      matchesSearchTarget(normalized, queryTokens, specimen),
+    );
 
-    const matchingElements = indexSnapshot.elements.filter((element) => {
-      const labelNorm = normalizeSearchTerm(element.label);
-      const displayNorm = normalizeSearchTerm(element.display);
-      return labelNorm.includes(normalized) || displayNorm.includes(normalized);
-    });
+    const matchingElements = indexSnapshot.elements.filter((element) =>
+      matchesSearchTarget(normalized, queryTokens, element),
+    );
 
     console.log('✅ Results found:', {
       specimens: matchingSpecimens.length,

@@ -215,7 +215,7 @@ const initDatasets = async ({ force = false } = {}) => {
         searchHandlersRef?.refreshSpecimenOptions?.('status.datasetsLoadedFromCache');
 
         console.log('Datasets loaded from cache, building initial search index...');
-        await searchHandlersRef?.buildSearchIndex?.();
+        await searchHandlersRef?.buildSearchIndex?.({ forceSynonymRefresh: force });
         if (reloadButtonRef) {
           reloadButtonRef.disabled = false;
         }
@@ -245,7 +245,7 @@ const initDatasets = async ({ force = false } = {}) => {
     searchHandlersRef?.refreshSpecimenOptions?.('status.datasetsLoadedFromAPI');
 
     console.log('Datasets loaded, building initial search index...');
-    await searchHandlersRef?.buildSearchIndex?.();
+    await searchHandlersRef?.buildSearchIndex?.({ forceSynonymRefresh: force });
   } catch (error) {
     console.error(error);
     if (isCurrentToken(currentToken)) {
