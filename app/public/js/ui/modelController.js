@@ -22,6 +22,7 @@ import {
   selectModelToken,
   selectStateBeforeComparison,
 } from '../state/selectors.js';
+import { listOfflineDatasets } from './offlineDownloads.js';
 
 /**
  * Coordinates dataset caching, loading, and reset flows for the viewer UI.
@@ -204,6 +205,70 @@ const initDatasets = async ({ force = false } = {}) => {
   viewerApiRef?.clearScene?.({ preserveComparison: false });
   clearMetadataPanel();
   searchHandlersRef?.setTaxonomyVisibility?.(false);
+
+  const offline =
+    typeof windowRef !== 'undefined' &&
+    windowRef?.navigator &&
+    windowRef.navigator.onLine === false;
+  const offlineCatalog = listOfflineDatasets();
+
+  if (offline) {
+    if (reloadButtonRef) {
+      reloadButtonRef.disabled = true;
+    }
+
+    const normalizedDatasets = setAllDatasetsInternalSafe(offlineCatalog);
+    searchHandlersRef?.initializeTaxonomySelectors?.(normalizedDatasets);
+    searchHandlersRef?.setTaxonomyVisibility?.(Boolean(normalizedDatasets.length));
+    searchHandlersRef?.refreshSpecimenOptions?.();
+
+    if (!normalizedDatasets.length) {
+      const offlineLabel = getEscaped(
+        getTranslate('selector.dataset.offline', 'Unavailable while offline'),
+      );
+      const offlineModelLabel = getEscaped(
+        getTranslate('selector.model.offline', 'Models unavailable while offline'),
+      );
+      if (datasetSelectRef) {
+        datasetSelectRef.innerHTML = `<option value="">${offlineLabel}</option>`;
+        datasetSelectRef.disabled = true;
+      }
+      if (modelSelectRef) {
+        modelSelectRef.innerHTML = `<option value="">${offlineModelLabel}</option>`;
+        modelSelectRef.disabled = true;
+      }
+      setCustomStatusRef?.(
+        getTranslate('status.offlineMode', 'Offline mode: no downloaded specimens'),
+        'info',
+      );
+      updateCompareButtonStateRef?.();
+      resetProgressPercentRef();
+      return;
+    }
+
+    if (modelSelectRef) {
+      const selectDatasetOption = getEscaped(
+        getTranslate('selector.model.disabled', 'Select a specimen'),
+      );
+      modelSelectRef.innerHTML = `<option value="">${selectDatasetOption}</option>`;
+      modelSelectRef.disabled = true;
+    }
+
+    setCustomStatusRef?.(
+      getTranslate('status.offlineCatalog', 'Offline mode: using downloaded specimens'),
+      'info',
+    );
+
+    try {
+      await searchHandlersRef?.buildSearchIndex?.({ skipSynonymRefresh: true });
+    } catch (error) {
+      console.warn('Unable to build offline search index', error);
+    }
+
+    resetProgressPercentRef();
+    updateCompareButtonStateRef?.();
+    return;
+  }
 
   try {
     let datasets = null;

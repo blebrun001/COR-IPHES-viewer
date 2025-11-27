@@ -56,6 +56,68 @@
   cursor: not-allowed;
 }
 
+.offline-download {
+  gap: 0.35rem;
+}
+
+.offline-download__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: var(--font-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.offline-download__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+}
+
+.offline-download__button {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.offline-download__button:hover:not(:disabled) {
+  border-color: var(--color-accent);
+}
+
+.offline-download__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.offline-download__status {
+  min-height: 1rem;
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+}
+
+.offline-download__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  min-height: 1.4rem;
+}
+
+.offline-download__pill {
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+}
+
 .search-input {
   appearance: none;
   padding: 0.65rem 0.85rem;

@@ -5,12 +5,24 @@
 import { DataverseClient } from '../data/dataverseClient.js';
 import { i18n } from '../i18n/translator.js';
 import initControllers from './controllers.js';
-import { initSearch, formatModelOptionLabel, deriveUberonUrlFromModel } from './search.js';
+import {
+  initSearch,
+  formatModelOptionLabel,
+  formatSpecimenLabel,
+  deriveUberonUrlFromModel,
+} from './search.js';
 import { initMetadata } from './metadata.js';
 import { initMaterialControls } from './materialControls.js';
 import { initInterfaceControls } from './interfaceControls.js';
 import { initModelController } from './modelController.js';
 import { createTooltipService } from './tooltips.js';
+import {
+  downloadDatasetForOffline,
+  isDatasetOffline,
+  isModelOffline,
+  listOfflineDatasets,
+  clearOfflineDownloads,
+} from './offlineDownloads.js';
 import {
   setActiveDataset as dispatchSetActiveDataset,
   setActiveDatasetForB as dispatchSetActiveDatasetForB,
@@ -205,6 +217,99 @@ export async function initInterface({
   const toggleTexturesButton = documentRef.getElementById('toggleTextures');
   const normalizeScaleButton = documentRef.getElementById('toggleNormalizeScale');
   const scaleReferenceButton = documentRef.getElementById('toggleScaleReference');
+  const offlineDownloadButton = documentRef.getElementById('offlineDownloadButton');
+  const offlineStatus = documentRef.getElementById('offlineStatus');
+  const offlineDownloadsList = documentRef.getElementById('offlineDownloadsList');
+  const offlineBadge = documentRef.getElementById('offlineBadge');
+  const offlineDatasetList = documentRef.getElementById('offlineDatasetList');
+  const offlineSelectAll = documentRef.getElementById('offlineSelectAll');
+  const offlineClearAll = documentRef.getElementById('offlineClearAll');
+  const offlineCancelButton = documentRef.getElementById('offlineCancelButton');
+  const offlineClearDownloadsButton = documentRef.getElementById('offlineClearDownloads');
+  let currentDownloadAbort = null;
+  const offlineExpansionState = new Map();
+
+  const buildModelItemsMarkup = ({ datasetId, models = [], offlineModels = new Set(), current }) => {
+    if (!models.length) {
+      return `<div class="offline-dialog__hint">${escapeHtml(
+        translate('offline.noModels', 'No models found'),
+      )}</div>`;
+    }
+    const selectAllLabel = escapeHtml(translate('offline.selectAllModels', 'Select all elements'));
+    const items =
+      `<label class="offline-checkbox offline-checkbox--all">
+        <input
+          class="offline-checkbox__input offline-checkbox__input--all"
+          type="checkbox"
+          data-dataset-id="${escapeHtml(datasetId)}"
+          data-model-key="__all__"
+        />
+        <span class="offline-checkbox__label">${selectAllLabel}</span>
+      </label>` +
+      models
+        .map((model) => {
+          const isOffline = offlineModels.has(model.key);
+          const shouldCheck = isOffline || (current && datasetId === current);
+          const badge = isOffline
+            ? `<span class="offline-checkbox__badge">${escapeHtml(
+                translate('offline.savedShort', 'Saved'),
+              )}</span>`
+            : '';
+          return `
+            <label class="offline-checkbox offline-checkbox--model">
+              <input
+                class="offline-checkbox__input"
+                type="checkbox"
+                data-dataset-id="${escapeHtml(datasetId)}"
+                data-model-key="${escapeHtml(model.key)}"
+                ${shouldCheck ? 'checked' : ''}
+              />
+              <span class="offline-checkbox__label">${escapeHtml(
+                model.displayName || model.key,
+              )}</span>
+              ${badge}
+            </label>
+          `;
+        })
+        .join('');
+    return items;
+  };
+
+  const loadModelsForDataset = async (datasetId) => {
+    let models = [];
+    const downloads = listOfflineDatasets();
+    const offlineEntry = downloads.find((entry) => entry.value === datasetId);
+    if (offlineEntry?.models?.length) {
+      models = offlineEntry.models.map((m) => ({
+        key: m.key,
+        displayName: m.label || m.key,
+        offline: m.offline !== false,
+      }));
+    }
+    if (!models.length && typeof dataClient?.getCachedDatasetEntry === 'function') {
+      const cached = dataClient.getCachedDatasetEntry(datasetId);
+      models = cached?.models || [];
+    }
+    if (!models.length && typeof dataClient?.ensureDatasetPrepared === 'function') {
+      try {
+        const entry = await dataClient.ensureDatasetPrepared(datasetId);
+        models = entry?.models || [];
+      } catch (error) {
+        console.warn('Unable to load models for offline selector', datasetId, error);
+      }
+    }
+    return models;
+  };
+
+  const getSpecimenLabel = (dataset) => {
+    if (!dataset) return translate('offline.unknownSpecimen', 'Unknown specimen');
+    return (
+      dataset.label ||
+      dataset.identifier ||
+      dataset.value ||
+      translate('offline.unknownSpecimen', 'Unknown specimen')
+    );
+  };
   const resetViewButton = documentRef.getElementById('resetView');
   const projectionModePerspectiveButton = documentRef.getElementById('projectionModePerspective');
   const projectionModeOrthographicButton = documentRef.getElementById('projectionModeOrthographic');
@@ -603,6 +708,267 @@ export async function initInterface({
     }
   };
 
+  // ===== Offline downloads =====
+  const setOfflineStatusText = (text) => {
+    if (offlineStatus) {
+      offlineStatus.textContent = text || '';
+    }
+  };
+
+  const renderOfflineDownloads = () => {
+    const downloads = listOfflineDatasets();
+    if (offlineBadge) {
+      offlineBadge.textContent = String(downloads.length || 0);
+    }
+    if (!offlineDownloadsList) {
+      return downloads;
+    }
+    if (!downloads.length) {
+      const emptyLabel = escapeHtml(
+        translate('offline.empty', 'No specimens saved for offline use'),
+      );
+      offlineDownloadsList.innerHTML = `<span class="offline-download__pill">${emptyLabel}</span>`;
+      return downloads;
+    }
+    const pills = downloads
+      .map((item) => {
+        const total = Array.isArray(item.models) ? item.models.length : 0;
+        const savedCount = Array.isArray(item.models)
+          ? item.models.filter((m) => m.offline !== false).length
+          : 0;
+        const partialLabel =
+          total > 0 && savedCount > 0 && savedCount < total
+            ? ` (${savedCount}/${total} ${escapeHtml(translate('offline.elements', 'elements'))})`
+            : savedCount === total && total > 0
+            ? ` (${escapeHtml(translate('offline.full', 'full'))})`
+            : '';
+        return `<span class="offline-download__pill" title="${escapeHtml(item.label)}">${escapeHtml(
+          item.label,
+        )}${partialLabel}</span>`;
+      })
+      .join('');
+    offlineDownloadsList.innerHTML = pills;
+    return downloads;
+  };
+
+  const renderOfflineSelector = async () => {
+    if (!offlineDatasetList) {
+      return;
+    }
+    const datasets = getAllDatasets && Array.isArray(getAllDatasets()) ? getAllDatasets() : [];
+    if (!datasets.length) {
+      const emptyLabel = escapeHtml(
+        translate('offline.noneAvailable', 'No specimens available to download'),
+      );
+      offlineDatasetList.innerHTML = `<div class="offline-dialog__hint">${emptyLabel}</div>`;
+      return;
+    }
+
+    const downloads = listOfflineDatasets();
+    const offlineByDataset = new Map(downloads.map((entry) => [entry.value, entry.models || []]));
+    const current = datasetSelect?.value;
+
+    const blocks = await Promise.all(
+      datasets.map(async (dataset) => {
+        const offlineModelsEntry = offlineByDataset.get(dataset.value) || [];
+        const offlineModels = new Set(
+          offlineModelsEntry.filter((m) => m.offline !== false).map((m) => m.key),
+        );
+
+        let models = [];
+        try {
+          models = await loadModelsForDataset(dataset.value);
+        } catch (error) {
+          console.warn('Unable to load models for offline selector', dataset.value, error);
+          models = [];
+        }
+
+        const savedCount = offlineModels.size;
+        const totalCount = models.length || offlineModelsEntry.length;
+
+        const baseLabel = getSpecimenLabel(dataset);
+        const label = escapeHtml(formatSpecimenLabel(baseLabel, dataset.specimenSummary));
+        const titleWithPartial =
+          totalCount > 0 && savedCount > 0 && savedCount < totalCount
+            ? `${label} (${escapeHtml(translate('offline.partial', 'partial'))})`
+            : label;
+        const meta =
+          totalCount > 0
+            ? `${totalCount} ${translate('offline.elements', 'elements')}`
+            : translate('offline.noModelsShort', 'No elements');
+        const savedBadge =
+          savedCount > 0
+            ? `<span class="offline-dataset__saved">${escapeHtml(
+                savedCount === totalCount
+                  ? translate('offline.full', 'full')
+                  : `${translate('offline.savedShort', 'Saved')} ${savedCount}/${totalCount}`,
+              )}</span>`
+            : '';
+
+        const modelsMarkup = buildModelItemsMarkup({
+          datasetId: dataset.value,
+          models,
+          offlineModels,
+          current,
+        });
+
+        return `
+          <div class="offline-dataset" data-dataset-id="${escapeHtml(dataset.value)}">
+            <div class="offline-dataset__summary">
+              <div class="offline-dataset__title-group">
+                <span class="offline-dataset__title">${titleWithPartial}</span>
+                <span class="offline-dataset__meta">
+                  <span class="offline-dataset__count">${escapeHtml(meta)}</span>
+                  ${savedBadge}
+                </span>
+              </div>
+            </div>
+            <div class="offline-dataset__models" data-loaded="true">
+              ${modelsMarkup}
+            </div>
+          </div>
+        `;
+      }),
+    );
+
+    offlineDatasetList.innerHTML = blocks.join('');
+    updateOfflineButtonState();
+  };
+
+  const getSelectedOfflineSelection = () => {
+    if (!offlineDatasetList) return [];
+    const selections = new Map();
+    offlineDatasetList
+      .querySelectorAll('.offline-checkbox__input:checked')
+      .forEach((input) => {
+        const datasetId = input.dataset.datasetId;
+        const modelKey = input.dataset.modelKey;
+        if (!datasetId || !modelKey || modelKey === '__all__') return;
+        if (!selections.has(datasetId)) {
+          selections.set(datasetId, new Set());
+        }
+        selections.get(datasetId).add(modelKey);
+      });
+    return Array.from(selections.entries()).map(([datasetId, modelKeys]) => ({
+      datasetId,
+      modelKeys: Array.from(modelKeys),
+    }));
+  };
+
+  const updateOfflineButtonState = () => {
+    if (!offlineDownloadButton) {
+      return;
+    }
+    const offline = windowRef?.navigator?.onLine === false;
+    const selection = getSelectedOfflineSelection();
+    const availableIds = new Set((getAllDatasets() || []).map((item) => item.value));
+    const hasValidSelection = selection.length > 0 && selection.every(({ datasetId }) => availableIds.has(datasetId));
+    const alreadyOffline =
+      hasValidSelection &&
+      selection.every(({ datasetId, modelKeys }) =>
+        modelKeys.every((key) => isModelOffline(datasetId, key)),
+      );
+    offlineDownloadButton.disabled = !hasValidSelection || offline || alreadyOffline;
+
+    let statusText = '';
+    if (!hasValidSelection) {
+      statusText = translate('offline.prompt', 'Select one or more specimens to save offline');
+    } else if (alreadyOffline) {
+      statusText = translate('offline.already', 'Already available offline');
+    } else if (offline) {
+      statusText = translate('offline.requiresOnline', 'Connect to download for offline use');
+    } else {
+      statusText = translate('offline.ready', 'Download selected specimens for offline use');
+    }
+    setOfflineStatusText(statusText);
+  };
+
+  const handleOfflineDownloadClick = async () => {
+    if (!offlineDownloadButton) {
+      return;
+    }
+    const selection = getSelectedOfflineSelection();
+    if (!selection.length) {
+      setOfflineStatusText(translate('offline.prompt', 'Select specimens to download'));
+      return;
+    }
+
+    offlineDownloadButton.disabled = true;
+    if (offlineCancelButton) {
+      offlineCancelButton.disabled = false;
+    }
+    currentDownloadAbort = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    setProgressPercent(0);
+    setCustomStatus(translate('offline.downloading', 'Downloading for offline use...'), 'loading');
+    setOfflineStatusText(translate('offline.downloading', 'Downloading for offline use...'));
+
+    const targets = selection
+      .map(({ datasetId, modelKeys }) => {
+        const pendingModels = modelKeys.filter((key) => !isModelOffline(datasetId, key));
+        return pendingModels.length ? { datasetId, modelKeys: pendingModels } : null;
+      })
+      .filter(Boolean);
+
+    if (!targets.length) {
+      setCustomStatus(translate('offline.already', 'Already available offline'), 'info');
+      setOfflineStatusText(translate('offline.already', 'Already available offline'));
+      offlineDownloadButton.disabled = false;
+      return;
+    }
+
+    try {
+      for (let index = 0; index < targets.length; index += 1) {
+        const { datasetId, modelKeys } = targets[index];
+        await downloadDatasetForOffline({
+          dataClient,
+          persistentId: datasetId,
+          modelKeys,
+          signal: currentDownloadAbort?.signal,
+          onProgress: (ratio) => {
+            const overall = (index + ratio) / targets.length;
+            const percent = Math.round(Math.min(Math.max(overall * 100, 0), 100));
+            setProgressPercent(percent);
+            setOfflineStatusText(`${percent}%`);
+          },
+        });
+      }
+      renderOfflineDownloads();
+      renderOfflineSelector();
+      setCustomStatus(
+        translate('offline.readyStatus', 'Saved selected elements for offline use'),
+        'info',
+      );
+      setOfflineStatusText(
+        translate('offline.readyStatus', 'Saved selected elements for offline use'),
+      );
+    } catch (error) {
+      if (error?.name === 'AbortError') {
+        setCustomStatus(translate('offline.cancelled', 'Download cancelled'), 'info');
+        setOfflineStatusText(translate('offline.cancelled', 'Download cancelled'));
+      } else {
+        console.error('Offline download failed', error);
+        setCustomStatus(
+          translate('offline.error', 'Offline download failed. Please try again.'),
+          'error',
+        );
+        setOfflineStatusText(translate('offline.error', 'Offline download failed.'));
+      }
+    } finally {
+      resetProgressPercent();
+      updateOfflineButtonState();
+      if (offlineCancelButton) {
+        offlineCancelButton.disabled = true;
+      }
+      currentDownloadAbort = null;
+    }
+  };
+
+  const handleOfflineCancelClick = () => {
+    if (currentDownloadAbort) {
+      currentDownloadAbort.abort();
+    }
+  };
+
   // ===== Comparison Mode Functions =====
 
   const updateCompareButtonState = () => {
@@ -810,6 +1176,14 @@ export async function initInterface({
       }
     }
 
+    if (offlineDatasetList && persistentId) {
+      Array.from(offlineDatasetList.querySelectorAll('.offline-checkbox__input')).forEach(
+        (input) => {
+          input.checked = input.value === persistentId;
+        },
+      );
+    }
+
     setActiveModelKey(null);
 
     if (searchInput) {
@@ -834,6 +1208,7 @@ export async function initInterface({
       modelController.loadDatasetModels(persistentId);
     }
     updateCompareButtonState();
+    updateOfflineButtonState();
   };
 
   const handleReloadButtonClick = () => {
@@ -956,6 +1331,71 @@ export async function initInterface({
 
     datasetSelect.addEventListener('change', handleDatasetSelectChange);
     modelSelect.addEventListener('change', controllers.handleModelSelectChange);
+    if (offlineDatasetList) {
+      offlineDatasetList.addEventListener('change', updateOfflineButtonState);
+      offlineDatasetList.addEventListener('change', (event) => {
+        const target = event.target;
+        if (!target?.classList?.contains('offline-checkbox__input')) return;
+        if (target.dataset.modelKey === '__all__') {
+          const datasetId = target.dataset.datasetId;
+          if (!datasetId) return;
+          const container = target.closest('.offline-dataset');
+          container
+            ?.querySelectorAll(
+              '.offline-checkbox__input[data-model-key]:not([data-model-key="__all__"])',
+            )
+            ?.forEach((input) => {
+              input.checked = target.checked;
+            });
+          updateOfflineButtonState();
+        }
+      });
+    }
+    if (offlineSelectAll) {
+      offlineSelectAll.addEventListener('click', () => {
+        if (!offlineDatasetList) return;
+        offlineDatasetList
+          .querySelectorAll('.offline-checkbox__input[data-model-key]:not([data-model-key="__all__"])')
+          .forEach((input) => (input.checked = true));
+        updateOfflineButtonState();
+      });
+    }
+    if (offlineClearAll) {
+      offlineClearAll.addEventListener('click', () => {
+        if (!offlineDatasetList) return;
+        offlineDatasetList
+          .querySelectorAll('.offline-checkbox__input[data-model-key]:not([data-model-key="__all__"])')
+          .forEach((input) => (input.checked = false));
+        updateOfflineButtonState();
+      });
+    }
+    if (offlineCancelButton) {
+      offlineCancelButton.addEventListener('click', handleOfflineCancelClick);
+    }
+    if (offlineClearDownloadsButton) {
+      offlineClearDownloadsButton.addEventListener('click', async () => {
+        setCustomStatus(translate('offline.clearing', 'Clearing offline downloads...'), 'loading');
+        setOfflineStatusText(translate('offline.clearing', 'Clearing offline downloads...'));
+        try {
+          await clearOfflineDownloads();
+          renderOfflineDownloads();
+          await renderOfflineSelector();
+          updateOfflineButtonState();
+          setCustomStatus(translate('offline.cleared', 'Offline downloads cleared'), 'info');
+          setOfflineStatusText(translate('offline.cleared', 'Offline downloads cleared'));
+        } catch (error) {
+          console.error('Failed to clear offline downloads', error);
+          setCustomStatus(
+            translate('offline.clearError', 'Failed to clear offline downloads'),
+            'error',
+          );
+          setOfflineStatusText(translate('offline.clearError', 'Failed to clear offline downloads'));
+        }
+      });
+    }
+    if (offlineDownloadButton) {
+      offlineDownloadButton.addEventListener('click', handleOfflineDownloadClick);
+    }
 
     if (searchInput && searchHandlers) {
       searchInput.addEventListener('input', searchHandlers.handleSearchInput);
@@ -978,12 +1418,29 @@ export async function initInterface({
       resetInterfaceButton.addEventListener('click', handleResetInterfaceClick);
     }
 
+    if (windowRef?.addEventListener) {
+      windowRef.addEventListener('online', () => {
+        updateOfflineButtonState();
+        setOfflineStatusText('');
+        modelController.initDatasets({ force: true }).then(() => {
+          renderOfflineSelector().then(() => updateOfflineButtonState());
+        });
+      });
+      windowRef.addEventListener('offline', () => {
+        updateOfflineButtonState();
+        modelController.initDatasets({ force: true }).then(() => {
+          renderOfflineSelector().then(() => updateOfflineButtonState());
+        });
+      });
+    }
+
     if (compareButton) {
       compareButton.addEventListener('click', handleCompareButtonClick);
     }
 
     if (toggleLabelsButton) {
       toggleLabelsButton.addEventListener('click', controllers.handleToggleLabelsButtonClick);
+      tooltips.setTooltip(toggleLabelsButton, 'viewer.tooltips.toggleLabels', 'Toggle labels');
     }
 
     if (languageSelect) {
@@ -1093,7 +1550,11 @@ export async function initInterface({
   });
 
   refreshLanguageDependentUI();
-  modelController.initDatasets();
+  renderOfflineDownloads();
+  renderOfflineSelector().then(() => updateOfflineButtonState());
+  modelController.initDatasets().then(() => {
+    renderOfflineSelector().then(() => updateOfflineButtonState());
+  });
   registerEventHandlers();
   updateRotationGizmoButton();
   updateProjectionButtons();

@@ -83,7 +83,7 @@ export function createTooltipService({
     if (!root?.querySelectorAll) {
       return;
     }
-    const elements = root.querySelectorAll('[data-tooltip-key]');
+    const elements = root.querySelectorAll('[data-tooltip-key], [data-i18n-attr*="data-tooltip:"]');
     elements.forEach((el) => registerHost(el));
   };
 

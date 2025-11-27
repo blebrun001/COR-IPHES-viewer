@@ -182,6 +182,7 @@
 
 /* Floating action buttons share styling and interaction feedback. */
 .floating-options-button,
+.floating-offline-button,
 .floating-info-button,
 .floating-reset-button {
   width: 3rem;
@@ -199,9 +200,11 @@
 }
 
 .floating-options-button:hover,
+.floating-offline-button:hover,
 .floating-info-button:hover,
 .floating-reset-button:hover,
 .floating-options-button:focus-visible,
+.floating-offline-button:focus-visible,
 .floating-info-button:focus-visible,
 .floating-reset-button:focus-visible {
   outline: none;
@@ -211,6 +214,7 @@
 }
 
 .floating-options-button__icon,
+.floating-offline-button__icon,
 .floating-info-button__icon,
 .floating-reset-button__icon {
   font-family: 'Material Icons', sans-serif;
@@ -222,6 +226,7 @@
 }
 
 .floating-options-button:active,
+.floating-offline-button:active,
 .floating-info-button:active,
 .floating-reset-button:active {
   transform: translateY(0);

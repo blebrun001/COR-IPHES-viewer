@@ -4,7 +4,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0c131c" />
     <title>Dataverse 3D Viewer</title>
+    <link rel="manifest" href="/pwa/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/ressources/icons/icon-512.png" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
@@ -153,6 +156,14 @@
               data-i18n-attr="aria-label:sidebar.links.options,data-tooltip:sidebar.tooltips.settings"
             >
               <span class="material-icons floating-options-button__icon" aria-hidden="true">settings</span>
+            </button>
+            <button
+              id="offlineManagerButton"
+              type="button"
+              class="floating-offline-button tooltip-host"
+              data-i18n-attr="aria-label:sidebar.links.offline,data-tooltip:sidebar.tooltips.offline"
+            >
+              <span class="material-icons floating-offline-button__icon" aria-hidden="true">cloud_download</span>
             </button>
             <button
               id="resetInterfaceButton"
@@ -355,7 +366,7 @@
                     id="toggleLabels"
                     type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle"
-                    data-i18n-attr="aria-label:viewer.buttons.enableLabels,data-tooltip:viewer.buttons.enableLabels"
+                    data-i18n-attr="aria-label:viewer.buttons.enableLabels,data-tooltip:viewer.tooltips.toggleLabels"
                     aria-pressed="false"
                     hidden
                   >
@@ -407,6 +418,71 @@
         }
       }
     </script>
+    <dialog id="offlineDialog" class="offline-dialog" aria-labelledby="offlineDialogTitle">
+      <button
+        id="closeOfflineDialog"
+        type="button"
+        class="options-close"
+        aria-label="Close offline manager"
+      >&times;</button>
+      <h2 id="offlineDialogTitle" data-i18n="offline.title">Offline access</h2>
+      <div class="offline-dialog__content">
+        <div class="offline-dialog__list">
+          <div class="offline-dialog__label" data-i18n="offline.selectLabel">
+            Choose specimens to download
+          </div>
+          <div class="offline-dialog__actions">
+            <button id="offlineSelectAll" type="button" class="offline-dialog__action" data-i18n="offline.selectAll">
+              Select all
+            </button>
+            <button id="offlineClearAll" type="button" class="offline-dialog__action" data-i18n="offline.clearAll">
+              Clear
+            </button>
+          </div>
+          <div id="offlineDatasetList" class="offline-dialog__checkboxes"></div>
+        </div>
+        <div class="offline-dialog__status-row">
+          <div>
+            <div class="offline-dialog__label" data-i18n="offline.statusLabel">Status</div>
+            <div id="offlineStatus" class="offline-dialog__status" aria-live="polite"></div>
+          </div>
+          <div class="offline-dialog__badge">
+            <span data-i18n="offline.saved">Saved</span>
+            <strong id="offlineBadge">0</strong>
+          </div>
+        </div>
+        <button
+          id="offlineDownloadButton"
+          type="button"
+          class="offline-dialog__cta"
+          data-i18n="offline.button"
+          disabled
+        >
+          Download current specimen
+        </button>
+        <button
+          id="offlineCancelButton"
+          type="button"
+          class="offline-dialog__action offline-dialog__action--inline"
+          data-i18n="offline.cancel"
+          disabled
+        >
+          Cancel download
+        </button>
+        <div class="offline-dialog__list">
+          <div class="offline-dialog__label" data-i18n="offline.savedList">Saved specimens</div>
+          <div id="offlineDownloadsList" class="offline-download__list" aria-live="polite"></div>
+          <button
+            id="offlineClearDownloads"
+            type="button"
+            class="offline-dialog__action offline-dialog__action--inline"
+            data-i18n="offline.clearDownloads"
+          >
+            Clear offline downloads
+          </button>
+        </div>
+      </div>
+    </dialog>
     <dialog id="optionsDialog" class="options-dialog" aria-labelledby="optionsDialogTitle">
       <button
         id="closeOptions"
@@ -482,8 +558,10 @@
     </dialog>
 
     <!-- Entry modules: core viewer bootstrap + supporting UI behaviours -->
+    <script type="module" src="/pwa/pwa.js"></script>
     <script type="module" src="./public/js/app.js"></script>
     <script type="module" src="./public/js/about.js"></script>
+    <script type="module" src="./public/js/data/offlineManager.js"></script>
     <script type="module" src="./public/js/options.js"></script>
     <script type="module" src="./public/js/sidebar.js"></script>
   </body>
