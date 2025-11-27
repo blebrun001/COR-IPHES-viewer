@@ -174,19 +174,34 @@
 }
 
 .app-tooltip::before {
+  --arrow-width: 0.55rem;
+  --arrow-height: 0.4rem;
   content: '';
   position: absolute;
   left: 50%;
-  bottom: -0.35rem;
-  transform: translateX(-50%) rotate(45deg);
-  width: 0.75rem;
-  height: 0.75rem;
-  background: var(--color-surface);
-  border-left: 1px solid var(--color-border);
-  border-top: 1px solid var(--color-border);
-  border-right: none;
-  border-bottom: none;
-  box-shadow: -4px 4px 10px rgba(15, 23, 42, 0.12);
+  top: 100%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: var(--arrow-width) solid transparent;
+  border-right: var(--arrow-width) solid transparent;
+  border-top: calc(var(--arrow-height) + 0.08rem) solid var(--color-border);
+  filter: drop-shadow(-2px 6px 10px rgba(15, 23, 42, 0.12));
+}
+
+.app-tooltip::after {
+  --arrow-width: 0.48rem;
+  --arrow-height: 0.32rem;
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: var(--arrow-width) solid transparent;
+  border-right: var(--arrow-width) solid transparent;
+  border-top: var(--arrow-height) solid var(--color-surface);
 }
 
 .app-tooltip[data-visible='true'] {
