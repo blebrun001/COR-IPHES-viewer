@@ -387,7 +387,12 @@ export function applyScaleReferenceMixin(viewerProto) {
       };
     }
     if (this.scaleReferenceLabel.el) {
-      return;
+      const attached = this.scaleReferenceLabel.el.parentElement === this.measureOverlay;
+      if (attached) {
+        return;
+      }
+      this.scaleReferenceLabel.el.remove();
+      this.scaleReferenceLabel.el = null;
     }
     const label = document.createElement('div');
     label.className = 'measurement-label hidden';

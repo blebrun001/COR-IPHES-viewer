@@ -166,6 +166,10 @@ export function applyMeasurementsMixin(viewerProto) {
     this.measurements = [];
     if (this.measureOverlay) {
       this.measureOverlay.innerHTML = '';
+      if (this.scaleReference?.enabled) {
+        // Clearing the overlay removes the scale label as well, so recreate it immediately.
+        this.ensureScaleReferenceLabel();
+      }
     }
     this.emit('measurementscleared');
     if (this.measureOverlay) {
