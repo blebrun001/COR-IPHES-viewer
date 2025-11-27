@@ -95,9 +95,19 @@ export function createTooltipService({
     const tooltipRect = tooltipEl.getBoundingClientRect();
     const offset = 10;
     const top = Math.max(4, hostRect.top - tooltipRect.height - offset);
-    const left = hostRect.left + hostRect.width / 2;
+    const viewportWidth = windowRef.innerWidth || documentRef.documentElement.clientWidth || 0;
+    const padding = 8;
+    const hostCenter = hostRect.left + hostRect.width / 2;
+    const halfTooltip = tooltipRect.width / 2;
+    const clampedCenter = Math.min(
+      viewportWidth - padding - halfTooltip,
+      Math.max(padding + halfTooltip, hostCenter)
+    );
+    const arrowOffset = hostCenter - clampedCenter;
+
     tooltipEl.style.top = `${top}px`;
-    tooltipEl.style.left = `${left}px`;
+    tooltipEl.style.left = `${clampedCenter}px`;
+    tooltipEl.style.setProperty('--arrow-offset', `${arrowOffset}px`);
   };
 
   const showTooltip = (host) => {
