@@ -276,12 +276,13 @@
     "theme": {
       "label": "Theme",
       "dark": "Dark",
-      "light": "Light"
+      "light": "Light",
+      "geek": "Matrix"
     },
     "tooltips": {
       "close": "Close the options dialog",
       "language": "Choose the interface language",
-      "theme": "Switch between dark and light themes",
+      "theme": "Switch between dark, light, and Matrix themes",
       "screenshotBackground": "Keep the background visible when capturing screenshots",
       "anaglyph": "Adjust the depth effect for anaglyph mode",
       "reloadDatasets": "Force reload of the specimen list"

@@ -37,3 +37,20 @@
   --color-texture-override: #ff9300;
   --color-viewer-bg: #e2e8f0;
 }
+
+:root[data-theme='geek'] {
+  /* Matrix-inspired overrides: neon green on near-black with a monospace voice. */
+  font-family: 'Share Tech Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace;
+  color-scheme: dark;
+  --color-bg: #010804;
+  --color-surface: #04130a;
+  --color-surface-alt: #072012;
+  --color-text-primary: #c8ffde;
+  --color-text-muted: #60f0a8;
+  --color-accent: #00f36d;
+  --color-success: #24ffa3;
+  --color-error: #ff5f5f;
+  --color-border: #0fdc73;
+  --color-texture-override: #00f36d;
+  --color-viewer-bg: #02140b;
+}

@@ -31,7 +31,7 @@ if (optionsDialog) {
 }
 
 const THEME_STORAGE_KEY = 'ui.theme';
-const SUPPORTED_THEMES = new Set(['dark', 'light']);
+const SUPPORTED_THEMES = new Set(['dark', 'light', 'geek']);
 const DEFAULT_THEME = 'dark';
 const THEME_ASSET_SELECTOR = '[data-theme-src-light][data-theme-src-dark]';
 

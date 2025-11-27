@@ -6,13 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dataverse 3D Viewer</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <script>
       (function () {
         try {
           const storedTheme = window.localStorage.getItem('ui.theme');
-          if (storedTheme === 'light' || storedTheme === 'dark') {
+          if (storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'geek') {
             document.documentElement.setAttribute('data-theme', storedTheme);
           }
         } catch (error) {
@@ -442,6 +443,7 @@
           >
             <option value="dark" data-i18n="options.theme.dark">Dark</option>
             <option value="light" data-i18n="options.theme.light">Light</option>
+            <option value="geek" data-i18n="options.theme.geek">Matrix</option>
           </select>
         </div>
         <div class="options-section">

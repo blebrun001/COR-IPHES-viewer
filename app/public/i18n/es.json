@@ -275,12 +275,13 @@
     "theme": {
       "label": "Tema",
       "dark": "Oscuro",
-      "light": "Claro"
+      "light": "Claro",
+      "geek": "Matrix"
     },
     "tooltips": {
       "close": "Cerrar la ventana de opciones",
       "language": "Elegir el idioma de la interfaz",
-      "theme": "Cambiar entre tema claro y oscuro",
+      "theme": "Cambiar entre los temas claro, oscuro y Matrix",
       "screenshotBackground": "Mantener o quitar el fondo al capturar imágenes",
       "anaglyph": "Ajustar la profundidad para el modo anáglifo",
       "reloadDatasets": "Forzar la recarga de la lista de especímenes"

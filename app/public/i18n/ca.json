@@ -276,12 +276,13 @@
     "theme": {
       "label": "Tema",
       "dark": "Fosc",
-      "light": "Clar"
+      "light": "Clar",
+      "geek": "Matrix"
     },
     "tooltips": {
       "close": "Tancar la finestra d’opcions",
       "language": "Triar l’idioma de la interfície",
-      "theme": "Canviar entre tema clar i fosc",
+      "theme": "Canviar entre els temes clar, fosc i Matrix",
       "screenshotBackground": "Incloure o no el fons a les captures",
       "anaglyph": "Ajustar la profunditat per al mode anàglif",
       "reloadDatasets": "Forçar la recàrrega de la llista d’espècimens"

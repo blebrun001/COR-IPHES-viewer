@@ -276,12 +276,13 @@
     "theme": {
       "label": "Thème",
       "dark": "Sombre",
-      "light": "Clair"
+      "light": "Clair",
+      "geek": "Matrix"
     },
     "tooltips": {
       "close": "Fermer la fenêtre des options",
       "language": "Choisir la langue de l’interface",
-      "theme": "Basculer entre les thèmes clair et sombre",
+      "theme": "Basculer entre les thèmes clair, sombre et Matrix",
       "screenshotBackground": "Inclure ou non le fond dans les captures d’écran",
       "anaglyph": "Ajuster l’intensité de l’effet anaglyphe",
       "reloadDatasets": "Forcer le rechargement de la liste des spécimens"
