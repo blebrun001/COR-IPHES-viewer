@@ -10,6 +10,7 @@ import { initMetadata } from './metadata.js';
 import { initMaterialControls } from './materialControls.js';
 import { initInterfaceControls } from './interfaceControls.js';
 import { initModelController } from './modelController.js';
+import { createTooltipService } from './tooltips.js';
 import {
   setActiveDataset as dispatchSetActiveDataset,
   setActiveDatasetForB as dispatchSetActiveDatasetForB,
@@ -266,6 +267,13 @@ export async function initInterface({
   const topBar = documentRef.querySelector('.top-bar');
   const sidebar = documentRef.getElementById('appSidebar');
   const toggleSidebarButton = documentRef.getElementById('toggleSidebar');
+  const optionsButton = documentRef.getElementById('optionsButton');
+  const aboutButton = documentRef.getElementById('aboutButton');
+  const closeOptionsButton = documentRef.getElementById('closeOptions');
+  const themeSelect = documentRef.getElementById('themeSelect');
+  const screenshotBgToggle = documentRef.getElementById('screenshot-bg-toggle');
+  const anaglyphEyeSeparation = documentRef.getElementById('anaglyphEyeSeparation');
+  const reloadDatasetsButton = documentRef.getElementById('reloadDatasets');
 
   if (
     !datasetSelect ||
@@ -277,6 +285,36 @@ export async function initInterface({
   ) {
     throw new Error('Required UI elements are missing');
   }
+
+  const tooltips = createTooltipService({ translate, documentRef, windowRef });
+  const setTooltip = (element, key, fallback = '') => {
+    if (!element) {
+      return;
+    }
+    tooltips.setTooltip(element, { key, fallback });
+  };
+  tooltips.registerStaticTooltips(documentRef);
+  [
+    [toggleSidebarButton, 'header.tooltips.toggleSidebar', 'Toggle sidebar'],
+    [datasetSelect, 'sidebar.tooltips.dataset', 'Select a specimen to load its models'],
+    [modelSelect, 'sidebar.tooltips.model', 'Select an anatomical element'],
+    [reloadButton, 'sidebar.tooltips.reload', 'Reload page'],
+    [resetInterfaceButton, 'sidebar.tooltips.reset', 'Reset interface state'],
+    [gbifLink, 'sidebar.tooltips.gbif', 'Open GBIF entry'],
+    [coraLink, 'sidebar.tooltips.cora', 'Open CORA-RDR entry'],
+    [uberonLink, 'sidebar.tooltips.uberon', 'Open ontology entry'],
+    [optionsButton, 'sidebar.tooltips.settings', 'Settings'],
+    [aboutButton, 'sidebar.tooltips.about', 'About this project'],
+    [viewerToolbarToggle, 'viewer.toolbar.tooltips.toggle', 'Show or hide secondary controls'],
+    [screenshotButton, 'viewer.buttons.capture', 'Capture'],
+    [resetViewButton, 'viewer.buttons.resetView', 'Reset view'],
+    [closeOptionsButton, 'options.tooltips.close', 'Close options'],
+    [languageSelect, 'options.tooltips.language', 'Change interface language'],
+    [themeSelect, 'options.tooltips.theme', 'Change viewer theme'],
+    [screenshotBgToggle, 'options.tooltips.screenshotBackground', 'Toggle screenshot background'],
+    [anaglyphEyeSeparation, 'options.tooltips.anaglyph', 'Adjust anaglyph depth'],
+    [reloadDatasetsButton, 'options.tooltips.reloadDatasets', 'Reload specimen list'],
+  ].forEach(([element, key, fallback]) => setTooltip(element, key, fallback));
 
   const depsMetadata = {
     translate,
@@ -329,6 +367,7 @@ export async function initInterface({
     measureToggleButton,
     clippingToggleButton,
     rotationGizmoButton,
+    tooltipService: tooltips,
     getComparisonMode,
   });
 
@@ -421,12 +460,13 @@ export async function initInterface({
       topBar.setAttribute('aria-hidden', isFullscreenActive ? 'true' : 'false');
     }
     if (fullscreenButton) {
-      const label = translate(
-        isFullscreenActive ? 'viewer.buttons.exitFullscreen' : 'viewer.buttons.enterFullscreen',
-        isFullscreenActive ? 'Exit fullscreen' : 'Enter fullscreen',
-      );
+      const key = isFullscreenActive
+        ? 'viewer.buttons.exitFullscreen'
+        : 'viewer.buttons.enterFullscreen';
+      const fallback = isFullscreenActive ? 'Exit fullscreen' : 'Enter fullscreen';
+      const label = translate(key, fallback);
       fullscreenButton.setAttribute('aria-label', label);
-      fullscreenButton.dataset.tooltip = label;
+      setTooltip(fullscreenButton, key, fallback);
       fullscreenButton.setAttribute('aria-pressed', isFullscreenActive ? 'true' : 'false');
       const iconSpan = fullscreenButton.querySelector('.viewer-toolbar__icon');
       if (iconSpan) {
@@ -439,6 +479,7 @@ export async function initInterface({
         'aria-label',
         translate('viewer.buttons.exitFullscreen', 'Exit fullscreen'),
       );
+      setTooltip(exitFullscreenButton, 'viewer.buttons.exitFullscreen', 'Exit fullscreen');
     }
   };
 
@@ -555,6 +596,7 @@ export async function initInterface({
     syncClippingUI();
     updateFullscreenUI(isFullscreenActive);
     i18n.applyTranslations(documentRef);
+    tooltips.refresh();
     updateToolbarToggle();
     if (searchHandlers?.isTaxonomySupported()) {
       searchHandlers.refreshTaxonomyFromLevel(0);
@@ -573,9 +615,11 @@ export async function initInterface({
     if (getComparisonMode()) {
       compareButton.textContent = translate('comparison.exitMode', 'Exit comparison mode');
       compareButton.disabled = false;
+      setTooltip(compareButton, 'comparison.tooltips.exit', 'Exit comparison mode');
     } else {
       compareButton.textContent = translate('comparison.enterMode', 'Compare');
       compareButton.disabled = !hasModelLoaded;
+      setTooltip(compareButton, 'comparison.tooltips.enter', 'Compare two models');
     }
   };
 
@@ -626,6 +670,7 @@ export async function initInterface({
     clearStatus,
     resetProgressPercent,
     supportsClipping,
+    tooltipService: tooltips,
   };
 
   const controllers = initControllers(controllerDeps);
@@ -650,6 +695,7 @@ export async function initInterface({
     },
     i18n,
     appStateAccessors: searchStateAccessors,
+    tooltipService: tooltips,
   };
 
   const searchHandlers = initSearch(searchDeps);
@@ -1079,6 +1125,7 @@ export async function initInterface({
           console.warn('Failed to unsubscribe viewer listener', error);
         }
       });
+      tooltips.destroy?.();
       viewerApi.destroy?.();
     },
   };

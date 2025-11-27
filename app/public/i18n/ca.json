@@ -2,7 +2,10 @@
   "header": {
     "toggleSidebar": "Mostra/amaga la barra lateral",
     "title": "Esqueletos en Línea",
-    "subtitle": "Visor de models 3D de COR-IPHES"
+    "subtitle": "Visor de models 3D de COR-IPHES",
+    "tooltips": {
+      "toggleSidebar": "Mostrar o amagar el panell lateral"
+    }
   },
   "sidebar": {
     "selectionHeading": "Selecció",
@@ -24,15 +27,24 @@
       "about": "Sobre el projecte"
     },
     "tooltips": {
+      "dataset": "Triar un exemplar per carregar els seus models",
+      "model": "Triar l’element anatòmic a mostrar",
       "settings": "Configuració",
       "reload": "Torna a carregar la pàgina",
-      "about": "Sobre"
+      "reset": "Restablir la interfície i tornar a carregar les dades",
+      "about": "Sobre",
+      "gbif": "Obrir la pàgina de GBIF d’aquesta espècie",
+      "cora": "Obrir el registre CORA-RDR d’aquesta espècie",
+      "uberon": "Obrir la pàgina d’ontologia d’aquest element"
     }
   },
   "search": {
     "label": "Cerca",
     "placeholder": "Cerca exemplars o elements anatòmics...",
-    "noResults": "Sense coincidències"
+    "noResults": "Sense coincidències",
+    "tooltips": {
+      "input": "Escriu per cercar exemplars, elements anatòmics o taxonomia"
+    }
   },
   "language": {
     "selectorLabel": "Idioma",
@@ -132,7 +144,10 @@
     },
     "toolbar": {
       "showMore": "Més controls",
-      "showLess": "Menys controls"
+      "showLess": "Menys controls",
+      "tooltips": {
+        "toggle": "Mostrar o amagar els controls secundaris"
+      }
     }
   },
   "metadata": {
@@ -161,7 +176,11 @@
     "modelA": "Model A",
     "modelB": "Model B",
     "sameModelError": "Si us plau seleccioneu un model diferent per comparar",
-    "loadError": "Error en carregar el model de comparació"
+    "loadError": "Error en carregar el model de comparació",
+    "tooltips": {
+      "enter": "Carregar un segon model al costat de l’actual",
+      "exit": "Tornar a la vista d’un sol model"
+    }
   },
   "status": {
     "loadingDatasets": "S'estan carregant els exemplars...",
@@ -189,7 +208,15 @@
     "family": "Família",
     "subfamily": "Subfamília",
     "genus": "Gènere",
-    "species": "Espècie"
+    "species": "Espècie",
+    "tooltips": {
+      "class": "Filtrar els resultats per classe",
+      "order": "Filtrar els resultats per ordre",
+      "family": "Filtrar els resultats per família",
+      "subfamily": "Filtrar els resultats per subfamília",
+      "genus": "Filtrar els resultats per gènere",
+      "species": "Filtrar els resultats per espècie"
+    }
   },
   "about": {
     "title": "Sobre el projecte",
@@ -250,6 +277,14 @@
       "label": "Tema",
       "dark": "Fosc",
       "light": "Clar"
+    },
+    "tooltips": {
+      "close": "Tancar la finestra d’opcions",
+      "language": "Triar l’idioma de la interfície",
+      "theme": "Canviar entre tema clar i fosc",
+      "screenshotBackground": "Incloure o no el fons a les captures",
+      "anaglyph": "Ajustar la profunditat per al mode anàglif",
+      "reloadDatasets": "Forçar la recàrrega de la llista d’espècimens"
     }
   },
   "option": {

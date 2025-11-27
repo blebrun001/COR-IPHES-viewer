@@ -2,7 +2,10 @@
   "header": {
     "toggleSidebar": "Afficher/masquer le panneau latéral",
     "title": "Esqueletos en Línea",
-    "subtitle": "Visualiseur de modèles 3D COR-IPHES"
+    "subtitle": "Visualiseur de modèles 3D COR-IPHES",
+    "tooltips": {
+      "toggleSidebar": "Afficher ou masquer le panneau latéral"
+    }
   },
   "sidebar": {
     "selectionHeading": "Sélection",
@@ -24,15 +27,24 @@
       "about": "À propos du projet"
     },
     "tooltips": {
+      "dataset": "Choisir un spécimen pour charger ses modèles",
+      "model": "Choisir un élément anatomique à afficher",
       "settings": "Paramètres",
       "reload": "Recharger la page",
-      "about": "À propos"
+      "reset": "Réinitialiser l’interface et recharger les données",
+      "about": "À propos",
+      "gbif": "Ouvrir la fiche GBIF de cette espèce",
+      "cora": "Ouvrir la fiche CORA-RDR de cette espèce",
+      "uberon": "Ouvrir la page d’ontologie de cet élément"
     }
   },
   "search": {
     "label": "Recherche",
     "placeholder": "Rechercher des spécimens ou des éléments anatomiques...",
-    "noResults": "Aucun résultat"
+    "noResults": "Aucun résultat",
+    "tooltips": {
+      "input": "Saisissez pour rechercher des spécimens, éléments anatomiques ou taxons"
+    }
   },
   "language": {
     "selectorLabel": "Langue",
@@ -132,7 +144,10 @@
     },
     "toolbar": {
       "showMore": "Plus de contrôles",
-      "showLess": "Moins de contrôles"
+      "showLess": "Moins de contrôles",
+      "tooltips": {
+        "toggle": "Afficher ou masquer les contrôles secondaires"
+      }
     }
   },
   "metadata": {
@@ -161,7 +176,11 @@
     "modelA": "Modèle A",
     "modelB": "Modèle B",
     "sameModelError": "Veuillez sélectionner un modèle différent à comparer",
-    "loadError": "Échec du chargement du modèle de comparaison"
+    "loadError": "Échec du chargement du modèle de comparaison",
+    "tooltips": {
+      "enter": "Charger un deuxième modèle à côté du modèle actuel",
+      "exit": "Revenir à la vue d’un seul modèle"
+    }
   },
   "status": {
     "loadingDatasets": "Chargement des spécimens...",
@@ -189,7 +208,15 @@
     "family": "Famille",
     "subfamily": "Sous-famille",
     "genus": "Genre",
-    "species": "Espèce"
+    "species": "Espèce",
+    "tooltips": {
+      "class": "Filtrer les résultats par classe",
+      "order": "Filtrer les résultats par ordre",
+      "family": "Filtrer les résultats par famille",
+      "subfamily": "Filtrer les résultats par sous-famille",
+      "genus": "Filtrer les résultats par genre",
+      "species": "Filtrer les résultats par espèce"
+    }
   },
   "about": {
     "title": "À propos du projet",
@@ -250,6 +277,14 @@
       "label": "Thème",
       "dark": "Sombre",
       "light": "Clair"
+    },
+    "tooltips": {
+      "close": "Fermer la fenêtre des options",
+      "language": "Choisir la langue de l’interface",
+      "theme": "Basculer entre les thèmes clair et sombre",
+      "screenshotBackground": "Inclure ou non le fond dans les captures d’écran",
+      "anaglyph": "Ajuster l’intensité de l’effet anaglyphe",
+      "reloadDatasets": "Forcer le rechargement de la liste des spécimens"
     }
   },
   "option": {

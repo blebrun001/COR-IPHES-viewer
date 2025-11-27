@@ -53,6 +53,7 @@ export default function initControllers(deps = {}) {
     resetProgressPercent,
     supportsClipping,
     documentRef,
+    tooltipService,
   } = deps;
 
   if (!viewerApi) {
@@ -93,6 +94,17 @@ export default function initControllers(deps = {}) {
   if (!modelUtilities || typeof modelUtilities.loadModel !== 'function') {
     throw new Error('initControllers requires modelUtilities.loadModel()');
   }
+
+  const setTooltip = (element, key, fallback = '') => {
+    if (!element) return;
+    if (tooltipService?.setTooltip) {
+      tooltipService.setTooltip(element, { key, fallback });
+      return;
+    }
+    if (translate) {
+      element.setAttribute('data-tooltip', translate(key, fallback));
+    }
+  };
 
   const getDatasetMetadata = (persistentId) => {
     if (dataClient && typeof dataClient.getDatasetMetadata === 'function') {
@@ -206,7 +218,7 @@ export default function initControllers(deps = {}) {
       const fallback = newState ? 'Disable Labels' : 'Enable Labels';
       const label = translate(labelKey, fallback);
       button.setAttribute('aria-label', label);
-      button.setAttribute('data-tooltip', label);
+      setTooltip(button, labelKey, fallback);
     },
 
     async handleLanguageSelectChange(event) {

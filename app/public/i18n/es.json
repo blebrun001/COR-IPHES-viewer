@@ -2,7 +2,10 @@
   "header": {
     "toggleSidebar": "Mostrar/ocultar la barra lateral",
     "title": "Esqueletos en Línea",
-    "subtitle": "Visor de modelos 3D de COR-IPHES"
+    "subtitle": "Visor de modelos 3D de COR-IPHES",
+    "tooltips": {
+      "toggleSidebar": "Mostrar u ocultar el panel lateral"
+    }
   },
   "sidebar": {
     "selectionHeading": "Selección",
@@ -24,15 +27,24 @@
       "about": "Acerca del proyecto"
     },
     "tooltips": {
+      "dataset": "Elige un espécimen para cargar sus modelos",
+      "model": "Elige el elemento anatómico a visualizar",
       "settings": "Configuración",
       "reload": "Recargar página",
-      "about": "Acerca de"
+      "reset": "Restablecer la interfaz y recargar los datos",
+      "about": "Acerca de",
+      "gbif": "Abrir la página de GBIF para esta especie",
+      "cora": "Abrir el registro CORA-RDR de esta especie",
+      "uberon": "Abrir la página de ontología de este elemento"
     }
   },
   "search": {
     "label": "Buscar",
     "placeholder": "Buscar especímenes o elementos anatómicos...",
-    "noResults": "Sin coincidencias"
+    "noResults": "Sin coincidencias",
+    "tooltips": {
+      "input": "Escribe para buscar especímenes, elementos anatómicos o taxonomía"
+    }
   },
   "language": {
     "selectorLabel": "Idioma",
@@ -132,7 +144,10 @@
     },
     "toolbar": {
       "showMore": "Más controles",
-      "showLess": "Menos controles"
+      "showLess": "Menos controles",
+      "tooltips": {
+        "toggle": "Mostrar u ocultar los controles secundarios"
+      }
     }
   },
   "metadata": {
@@ -161,7 +176,11 @@
     "modelA": "Modelo A",
     "modelB": "Modelo B",
     "sameModelError": "Por favor seleccione un modelo diferente para comparar",
-    "loadError": "Error al cargar el modelo de comparación"
+    "loadError": "Error al cargar el modelo de comparación",
+    "tooltips": {
+      "enter": "Cargar un segundo modelo junto al actual",
+      "exit": "Volver a la vista de un único modelo"
+    }
   },
   "status": {
     "loadingDatasets": "Cargando ejemplares...",
@@ -188,7 +207,15 @@
     "family": "Familia",
     "subfamily": "Subfamilia",
     "genus": "Género",
-    "species": "Especie"
+    "species": "Especie",
+    "tooltips": {
+      "class": "Filtrar resultados por clase",
+      "order": "Filtrar resultados por orden",
+      "family": "Filtrar resultados por familia",
+      "subfamily": "Filtrar resultados por subfamilia",
+      "genus": "Filtrar resultados por género",
+      "species": "Filtrar resultados por especie"
+    }
   },
   "about": {
     "title": "Acerca del proyecto",
@@ -249,6 +276,14 @@
       "label": "Tema",
       "dark": "Oscuro",
       "light": "Claro"
+    },
+    "tooltips": {
+      "close": "Cerrar la ventana de opciones",
+      "language": "Elegir el idioma de la interfaz",
+      "theme": "Cambiar entre tema claro y oscuro",
+      "screenshotBackground": "Mantener o quitar el fondo al capturar imágenes",
+      "anaglyph": "Ajustar la profundidad para el modo anáglifo",
+      "reloadDatasets": "Forzar la recarga de la lista de especímenes"
     }
   },
   "option": {

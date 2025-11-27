@@ -17,6 +17,7 @@
  * @param {HTMLElement|null} deps.clippingToggleButton
  * @param {HTMLElement|null} deps.rotationGizmoButton
  * @param {() => boolean} [deps.getComparisonMode]
+ * @param {{ setTooltip?: Function }} [deps.tooltipService]
  * @returns {{
  *   initialize: () => void,
  *   updateRotationGizmoButton: () => void,
@@ -45,7 +46,7 @@ export function initMaterialControls({
   projectionModeButtons,
   orbitModeButtons,
   toggleTexturesButton,
-  normalizeScaleButton,
+ normalizeScaleButton,
   scaleReferenceButton,
   wireframeButton,
   lightingButton,
@@ -53,6 +54,7 @@ export function initMaterialControls({
   measureToggleButton,
   clippingToggleButton,
   rotationGizmoButton,
+  tooltipService,
   getComparisonMode,
 }) {
   if (!viewerApi) {
@@ -63,6 +65,17 @@ export function initMaterialControls({
     typeof renderingFacade.hasActiveContent === 'function'
       ? renderingFacade.hasActiveContent()
       : false;
+
+  const setTooltip = (element, key, fallback = '') => {
+    if (!element) return;
+    if (tooltipService?.setTooltip) {
+      tooltipService.setTooltip(element, { key, fallback });
+      return;
+    }
+    if (translate) {
+      element.setAttribute('data-tooltip', translate(key, fallback));
+    }
+  };
 
   const isXClippingActive = () => {
     if (!supportsClipping) return false;
@@ -98,9 +111,10 @@ export function initMaterialControls({
       : 'viewer.rotation.enableGizmo';
     const fallback = enabled ? 'Disable rotation gizmo' : 'Enable rotation gizmo';
     rotationGizmoButton.setAttribute('aria-label', translate(labelKey, fallback));
-    rotationGizmoButton.setAttribute(
-      'data-tooltip',
-      translate('viewer.rotation.gizmoTooltip', 'Rotation gizmo'),
+    setTooltip(
+      rotationGizmoButton,
+      'viewer.rotation.gizmoTooltip',
+      'Rotation gizmo',
     );
     rotationGizmoButton.setAttribute('aria-pressed', enabled ? 'true' : 'false');
     rotationGizmoButton.disabled = !rotationGizmoHasModel;
@@ -117,7 +131,7 @@ export function initMaterialControls({
       const isActive = currentMode === mode;
       const label = translate(labelKey, fallback);
       button.setAttribute('aria-label', label);
-      button.setAttribute('data-tooltip', label);
+      setTooltip(button, labelKey, fallback);
       button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     });
   };
@@ -133,7 +147,7 @@ export function initMaterialControls({
       const isActive = currentMode === mode;
       const label = translate(labelKey, fallback);
       button.setAttribute('aria-label', label);
-      button.setAttribute('data-tooltip', label);
+      setTooltip(button, labelKey, fallback);
       button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     });
   };
@@ -146,12 +160,13 @@ export function initMaterialControls({
       const key = texturesEnabled
         ? 'viewer.buttons.disableTextures'
         : 'viewer.buttons.enableTextures';
+      const fallback = texturesEnabled ? 'Disable Textures' : 'Enable Textures';
       const label = translate(
         key,
-        texturesEnabled ? 'Disable Textures' : 'Enable Textures',
+        fallback,
       );
       toggleTexturesButton.setAttribute('aria-label', label);
-      toggleTexturesButton.setAttribute('data-tooltip', label);
+      setTooltip(toggleTexturesButton, key, fallback);
     }
   };
 
@@ -187,7 +202,7 @@ export function initMaterialControls({
       normalizationEnabled ? 'true' : 'false',
     );
     normalizeScaleButton.setAttribute('aria-label', label);
-    normalizeScaleButton.setAttribute('data-tooltip', tooltip);
+    setTooltip(normalizeScaleButton, 'viewer.buttons.normalizeComparisonScaleTooltip', 'Normalize scales');
     normalizeScaleButton.hidden = !comparisonActive;
     normalizeScaleButton.disabled = !comparisonActive;
   };
@@ -200,12 +215,13 @@ export function initMaterialControls({
       const key = wireframeEnabled
         ? 'viewer.buttons.disableWireframe'
         : 'viewer.buttons.enableWireframe';
+      const fallback = wireframeEnabled ? 'Disable Wireframe' : 'Enable Wireframe';
       const label = translate(
         key,
-        wireframeEnabled ? 'Disable Wireframe' : 'Enable Wireframe',
+        fallback,
       );
       wireframeButton.setAttribute('aria-label', label);
-      wireframeButton.setAttribute('data-tooltip', label);
+      setTooltip(wireframeButton, key, fallback);
     }
   };
 
@@ -229,7 +245,11 @@ export function initMaterialControls({
       'Display a 1 cm reference cube',
     );
     scaleReferenceButton.setAttribute('aria-label', translate(labelKey, labelFallback));
-    scaleReferenceButton.setAttribute('data-tooltip', tooltip);
+    setTooltip(
+      scaleReferenceButton,
+      'viewer.buttons.scaleReferenceTooltip',
+      'Display a 1 cm reference cube',
+    );
     scaleReferenceButton.setAttribute('aria-pressed', enabled ? 'true' : 'false');
     scaleReferenceButton.disabled = !hasSceneContent;
   };
@@ -242,12 +262,13 @@ export function initMaterialControls({
       const key = lightsDimmed
         ? 'viewer.buttons.restoreLights'
         : 'viewer.buttons.dimLights';
+      const fallback = lightsDimmed ? 'Restore Lights' : 'Dim Lights';
       const label = translate(
         key,
-        lightsDimmed ? 'Restore Lights' : 'Dim Lights',
+        fallback,
       );
       lightingButton.setAttribute('aria-label', label);
-      lightingButton.setAttribute('data-tooltip', label);
+      setTooltip(lightingButton, key, fallback);
     }
   };
 
@@ -264,7 +285,7 @@ export function initMaterialControls({
         : 'Enable anaglyph view';
       const label = translate(key, fallback);
       anaglyphButton.setAttribute('aria-label', label);
-      anaglyphButton.setAttribute('data-tooltip', label);
+      setTooltip(anaglyphButton, key, fallback);
       anaglyphButton.setAttribute('aria-pressed', anaglyphEnabled ? 'true' : 'false');
     }
   };
@@ -277,12 +298,13 @@ export function initMaterialControls({
       const key = measurementEnabled
         ? 'viewer.buttons.exitMeasure'
         : 'viewer.buttons.measure';
+      const fallback = measurementEnabled ? 'Exit Measure' : 'Measure';
       const label = translate(
         key,
-        measurementEnabled ? 'Exit Measure' : 'Measure',
+        fallback,
       );
       measureToggleButton.setAttribute('aria-label', label);
-      measureToggleButton.setAttribute('data-tooltip', label);
+      setTooltip(measureToggleButton, key, fallback);
     }
   };
 
@@ -304,9 +326,10 @@ export function initMaterialControls({
       'aria-label',
       translate(labelKey, labelFallback),
     );
-    clippingToggleButton.setAttribute(
-      'data-tooltip',
-      translate('viewer.buttons.clippingTooltip', 'Section view'),
+    setTooltip(
+      clippingToggleButton,
+      'viewer.buttons.clippingTooltip',
+      'Section view',
     );
     clippingToggleButton.setAttribute('aria-pressed', enabled ? 'true' : 'false');
     clippingToggleButton.setAttribute('aria-expanded', enabled ? 'true' : 'false');

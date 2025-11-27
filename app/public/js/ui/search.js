@@ -272,6 +272,7 @@ export function initSearch(deps = {}) {
     setActiveDatasetId,
     i18n,
     appStateAccessors,
+    tooltipService,
   } = deps;
 
   const TAXONOMY_LEVEL_DEFS = [
@@ -289,6 +290,16 @@ export function initSearch(deps = {}) {
     const datasets = typeof getAllDatasets === 'function' ? getAllDatasets() : [];
     return Array.isArray(datasets) ? datasets : [];
   };
+  const setTooltip = (element, key, fallback = '') => {
+    if (!element) return;
+    if (tooltipService?.setTooltip) {
+      tooltipService.setTooltip(element, { key, fallback });
+      return;
+    }
+    if (translate) {
+      element.setAttribute('data-tooltip', translate(key, fallback));
+    }
+  };
   let uberonClient = null;
   try {
     uberonClient = deps.uberonClient || new UberonSynonymsClient();
@@ -301,6 +312,11 @@ export function initSearch(deps = {}) {
     searchInput.setAttribute('aria-autocomplete', 'list');
     searchInput.setAttribute('aria-controls', searchResults.id);
     searchInput.setAttribute('aria-expanded', 'false');
+    setTooltip(
+      searchInput,
+      'search.tooltips.input',
+      'Search specimens or anatomical elements',
+    );
   }
   if (searchResults) {
     searchResults.setAttribute('role', 'listbox');
@@ -1322,6 +1338,12 @@ export function initSearch(deps = {}) {
         select.id = selectId;
         select.dataset.levelKey = level.key;
         select.dataset.levelIndex = String(index);
+        const levelLabel = getTaxonomyLabel(level.key, level.fallback);
+        setTooltip(
+          select,
+          `taxonomy.tooltips.${level.key}`,
+          `Filter results by ${levelLabel}`,
+        );
 
         wrapper.appendChild(label);
         wrapper.appendChild(select);

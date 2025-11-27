@@ -2,7 +2,10 @@
   "header": {
     "toggleSidebar": "Toggle sidebar",
     "title": "Esqueletos en Línea",
-    "subtitle": "COR-IPHES 3D Model Viewer (beta)"
+    "subtitle": "COR-IPHES 3D Model Viewer (beta)",
+    "tooltips": {
+      "toggleSidebar": "Show or hide the sidebar panel"
+    }
   },
   "sidebar": {
     "selectionHeading": "Selection",
@@ -24,15 +27,24 @@
       "about": "About the project"
     },
     "tooltips": {
+      "dataset": "Choose a specimen to load its models",
+      "model": "Pick an anatomical element to view",
       "settings": "Settings",
       "reload": "Reload page",
-      "about": "About"
+      "reset": "Reset the interface and reload data",
+      "about": "About",
+      "gbif": "Open the GBIF page for this species",
+      "cora": "Open the CORA-RDR record for this species",
+      "uberon": "Open the ontology page for this element"
     }
   },
   "search": {
     "label": "Search",
     "placeholder": "Search specimens or anatomical elements...",
-    "noResults": "No matches found"
+    "noResults": "No matches found",
+    "tooltips": {
+      "input": "Type to search specimens, anatomical elements, or taxonomy"
+    }
   },
   "language": {
     "selectorLabel": "Language",
@@ -132,7 +144,10 @@
     },
     "toolbar": {
       "showMore": "More controls",
-      "showLess": "Fewer controls"
+      "showLess": "Fewer controls",
+      "tooltips": {
+        "toggle": "Show or hide secondary controls"
+      }
     }
   },
   "metadata": {
@@ -161,7 +176,11 @@
     "modelA": "Model A",
     "modelB": "Model B",
     "sameModelError": "Please select a different model to compare",
-    "loadError": "Failed to load comparison model"
+    "loadError": "Failed to load comparison model",
+    "tooltips": {
+      "enter": "Load a second model alongside the current one",
+      "exit": "Return to single model view"
+    }
   },
   "status": {
     "loadingDatasets": "Loading specimens...",
@@ -189,7 +208,15 @@
     "family": "Family",
     "subfamily": "Subfamily",
     "genus": "Genus",
-    "species": "Species"
+    "species": "Species",
+    "tooltips": {
+      "class": "Filter results by class",
+      "order": "Filter results by order",
+      "family": "Filter results by family",
+      "subfamily": "Filter results by subfamily",
+      "genus": "Filter results by genus",
+      "species": "Filter results by species"
+    }
   },
   "about": {
     "title": "About the project",
@@ -250,6 +277,14 @@
       "label": "Theme",
       "dark": "Dark",
       "light": "Light"
+    },
+    "tooltips": {
+      "close": "Close the options dialog",
+      "language": "Choose the interface language",
+      "theme": "Switch between dark and light themes",
+      "screenshotBackground": "Keep the background visible when capturing screenshots",
+      "anaglyph": "Adjust the depth effect for anaglyph mode",
+      "reloadDatasets": "Force reload of the specimen list"
     }
   },
   "option": {
