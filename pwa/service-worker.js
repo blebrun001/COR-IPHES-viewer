@@ -90,6 +90,22 @@ const FONT_ASSETS = [
   'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0'
 ];
 
+const isDatafileRequest = (url) => {
+  try {
+    return new URL(url).pathname.includes('/access/datafile/');
+  } catch (error) {
+    return false;
+  }
+};
+
+const isOfflineProxyRequest = (url) => {
+  try {
+    return new URL(url).pathname.startsWith('/offline-proxy');
+  } catch (error) {
+    return false;
+  }
+};
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
@@ -112,6 +128,12 @@ self.addEventListener('activate', (event) => {
     }).then(() => self.clients.claim())
   );
 });
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') {
     return;
@@ -124,6 +146,64 @@ self.addEventListener('fetch', (event) => {
   const isNavigation = event.request.mode === 'navigate';
   const requestURL = new URL(event.request.url);
   const isFont = requestURL.origin.includes('fonts.googleapis.com') || requestURL.origin.includes('fonts.gstatic.com');
+  const isDatafile = isDatafileRequest(event.request.url);
+  const isOfflineProxy = isOfflineProxyRequest(event.request.url);
+
+  if (isOfflineProxy) {
+    event.respondWith(
+      (async () => {
+        const target = requestURL.searchParams.get('url');
+        if (!target) {
+          return Response.error();
+        }
+        const offlineCache = await caches.open(OFFLINE_DATA_CACHE);
+        const cached = await offlineCache.match(target, { ignoreVary: true });
+        if (cached) {
+          return cached;
+        }
+        try {
+          const response = await fetch(target, { mode: 'cors' });
+          if (response && response.status === 200) {
+            offlineCache.put(target, response.clone());
+          }
+          return response;
+        } catch (error) {
+          const fallback = await caches.match(target);
+          if (fallback) {
+            return fallback;
+          }
+          return Response.error();
+        }
+      })()
+    );
+    return;
+  }
+
+  if (isDatafile) {
+    event.respondWith(
+      (async () => {
+        const offlineCache = await caches.open(OFFLINE_DATA_CACHE);
+        const cached = await offlineCache.match(event.request, { ignoreVary: true });
+        if (cached) {
+          return cached;
+        }
+        try {
+          const response = await fetch(event.request);
+          if (response && response.status === 200) {
+            offlineCache.put(event.request, response.clone());
+          }
+          return response;
+        } catch (error) {
+          const fallback = await caches.match(event.request);
+          if (fallback) {
+            return fallback;
+          }
+          throw error;
+        }
+      })()
+    );
+    return;
+  }
 
   if (isFont) {
     event.respondWith(

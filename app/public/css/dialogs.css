@@ -286,7 +286,7 @@
 
 .offline-dataset__summary {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.5rem;
   padding: 0.75rem 0.9rem;
@@ -304,12 +304,16 @@
 
 .offline-dataset__title {
   font-weight: 600;
+  font-size: var(--font-sm);
+  line-height: 1.35;
 }
 
 .offline-dataset__title-group {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  width: 100%;
+  text-align: left;
 }
 
 .offline-dataset__meta {

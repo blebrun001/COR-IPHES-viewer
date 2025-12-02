@@ -8,6 +8,30 @@ const DEFAULT_API_ROOT = "https://dataverse.csuc.cat/api";
 const DEFAULT_DATAVERSE_ID = "cor-iphes";
 const DEFAULT_FETCH = getDefaultFetch();
 
+const buildOfflineProxyUrl = (targetUrl) => {
+  if (!targetUrl) return targetUrl;
+  try {
+    if (targetUrl.includes('/offline-proxy?url=')) {
+      return targetUrl;
+    }
+    const hasController =
+      typeof navigator !== 'undefined' &&
+      navigator.serviceWorker &&
+      navigator.serviceWorker.controller;
+    if (!hasController) {
+      return targetUrl;
+    }
+    const origin = typeof location !== 'undefined' && location.origin ? location.origin : '';
+    if (!origin) {
+      return targetUrl;
+    }
+    const encoded = encodeURIComponent(targetUrl);
+    return `${origin}/offline-proxy?url=${encoded}`;
+  } catch (error) {
+    return targetUrl;
+  }
+};
+
 function normalizeKeyToken(name) {
   return typeof name === 'string' ? name.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
 }
@@ -818,11 +842,15 @@ export class DataverseClient {
       model.mtlEntry?.directory || model.objEntry?.directory || model.directory || ''
     );
 
-    const objUrl = `${this.apiRoot}/access/datafile/${model.objEntry.file.dataFile.id}?format=original`;
+    const objUrl = buildOfflineProxyUrl(
+      `${this.apiRoot}/access/datafile/${model.objEntry.file.dataFile.id}?format=original`
+    );
 
     const defaultMaterialLibrary = model.mtlEntry
       ? {
-          url: `${this.apiRoot}/access/datafile/${model.mtlEntry.file.dataFile.id}?format=original`,
+          url: buildOfflineProxyUrl(
+            `${this.apiRoot}/access/datafile/${model.mtlEntry.file.dataFile.id}?format=original`
+          ),
           textureBaseDir: defaultMtlDirectory,
         }
       : null;
@@ -842,7 +870,9 @@ export class DataverseClient {
       const file = getFileByPath(entry, resolved, baseDir);
       if (file) {
         return {
-          url: `${this.apiRoot}/access/datafile/${file.dataFile.id}?format=original`,
+          url: buildOfflineProxyUrl(
+            `${this.apiRoot}/access/datafile/${file.dataFile.id}?format=original`
+          ),
           textureBaseDir: normalizeDir(file.directoryLabel || file.directory || ''),
         };
       }
@@ -881,7 +911,9 @@ export class DataverseClient {
       const file = getFileByPath(entry, resolved, baseDir);
       if (!file) return null;
       return {
-        url: `${this.apiRoot}/access/datafile/${file.dataFile.id}?format=original`,
+        url: buildOfflineProxyUrl(
+          `${this.apiRoot}/access/datafile/${file.dataFile.id}?format=original`
+        ),
         cacheKey: `dataset:${datasetId}:file:${file.dataFile.id}`,
       };
     };

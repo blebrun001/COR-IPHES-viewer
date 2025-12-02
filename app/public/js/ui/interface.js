@@ -227,53 +227,6 @@ export async function initInterface({
   const offlineCancelButton = documentRef.getElementById('offlineCancelButton');
   const offlineClearDownloadsButton = documentRef.getElementById('offlineClearDownloads');
   let currentDownloadAbort = null;
-  const offlineExpansionState = new Map();
-
-  const buildModelItemsMarkup = ({ datasetId, models = [], offlineModels = new Set(), current }) => {
-    if (!models.length) {
-      return `<div class="offline-dialog__hint">${escapeHtml(
-        translate('offline.noModels', 'No models found'),
-      )}</div>`;
-    }
-    const selectAllLabel = escapeHtml(translate('offline.selectAllModels', 'Select all elements'));
-    const items =
-      `<label class="offline-checkbox offline-checkbox--all">
-        <input
-          class="offline-checkbox__input offline-checkbox__input--all"
-          type="checkbox"
-          data-dataset-id="${escapeHtml(datasetId)}"
-          data-model-key="__all__"
-        />
-        <span class="offline-checkbox__label">${selectAllLabel}</span>
-      </label>` +
-      models
-        .map((model) => {
-          const isOffline = offlineModels.has(model.key);
-          const shouldCheck = isOffline || (current && datasetId === current);
-          const badge = isOffline
-            ? `<span class="offline-checkbox__badge">${escapeHtml(
-                translate('offline.savedShort', 'Saved'),
-              )}</span>`
-            : '';
-          return `
-            <label class="offline-checkbox offline-checkbox--model">
-              <input
-                class="offline-checkbox__input"
-                type="checkbox"
-                data-dataset-id="${escapeHtml(datasetId)}"
-                data-model-key="${escapeHtml(model.key)}"
-                ${shouldCheck ? 'checked' : ''}
-              />
-              <span class="offline-checkbox__label">${escapeHtml(
-                model.displayName || model.key,
-              )}</span>
-              ${badge}
-            </label>
-          `;
-        })
-        .join('');
-    return items;
-  };
 
   const loadModelsForDataset = async (datasetId) => {
     let models = [];
@@ -715,6 +668,15 @@ export async function initInterface({
     }
   };
 
+  const isDatasetFullyOffline = (datasetId) => {
+    if (!datasetId) {
+      return false;
+    }
+    const entry = listOfflineDatasets().find((item) => item.value === datasetId);
+    const models = Array.isArray(entry?.models) ? entry.models : [];
+    return models.length > 0 && models.every((model) => model.offline !== false);
+  };
+
   const renderOfflineDownloads = () => {
     const downloads = listOfflineDatasets();
     if (offlineBadge) {
@@ -771,9 +733,7 @@ export async function initInterface({
     const blocks = await Promise.all(
       datasets.map(async (dataset) => {
         const offlineModelsEntry = offlineByDataset.get(dataset.value) || [];
-        const offlineModels = new Set(
-          offlineModelsEntry.filter((m) => m.offline !== false).map((m) => m.key),
-        );
+        const offlineModels = offlineModelsEntry.filter((m) => m.offline !== false);
 
         let models = [];
         try {
@@ -783,38 +743,40 @@ export async function initInterface({
           models = [];
         }
 
-        const savedCount = offlineModels.size;
+        const savedCount = offlineModels.length;
         const totalCount = models.length || offlineModelsEntry.length;
+        const isFullyOffline = totalCount > 0 && savedCount >= totalCount;
+        const isPartial = savedCount > 0 && savedCount < totalCount;
 
         const baseLabel = getSpecimenLabel(dataset);
         const label = escapeHtml(formatSpecimenLabel(baseLabel, dataset.specimenSummary));
         const titleWithPartial =
-          totalCount > 0 && savedCount > 0 && savedCount < totalCount
-            ? `${label} (${escapeHtml(translate('offline.partial', 'partial'))})`
-            : label;
+          isPartial ? `${label} (${escapeHtml(translate('offline.partial', 'partial'))})` : label;
         const meta =
           totalCount > 0
             ? `${totalCount} ${translate('offline.elements', 'elements')}`
             : translate('offline.noModelsShort', 'No elements');
         const savedBadge =
-          savedCount > 0
+          savedCount > 0 && totalCount > 0
             ? `<span class="offline-dataset__saved">${escapeHtml(
-                savedCount === totalCount
+                isFullyOffline
                   ? translate('offline.full', 'full')
                   : `${translate('offline.savedShort', 'Saved')} ${savedCount}/${totalCount}`,
               )}</span>`
             : '';
 
-        const modelsMarkup = buildModelItemsMarkup({
-          datasetId: dataset.value,
-          models,
-          offlineModels,
-          current,
-        });
+        const shouldCheck = isFullyOffline || (current && dataset.value === current);
 
         return `
           <div class="offline-dataset" data-dataset-id="${escapeHtml(dataset.value)}">
-            <div class="offline-dataset__summary">
+            <label class="offline-dataset__summary offline-checkbox">
+              <input
+                class="offline-checkbox__input offline-checkbox__input--dataset"
+                type="checkbox"
+                value="${escapeHtml(dataset.value)}"
+                data-dataset-id="${escapeHtml(dataset.value)}"
+                ${shouldCheck ? 'checked' : ''}
+              />
               <div class="offline-dataset__title-group">
                 <span class="offline-dataset__title">${titleWithPartial}</span>
                 <span class="offline-dataset__meta">
@@ -822,10 +784,7 @@ export async function initInterface({
                   ${savedBadge}
                 </span>
               </div>
-            </div>
-            <div class="offline-dataset__models" data-loaded="true">
-              ${modelsMarkup}
-            </div>
+            </label>
           </div>
         `;
       }),
@@ -835,24 +794,13 @@ export async function initInterface({
     updateOfflineButtonState();
   };
 
-  const getSelectedOfflineSelection = () => {
+  const getSelectedOfflineDatasets = () => {
     if (!offlineDatasetList) return [];
-    const selections = new Map();
-    offlineDatasetList
-      .querySelectorAll('.offline-checkbox__input:checked')
-      .forEach((input) => {
-        const datasetId = input.dataset.datasetId;
-        const modelKey = input.dataset.modelKey;
-        if (!datasetId || !modelKey || modelKey === '__all__') return;
-        if (!selections.has(datasetId)) {
-          selections.set(datasetId, new Set());
-        }
-        selections.get(datasetId).add(modelKey);
-      });
-    return Array.from(selections.entries()).map(([datasetId, modelKeys]) => ({
-      datasetId,
-      modelKeys: Array.from(modelKeys),
-    }));
+    return Array.from(
+      offlineDatasetList.querySelectorAll('.offline-checkbox__input--dataset:checked'),
+    )
+      .map((input) => input.dataset.datasetId || input.value)
+      .filter(Boolean);
   };
 
   const updateOfflineButtonState = () => {
@@ -860,14 +808,11 @@ export async function initInterface({
       return;
     }
     const offline = windowRef?.navigator?.onLine === false;
-    const selection = getSelectedOfflineSelection();
+    const selection = getSelectedOfflineDatasets();
     const availableIds = new Set((getAllDatasets() || []).map((item) => item.value));
-    const hasValidSelection = selection.length > 0 && selection.every(({ datasetId }) => availableIds.has(datasetId));
-    const alreadyOffline =
-      hasValidSelection &&
-      selection.every(({ datasetId, modelKeys }) =>
-        modelKeys.every((key) => isModelOffline(datasetId, key)),
-      );
+    const hasValidSelection =
+      selection.length > 0 && selection.every((datasetId) => availableIds.has(datasetId));
+    const alreadyOffline = hasValidSelection && selection.every((id) => isDatasetFullyOffline(id));
     offlineDownloadButton.disabled = !hasValidSelection || offline || alreadyOffline;
 
     let statusText = '';
@@ -887,7 +832,7 @@ export async function initInterface({
     if (!offlineDownloadButton) {
       return;
     }
-    const selection = getSelectedOfflineSelection();
+    const selection = getSelectedOfflineDatasets();
     if (!selection.length) {
       setOfflineStatusText(translate('offline.prompt', 'Select specimens to download'));
       return;
@@ -902,12 +847,7 @@ export async function initInterface({
     setCustomStatus(translate('offline.downloading', 'Downloading for offline use...'), 'loading');
     setOfflineStatusText(translate('offline.downloading', 'Downloading for offline use...'));
 
-    const targets = selection
-      .map(({ datasetId, modelKeys }) => {
-        const pendingModels = modelKeys.filter((key) => !isModelOffline(datasetId, key));
-        return pendingModels.length ? { datasetId, modelKeys: pendingModels } : null;
-      })
-      .filter(Boolean);
+    const targets = selection.filter((datasetId) => !isDatasetFullyOffline(datasetId));
 
     if (!targets.length) {
       setCustomStatus(translate('offline.already', 'Already available offline'), 'info');
@@ -918,11 +858,10 @@ export async function initInterface({
 
     try {
       for (let index = 0; index < targets.length; index += 1) {
-        const { datasetId, modelKeys } = targets[index];
+        const datasetId = targets[index];
         await downloadDatasetForOffline({
           dataClient,
           persistentId: datasetId,
-          modelKeys,
           signal: currentDownloadAbort?.signal,
           onProgress: (ratio) => {
             const overall = (index + ratio) / targets.length;
@@ -935,11 +874,11 @@ export async function initInterface({
       renderOfflineDownloads();
       renderOfflineSelector();
       setCustomStatus(
-        translate('offline.readyStatus', 'Saved selected elements for offline use'),
+        translate('offline.readyStatus', 'Saved selected specimens for offline use'),
         'info',
       );
       setOfflineStatusText(
-        translate('offline.readyStatus', 'Saved selected elements for offline use'),
+        translate('offline.readyStatus', 'Saved selected specimens for offline use'),
       );
     } catch (error) {
       if (error?.name === 'AbortError') {
@@ -1333,29 +1272,12 @@ export async function initInterface({
     modelSelect.addEventListener('change', controllers.handleModelSelectChange);
     if (offlineDatasetList) {
       offlineDatasetList.addEventListener('change', updateOfflineButtonState);
-      offlineDatasetList.addEventListener('change', (event) => {
-        const target = event.target;
-        if (!target?.classList?.contains('offline-checkbox__input')) return;
-        if (target.dataset.modelKey === '__all__') {
-          const datasetId = target.dataset.datasetId;
-          if (!datasetId) return;
-          const container = target.closest('.offline-dataset');
-          container
-            ?.querySelectorAll(
-              '.offline-checkbox__input[data-model-key]:not([data-model-key="__all__"])',
-            )
-            ?.forEach((input) => {
-              input.checked = target.checked;
-            });
-          updateOfflineButtonState();
-        }
-      });
     }
     if (offlineSelectAll) {
       offlineSelectAll.addEventListener('click', () => {
         if (!offlineDatasetList) return;
         offlineDatasetList
-          .querySelectorAll('.offline-checkbox__input[data-model-key]:not([data-model-key="__all__"])')
+          .querySelectorAll('.offline-checkbox__input--dataset')
           .forEach((input) => (input.checked = true));
         updateOfflineButtonState();
       });
@@ -1364,7 +1286,7 @@ export async function initInterface({
       offlineClearAll.addEventListener('click', () => {
         if (!offlineDatasetList) return;
         offlineDatasetList
-          .querySelectorAll('.offline-checkbox__input[data-model-key]:not([data-model-key="__all__"])')
+          .querySelectorAll('.offline-checkbox__input--dataset')
           .forEach((input) => (input.checked = false));
         updateOfflineButtonState();
       });

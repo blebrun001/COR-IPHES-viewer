@@ -101,22 +101,11 @@ export async function downloadDatasetForOffline({
   const requests = new Set([metadataUrl]);
   const fileIds = new Set();
 
-  selectedModels.forEach((model) => {
-    const objId = model?.objEntry?.file?.dataFile?.id;
-    const mtlId = model?.mtlEntry?.file?.dataFile?.id;
-    if (objId) fileIds.add(objId);
-    if (mtlId) fileIds.add(mtlId);
-
-    const targetDir = model.directory || model?.objEntry?.directory || model?.mtlEntry?.directory || '';
-    if (targetDir) {
-      files.forEach((file) => {
-        const id = file?.dataFile?.id;
-        if (!id) return;
-        const dir = file.directoryLabel || file.directory || '';
-        if (dir === targetDir) {
-          fileIds.add(id);
-        }
-      });
+  // Cache every file in the dataset so the specimen can be used fully offline.
+  files.forEach((file) => {
+    const id = file?.dataFile?.id;
+    if (id) {
+      fileIds.add(id);
     }
   });
 
