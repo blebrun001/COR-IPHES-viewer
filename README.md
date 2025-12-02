@@ -38,6 +38,7 @@ The COR-IPHES 3D Viewer is a fully static web experience built to showcase the C
 - **Automatic scene preparation**: Models are recentred, scaled, lit, and framed as soon as they load.
 - **Rich tooling**: Perspective/orthographic projections, material toggles, wireframe views, scale reference cube, measurement overlays, anaglyph rendering, and rotation gizmo support.
 - **Comparison workflow**: Pin a primary model and load a secondary one side-by-side, with optional normalised scaling.
+- **Search + taxonomy filters**: Free-text search across specimens/elements, Darwin Core taxonomy selectors, and UBERON-aware anatomical detection with deep links to GBIF/CORA/OLS.
 - **Internationalisation**: English, Spanish, French, and Catalan dictionaries ship with the project; the viewer can switch languages at runtime.
 - **Offline-friendly cache**: Dataset metadata lists are cached in `localStorage` to reduce API calls between sessions.
 - **Responsive UI**: Sidebar collapses into a drawer on smaller screens, with dedicated touch affordances.
@@ -87,7 +88,10 @@ All modules are written using modern ES syntax and loaded directly by the browse
 
 ## Prerequisites
 - Modern browser with **WebGL 2** support (Chrome, Firefox, Edge, Safari ≥ 16).
-- Internet access to `https://dataverse.csuc.cat`.
+- Internet access to:
+  - `https://dataverse.csuc.cat` (models and metadata),
+  - `https://www.ebi.ac.uk/ols4/api/ontologies/uberon/terms` (UBERON synonyms for anatomical search),
+  - `https://unpkg.com/three@0.161.0/...` (Three.js import map; you can self-host the modules if preferred).
 - A local static server to serve the files (due to module and CORS requirements).
   - **Python 3.9+** (recommended) or **Node.js 18+**.
 
@@ -144,7 +148,8 @@ Then open `http://localhost:8000/`.
 ## Configuration & Environment
 - **Environment variables**: None required. API endpoints are hard-coded in `app/public/js/data/dataverseClient.js`.
 - **Caching**: Dataset listings are cached in `localStorage` for 24 hours. Use the “Reload lists” button (options dialog) to bust cache manually.
-- **Theme**: Dark theme by default. Users may toggle light/dark via the options dialog; theme selection is persisted in `localStorage`.
+- **Theme**: Dark theme by default. Users may toggle `dark` / `light` / `geek` (Matrix-style) via the options dialog; theme selection is persisted in `localStorage`.
+- **Screenshots**: Options dialog lets you toggle background visibility for captured PNGs; preference is stored locally.
 - **Build step**: Not required. Any optimisation (minification, bundling) would have to be scripted manually if desired for production.
 
 ---
@@ -176,6 +181,7 @@ The client accepts a custom `fetch` implementation, enabling substitution during
 ---
 
 ## 3D Viewer Capabilities
+- **Search & taxonomy filters**: Free-text search spans specimens and anatomical elements; Darwin Core taxonomy selectors (class → species) filter datasets; anatomical detection uses UBERON codes inferred from model paths plus synonyms fetched from OLS.
 - **Model lifecycle**: Primary model management, comparison mode, screenshot capture with watermark and measurement overlays.
 - **Camera controls**: Perspective/orthographic switching, orbit modes (upright vs. free), focus on active content.
 - **Rendering toggles**: Textures, wireframe, lighting dimmer, scale reference cube, anaglyph stereo (adjustable eye separation).
@@ -210,13 +216,18 @@ Each capability is implemented as a mixin in `app/public/js/3d/`, enhancing the 
 ---
 
 ## Testing & Quality Checklist
+- [ ] Use the taxonomy selectors (class → species) to filter specimens and confirm search results update.
+- [ ] Run a free-text search for anatomical elements; verify UBERON-linked labels/synonyms appear (requires OLS network access).
 - [ ] Load at least one dataset and confirm the model appears with textures.
 - [ ] Switch between projection modes and orbit modes.
 - [ ] Enable measurement mode, create/remove measurements, and export a screenshot.
 - [ ] Enter comparison mode, load a secondary model, and toggle scale normalisation.
 - [ ] Test clipping planes: enable, drag handles, reset.
 - [ ] Toggle each rendering option (textures, wireframe, lighting dimmer, scale reference).
+- [ ] Open the GBIF/CORA/UBERON external links for a specimen to confirm they resolve correctly.
 - [ ] Switch languages and verify translations update dynamically.
+- [ ] Toggle theme (dark, light, geek) and ensure viewer assets swap correctly.
+- [ ] Toggle screenshot background visibility in Options and confirm captures reflect the setting.
 - [ ] Resize the browser below 1024 px and confirm the sidebar toggle works.
 - [ ] Test the options dialog and ensure theme switching applies correctly.
 
@@ -228,6 +239,7 @@ Each capability is implemented as a mixin in `app/public/js/3d/`, enhancing the 
    - Serve from the repository root (the directory containing `index.html`).
    - Ensure the `/app/` subdirectory is available as-is.
    - Enforce HTTPS so that browser requests to `https://dataverse.csuc.cat` succeed.
+   - Allow outgoing requests to `dataverse.csuc.cat`, `www.ebi.ac.uk` (OLS UBERON), and `unpkg.com` (Three.js CDN) or self-host those assets.
 3. **CDN/Cache headers**: Optional, but consider enabling caching for static assets (`.js`, `.css`, textures) while keeping HTML uncached for rapid updates.
 4. **Post-deploy checks**: Validate core flows, especially Dataverse fetches (some hosts block external APIs).
 
