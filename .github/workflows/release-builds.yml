@@ -6,6 +6,9 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+
 jobs:
   build-macos:
     name: macOS app
@@ -28,9 +31,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: cor-iphes-macos
-          path: |
-            src-tauri/target/release/bundle/macos/COR-IPHES Esqueletos Off-linea.app
-            src-tauri/target/release/bundle/macos/COR-IPHES-Esqueletos-Off-linea-macos.app.zip
+          path: src-tauri/target/release/bundle/macos/COR-IPHES-Esqueletos-Off-linea-macos.app.zip
 
   build-linux:
     name: Linux AppImage
@@ -76,3 +77,28 @@ jobs:
         with:
           name: cor-iphes-windows
           path: src-tauri/target/release/portable/COR-IPHES-Esqueletos-Off-linea-windows-portable.zip
+
+  publish-release:
+    name: Publish GitHub release
+    needs:
+      - build-macos
+      - build-linux
+      - build-windows
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Publish prerelease
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          name: "COR-IPHES Esqueletos Off-linea ${{ github.ref_name }}"
+          body: |
+            Alpha release: unfinished build for early testing.
+
+            Packages are unsigned. macOS Gatekeeper and Windows SmartScreen may show warnings.
+          files: release-assets/*

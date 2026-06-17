@@ -1,6 +1,6 @@
 [package]
 name = "cor-iphes-esqueletos-off-linea"
-version = "0.1.0"
+version = "0.1.0-alpha.1"
 description = "COR-IPHES Esqueletos Off-linea desktop application"
 authors = ["IPHES-CERCA"]
 license = "CC-BY-NC-4.0"
