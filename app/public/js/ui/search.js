@@ -207,44 +207,15 @@ export function resolveUberonCodeFromModel(modelInfo) {
 }
 
 /**
- * Builds the option label for a model, appending UBERON code if detected.
+ * Builds the option label for a model.
+ *
+ * Anatomical element names come from the catalog and are preserved verbatim.
  *
  * @param {object|null} modelInfo - Model descriptor.
  * @returns {string} Human readable label.
  */
 export function formatModelOptionLabel(modelInfo) {
-  const baseLabel = modelInfo?.displayName || '';
-  if (!baseLabel) {
-    return baseLabel;
-  }
-
-  const code = resolveUberonCodeFromModel(modelInfo);
-  if (!code) {
-    return baseLabel;
-  }
-
-  const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const variants = [
-    `uberon[:_\\-\\s]*${escapedCode}`,
-    `UBERON[_\\-\\s]*${escapedCode}`,
-    `\\b${escapedCode}\\b`,
-  ];
-
-  let cleaned = baseLabel;
-  variants.forEach((fragment) => {
-    cleaned = cleaned.replace(
-      new RegExp(`\\s*[\\(\\[\\-_]*\\s*${fragment}\\s*[\\)\\]\\-_]*\\s*`, 'ig'),
-      ' ',
-    );
-  });
-
-  cleaned = cleaned.replace(/[_]+/g, ' ');
-  cleaned = cleaned.replace(/\s{2,}/g, ' ').trim();
-  if (!cleaned) {
-    cleaned = baseLabel;
-  }
-
-  return `${cleaned} (UBERON:${code})`;
+  return modelInfo?.displayName || '';
 }
 
 /**
@@ -270,7 +241,6 @@ export function initSearch(deps = {}) {
     setStatus,
     getAllDatasets,
     setActiveDatasetId,
-    i18n,
     appStateAccessors,
     tooltipService,
   } = deps;
@@ -758,7 +728,9 @@ export function initSearch(deps = {}) {
     console.log('Elements:', nextIndex.elements.length);
     console.log('===========================\n');
 
-    if (uberonClient && !skipSynonymRefresh && uberonCodes.size > 0) {
+    const canRefreshSynonyms =
+      typeof window === 'undefined' || window.__COR_IPHES_ONLINE__ !== false;
+    if (uberonClient && canRefreshSynonyms && !skipSynonymRefresh && uberonCodes.size > 0) {
       uberonClient
         .refreshEntries(Array.from(uberonCodes), { force: forceSynonymRefresh })
         .then(({ updated }) => {
@@ -1115,8 +1087,7 @@ export function initSearch(deps = {}) {
     entries.sort((a, b) => {
       if (a[0] === UNKNOWN_TAXON_VALUE) return 1;
       if (b[0] === UNKNOWN_TAXON_VALUE) return -1;
-      const locale = i18n?.currentLanguage || 'en';
-      return a[1].localeCompare(b[1], locale, { sensitivity: 'base' });
+      return a[1].localeCompare(b[1], 'en', { sensitivity: 'base' });
     });
 
     const placeholder = getTaxonomySelectLabel(level.key, level.fallback);
@@ -1205,10 +1176,21 @@ export function initSearch(deps = {}) {
       `<option value="">${placeholder}</option>` +
       datasets
         .map(
-          (info) =>
-            `<option value="${escapeHtml(info.value)}">${escapeHtml(
-              formatSpecimenLabel(info.label, info.specimenSummary),
-            )}</option>`,
+          (info) => {
+            const state =
+              info?.downloadState ||
+              info?.download_state ||
+              info?.downloadStats?.state ||
+              info?.download_stats?.state ||
+              '';
+            const stateLabel =
+              state && dataClient?.usesPersistentCatalog
+                ? (translate ? translate(`sync.states.${state}`, state.replace(/_/g, ' ')) : state.replace(/_/g, ' '))
+                : '';
+            const label = formatSpecimenLabel(info.label, info.specimenSummary);
+            const display = stateLabel ? `${label} · ${stateLabel}` : label;
+            return `<option value="${escapeHtml(info.value)}">${escapeHtml(display)}</option>`;
+          },
         )
         .join('');
 
@@ -1329,7 +1311,6 @@ export function initSearch(deps = {}) {
           : document.createElement('label');
         const selectId = `taxonomy-${level.key}`;
         label.setAttribute('for', selectId);
-        label.dataset.i18n = `taxonomy.${level.key}`;
         label.textContent = getTaxonomyLabel(level.key, level.fallback);
 
         const select = documentRef?.createElement

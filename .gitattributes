@@ -1,0 +1,5 @@
+* text=auto
+
+app/public/vendor/** linguist-vendored
+package-lock.json linguist-generated
+src-tauri/Cargo.lock linguist-generated

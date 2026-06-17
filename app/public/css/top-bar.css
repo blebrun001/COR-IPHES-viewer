@@ -49,7 +49,14 @@
 .project-title {
   margin: 0;
   font-size: clamp(var(--font-lg), 2vw, var(--font-xl));
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
+}
+
+.project-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
 }
 
 .project-subtitle {

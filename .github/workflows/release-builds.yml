@@ -1,0 +1,78 @@
+name: Release builds
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-macos:
+    name: macOS app
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - run: npm ci
+      - run: npm test
+      - run: npm run tauri:build:mac
+      - name: Archive app bundle
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent \
+            "src-tauri/target/release/bundle/macos/COR-IPHES Esqueletos Off-linea.app" \
+            "src-tauri/target/release/bundle/macos/COR-IPHES-Esqueletos-Off-linea-macos.app.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cor-iphes-macos
+          path: |
+            src-tauri/target/release/bundle/macos/COR-IPHES Esqueletos Off-linea.app
+            src-tauri/target/release/bundle/macos/COR-IPHES-Esqueletos-Off-linea-macos.app.zip
+
+  build-linux:
+    name: Linux AppImage
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Tauri Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf
+      - run: npm ci
+      - run: npm test
+      - run: npm run tauri:build:linux
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cor-iphes-linux
+          path: src-tauri/target/release/bundle/appimage/*.AppImage
+
+  build-windows:
+    name: Windows portable
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - run: npm ci
+      - run: npm test
+      - run: npm run tauri:build:windows
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cor-iphes-windows
+          path: src-tauri/target/release/portable/COR-IPHES-Esqueletos-Off-linea-windows-portable.zip

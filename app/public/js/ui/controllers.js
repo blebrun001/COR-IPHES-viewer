@@ -24,7 +24,6 @@ export default function initControllers(deps = {}) {
   const {
     viewerApi,
     translate,
-    i18n,
     dataClient,
     updateProjectionButtons,
     updateTextureToggleButton,
@@ -78,9 +77,6 @@ export default function initControllers(deps = {}) {
   ensure(isXClippingActive, 'isXClippingActive');
   ensure(syncClippingUI, 'syncClippingUI');
   ensure(translate, 'translate');
-  if (!i18n || typeof i18n.setLanguage !== 'function') {
-    throw new Error('initControllers requires an i18n instance with setLanguage()');
-  }
   if (!metadata || typeof metadata.updateExternalLinks !== 'function') {
     throw new Error('initControllers requires metadata.updateExternalLinks()');
   }
@@ -219,18 +215,6 @@ export default function initControllers(deps = {}) {
       const label = translate(labelKey, fallback);
       button.setAttribute('aria-label', label);
       setTooltip(button, labelKey, fallback);
-    },
-
-    async handleLanguageSelectChange(event) {
-      const selected = event?.target?.value;
-      if (!selected || selected === i18n.currentLanguage) {
-        return;
-      }
-      try {
-        await i18n.setLanguage(selected);
-      } catch (error) {
-        console.error('Unable to switch language', error);
-      }
     },
 
     handleModelSelectChange(event) {

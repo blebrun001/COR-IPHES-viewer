@@ -1,0 +1,27 @@
+{
+  "name": "cor-iphes-esqueletos-off-linea",
+  "version": "0.1.0",
+  "private": true,
+  "license": "CC-BY-NC-4.0",
+  "type": "module",
+  "description": "Portable offline desktop wrapper for the COR-IPHES 3D viewer.",
+  "scripts": {
+    "test": "npm run test:js && npm run test:rust",
+    "test:js": "node --test tests/*.test.js",
+    "test:rust": "cargo test --manifest-path src-tauri/Cargo.toml",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "tauri:build:mac": "tauri build --bundles app",
+    "tauri:build:linux": "tauri build --bundles appimage",
+    "tauri:build:windows": "tauri build --no-bundle && node scripts/package-windows-portable.mjs",
+    "validate:release:local": "node scripts/validate-release-local.mjs",
+    "vendor:three": "node scripts/vendor-three.mjs"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.11.0",
+    "three": "0.161.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.0"
+  }
+}

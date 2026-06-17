@@ -1,26 +1,11 @@
-<!-- Bootstraps the interactive 3D viewer application, wiring layout, controls, and localization assets. -->
+<!-- Bootstraps the interactive 3D viewer application, wiring layout, controls, and local assets. -->
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dataverse 3D Viewer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
-    <script>
-      (function () {
-        try {
-          const storedTheme = window.localStorage.getItem('ui.theme');
-          if (storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'geek') {
-            document.documentElement.setAttribute('data-theme', storedTheme);
-          }
-        } catch (error) {
-          /* Ignore storage access issues */
-        }
-      })();
-    </script>
+    <title>COR-IPHES Esqueletos Off-linea</title>
+    <link rel="stylesheet" href="./public/vendor/fonts/local-fonts.css" />
     <link rel="stylesheet" href="./public/css/styles.css" />
   </head>
   <body>
@@ -35,21 +20,23 @@
             class="top-bar__toggle"
             aria-controls="appSidebar"
             aria-expanded="true"
-            data-i18n-attr="aria-label:header.toggleSidebar"
+            data-text-attr="aria-label:header.toggleSidebar"
           >
             ☰
           </button>
-          <h1 class="project-title" data-i18n="header.title">Esqueletos en Línea</h1>
-          <p class="project-subtitle" data-i18n="header.subtitle">COR-IPHES 3D Model Viewer (beta)</p>
+          <div>
+            <div class="project-title-row">
+              <h1 class="project-title" data-text="header.title">COR-IPHES Esqueletos Off-linea</h1>
+            </div>
+            <p class="project-subtitle" data-text="header.subtitle">Portable 3D Model Viewer</p>
+          </div>
         </div>
         <div class="top-bar__center"></div>
         <div class="top-bar__right">
         <img
           src="./public/ressources/iphes.png"
-          data-theme-src-dark="./public/ressources/iphes.png"
-          data-theme-src-light="./public/ressources/ipheslight.png"
           alt="IPHES-CERCA logo"
-          data-i18n-attr="alt:about.logos.iphesAlt"
+          data-text-attr="alt:header.logos.iphesAlt"
           class="top-bar__logo"
           decoding="async"
         />
@@ -61,19 +48,19 @@
           <section class="sidebar-section selectors-section">
             <div class="sidebar-selectors">
               <div class="selector-group search-group">
-                <label for="searchInput" data-i18n="search.label">Search</label>
+                <label for="searchInput" data-text="search.label">Search</label>
                 <input
                   type="search"
                   id="searchInput"
                   class="search-input"
                   placeholder="Search specimens or anatomical elements..."
-                  data-i18n-attr="placeholder:search.placeholder"
+                  data-text-attr="placeholder:search.placeholder"
                   autocomplete="off"
                 />
                 <div id="searchResults" class="search-results" hidden></div>
               </div>
               <div class="selector-group taxonomy-group" id="taxonomyGroup">
-                <div class="taxonomy-heading" data-i18n="sidebar.taxonomyHeading">Taxonomy</div>
+                <div class="taxonomy-heading" data-text="sidebar.taxonomyHeading">Taxonomy</div>
                 <div
                   id="taxonomySelectors"
                   class="taxonomy-selectors"
@@ -81,16 +68,25 @@
                 >
                   <div id="taxonomyLevels" class="taxonomy-levels"></div>
                   <div class="selector-group">
-                    <label for="datasetSelect" data-i18n="sidebar.datasetLabel">Specimen</label>
+                    <label for="datasetSelect" data-text="sidebar.datasetLabel">Specimen</label>
                     <select id="datasetSelect">
-                      <option value="" data-i18n="sidebar.datasetLoadingOption">Loading datasets...</option>
+                      <option value="" data-text="sidebar.datasetLoadingOption">Loading datasets...</option>
                     </select>
                   </div>
                   <div class="selector-group">
-                    <label for="modelSelect" data-i18n="sidebar.modelLabel">Anatomical element</label>
+                    <label for="modelSelect" data-text="sidebar.modelLabel">Anatomical element</label>
                     <select id="modelSelect" disabled>
-                      <option value="" data-i18n="sidebar.modelDisabledOption">Select a dataset</option>
+                      <option value="" data-text="sidebar.modelDisabledOption">Select a dataset</option>
                     </select>
+                    <button
+                      id="downloadSpecimenButton"
+                      type="button"
+                      class="selector-inline-action"
+                      hidden
+                      data-text="sync.downloadSpecimen"
+                    >
+                      Download specimen
+                    </button>
                   </div>
                 </div>
               </div>
@@ -100,7 +96,7 @@
                   class="compare-button"
                   type="button"
                   disabled
-                  data-i18n="comparison.enterMode"
+                  data-text="comparison.enterMode"
                 >
                   Compare
                 </button>
@@ -108,7 +104,7 @@
             </div>
           </section>
           <section class="sidebar-section links-section">
-            <div class="sidebar-heading" data-i18n="sidebar.moreInfoHeading">More infos</div>
+            <div class="sidebar-heading" data-text="sidebar.moreInfoHeading">More infos</div>
             <div class="external-links">
               <a
                 id="gbifLink"
@@ -117,7 +113,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 hidden
-                data-i18n="sidebar.links.gbif"
+                data-text="sidebar.links.gbif"
               >
                 Species (GBIF)
               </a>
@@ -128,7 +124,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 hidden
-                data-i18n="sidebar.links.cora"
+                data-text="sidebar.links.cora"
               >
                 Species (CORA-RDR)
               </a>
@@ -139,7 +135,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 hidden
-                data-i18n="sidebar.links.uberon"
+                data-text="sidebar.links.uberon"
               >
                 Anatomical element (OLS UBERON)
               </a>
@@ -147,10 +143,18 @@
           </section>
           <div class="sidebar-footer">
             <button
+              id="syncButton"
+              class="floating-sync-button tooltip-host"
+              type="button"
+              data-text-attr="aria-label:sidebar.links.sync,data-tooltip:sidebar.tooltips.sync"
+            >
+              <span class="material-icons floating-sync-button__icon" aria-hidden="true">sync</span>
+            </button>
+            <button
               id="optionsButton"
               class="floating-options-button tooltip-host"
               type="button"
-              data-i18n-attr="aria-label:sidebar.links.options,data-tooltip:sidebar.tooltips.settings"
+              data-text-attr="aria-label:sidebar.links.options,data-tooltip:sidebar.tooltips.settings"
             >
               <span class="material-icons floating-options-button__icon" aria-hidden="true">settings</span>
             </button>
@@ -158,17 +162,9 @@
               id="resetInterfaceButton"
               type="button"
               class="floating-reset-button tooltip-host"
-              data-i18n-attr="aria-label:sidebar.links.reset,data-tooltip:sidebar.tooltips.reload"
+              data-text-attr="aria-label:sidebar.links.reset,data-tooltip:sidebar.tooltips.reload"
             >
               <span class="material-icons floating-reset-button__icon" aria-hidden="true">refresh</span>
-            </button>
-            <button
-              id="aboutButton"
-              type="button"
-              class="floating-info-button tooltip-host"
-              data-i18n-attr="aria-label:sidebar.links.about,data-tooltip:sidebar.tooltips.about"
-            >
-              <span class="material-icons floating-info-button__icon" aria-hidden="true">help_outline</span>
             </button>
           </div>
         </aside>
@@ -209,13 +205,13 @@
               <div
                 class="viewer-toolbar__button-group viewer-toolbar__button-group--projection"
                 role="group"
-                data-i18n-attr="aria-label:viewer.projection.label"
+                data-text-attr="aria-label:viewer.projection.label"
               >
                     <button
                       id="projectionModePerspective"
                       type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle viewer-toolbar__button--projection"
-                    data-i18n-attr="aria-label:viewer.projection.perspective,data-tooltip:viewer.projection.perspective"
+                    data-text-attr="aria-label:viewer.projection.perspective,data-tooltip:viewer.projection.perspective"
                     aria-pressed="true"
                     >
                       <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">token</span>
@@ -224,7 +220,7 @@
                       id="projectionModeOrthographic"
                       type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle viewer-toolbar__button--projection"
-                    data-i18n-attr="aria-label:viewer.projection.orthographic,data-tooltip:viewer.projection.orthographic"
+                    data-text-attr="aria-label:viewer.projection.orthographic,data-tooltip:viewer.projection.orthographic"
                     aria-pressed="false"
                     >
                       <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">deployed_code</span>
@@ -233,13 +229,13 @@
                   <div
                 class="viewer-toolbar__button-group viewer-toolbar__button-group--orbit"
                 role="group"
-                data-i18n-attr="aria-label:viewer.orbit.label"
+                data-text-attr="aria-label:viewer.orbit.label"
               >
                     <button
                       id="orbitModeUpright"
                       type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle viewer-toolbar__button--orbit"
-                    data-i18n-attr="aria-label:viewer.orbit.upright,data-tooltip:viewer.orbit.upright"
+                    data-text-attr="aria-label:viewer.orbit.upright,data-tooltip:viewer.orbit.upright"
                     aria-pressed="true"
                     >
                       <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">arrows_outward</span>
@@ -248,7 +244,7 @@
                       id="orbitModeFree"
                       type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle viewer-toolbar__button--orbit"
-                    data-i18n-attr="aria-label:viewer.orbit.free,data-tooltip:viewer.orbit.free"
+                    data-text-attr="aria-label:viewer.orbit.free,data-tooltip:viewer.orbit.free"
                     aria-pressed="false"
                     >
                       <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">360</span>
@@ -258,7 +254,7 @@
                     id="resetView"
                     type="button"
                     class="viewer-toolbar__button"
-                    data-i18n-attr="aria-label:viewer.buttons.resetView,data-tooltip:viewer.buttons.resetView"
+                    data-text-attr="aria-label:viewer.buttons.resetView,data-tooltip:viewer.buttons.resetView"
                   >
                     <span aria-hidden="true" class="material-icons viewer-toolbar__icon">restart_alt</span>
                   </button>
@@ -266,7 +262,7 @@
                     id="captureScreenshot"
                     type="button"
                     class="viewer-toolbar__button"
-                    data-i18n-attr="aria-label:viewer.buttons.capture,data-tooltip:viewer.buttons.capture"
+                    data-text-attr="aria-label:viewer.buttons.capture,data-tooltip:viewer.buttons.capture"
                   >
                     <span aria-hidden="true" class="material-icons viewer-toolbar__icon">photo_camera</span>
                   </button>
@@ -274,7 +270,7 @@
                     id="toggleFullscreen"
                     type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle"
-                    data-i18n-attr="aria-label:viewer.buttons.enterFullscreen,data-tooltip:viewer.buttons.enterFullscreen"
+                    data-text-attr="aria-label:viewer.buttons.enterFullscreen,data-tooltip:viewer.buttons.enterFullscreen"
                     aria-pressed="false"
                   >
                     <span aria-hidden="true" class="material-icons viewer-toolbar__icon">fullscreen</span>
@@ -287,7 +283,7 @@
                     id="toggleRotationGizmo"
                     type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle"
-                    data-i18n-attr="aria-label:viewer.rotation.enableGizmo,data-tooltip:viewer.rotation.gizmoTooltip"
+                    data-text-attr="aria-label:viewer.rotation.enableGizmo,data-tooltip:viewer.rotation.gizmoTooltip"
                     aria-pressed="false"
                     disabled
                   >
@@ -297,7 +293,7 @@
                     id="toggleTextures"
                     type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle"
-                    data-i18n-attr="aria-label:viewer.buttons.disableTextures,data-tooltip:viewer.buttons.disableTextures"
+                    data-text-attr="aria-label:viewer.buttons.disableTextures,data-tooltip:viewer.buttons.disableTextures"
                   >
                     <span aria-hidden="true" class="material-icons viewer-toolbar__icon">texture</span>
                   </button>
@@ -305,7 +301,7 @@
                     id="toggleWireframe"
                     type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle"
-                    data-i18n-attr="aria-label:viewer.buttons.enableWireframe,data-tooltip:viewer.buttons.enableWireframe"
+                    data-text-attr="aria-label:viewer.buttons.enableWireframe,data-tooltip:viewer.buttons.enableWireframe"
                   >
                     <span aria-hidden="true" class="material-icons viewer-toolbar__icon">grid_4x4</span>
                   </button>
@@ -313,7 +309,7 @@
                     id="toggleLighting"
                     type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle"
-                    data-i18n-attr="aria-label:viewer.buttons.dimLights,data-tooltip:viewer.buttons.dimLights"
+                    data-text-attr="aria-label:viewer.buttons.dimLights,data-tooltip:viewer.buttons.dimLights"
                   >
                     <span aria-hidden="true" class="material-icons viewer-toolbar__icon">wb_incandescent</span>
                   </button>
@@ -321,16 +317,16 @@
                     id="toggleAnaglyph"
                     type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle"
-                    data-i18n-attr="aria-label:viewer.buttons.enableAnaglyph,data-tooltip:viewer.buttons.enableAnaglyph"
+                    data-text-attr="aria-label:viewer.buttons.enableAnaglyph,data-tooltip:viewer.buttons.enableAnaglyph"
                     aria-pressed="false"
                   >
-                    <span aria-hidden="true" class="material-symbols-outlined">eyeglasses_2</span>
+                    <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">eyeglasses_2</span>
                   </button>
                   <button
                     id="toggleMeasure"
                     type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle"
-                    data-i18n-attr="aria-label:viewer.buttons.measure,data-tooltip:viewer.buttons.measure"
+                    data-text-attr="aria-label:viewer.buttons.measure,data-tooltip:viewer.buttons.measure"
                   >
                     <span aria-hidden="true" class="material-icons viewer-toolbar__icon">straighten</span>
                   </button>
@@ -338,7 +334,7 @@
                     id="clearMeasurements"
                     type="button"
                     class="viewer-toolbar__button"
-                    data-i18n-attr="aria-label:viewer.buttons.clearMeasurements,data-tooltip:viewer.buttons.clearMeasurements"
+                    data-text-attr="aria-label:viewer.buttons.clearMeasurements,data-tooltip:viewer.buttons.clearMeasurements"
                   >
                     <span aria-hidden="true" class="material-icons viewer-toolbar__icon">delete</span>
                   </button>
@@ -346,7 +342,7 @@
                     id="toggleClipping"
                     type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle"
-                data-i18n-attr="aria-label:viewer.buttons.enableClipping,data-tooltip:viewer.buttons.clippingTooltip"
+                data-text-attr="aria-label:viewer.buttons.enableClipping,data-tooltip:viewer.buttons.clippingTooltip"
                     aria-pressed="false"
                   >
                     <span aria-hidden="true" class="material-icons viewer-toolbar__icon">content_cut</span>
@@ -355,7 +351,7 @@
                     id="toggleLabels"
                     type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle"
-                    data-i18n-attr="aria-label:viewer.buttons.enableLabels,data-tooltip:viewer.buttons.enableLabels"
+                    data-text-attr="aria-label:viewer.buttons.enableLabels,data-tooltip:viewer.buttons.enableLabels"
                     aria-pressed="false"
                     hidden
                   >
@@ -365,7 +361,7 @@
                     id="toggleNormalizeScale"
                     type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle"
-                    data-i18n-attr="aria-label:viewer.buttons.enableNormalizeComparisonScale,data-tooltip:viewer.buttons.normalizeComparisonScaleTooltip"
+                    data-text-attr="aria-label:viewer.buttons.enableNormalizeComparisonScale,data-tooltip:viewer.buttons.normalizeComparisonScaleTooltip"
                     hidden
                   >
                     <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">view_real_size</span>
@@ -374,11 +370,10 @@
                     id="toggleScaleReference"
                     type="button"
                     class="viewer-toolbar__button viewer-toolbar__button--toggle"
-                    data-i18n-attr="aria-label:viewer.buttons.enableScaleReference,data-tooltip:viewer.buttons.scaleReferenceTooltip"
-                    data-i18n-attr="aria-label:viewer.buttons.enableScaleReference,data-tooltip:viewer.buttons.scaleReferenceTooltip"
+                    data-text-attr="aria-label:viewer.buttons.enableScaleReference,data-tooltip:viewer.buttons.scaleReferenceTooltip"
                     aria-pressed="false"
                   >
-                    <span aria-hidden="true" class="material-symbols-outlined">view_in_ar</span>
+                    <span aria-hidden="true" class="material-symbols-outlined viewer-toolbar__icon">view_in_ar</span>
                   </button>
               </div>
               <button
@@ -387,7 +382,7 @@
                 type="button"
                 aria-expanded="false"
                 aria-controls="viewerToolbarSecondary"
-                data-i18n="viewer.toolbar.showMore"
+                data-text="viewer.toolbar.showMore"
               >
                 More controls
               </button>
@@ -402,59 +397,121 @@
     <script type="importmap">
       {
         "imports": {
-          "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
-          "three/examples/jsm/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+          "three": "./public/vendor/three/build/three.module.js",
+          "three/examples/jsm/": "./public/vendor/three/examples/jsm/"
         }
       }
     </script>
+    <dialog id="syncDialog" class="sync-dialog" aria-labelledby="syncDialogTitle">
+      <button
+        id="closeSync"
+        type="button"
+        class="options-close"
+        data-text-attr="aria-label:sync.closeAria"
+      >&times;</button>
+      <div class="sync-dialog__header">
+        <div>
+          <h2 id="syncDialogTitle" data-text="sync.title">Offline catalog</h2>
+          <p data-text="sync.subtitle">Update the specimen list, then download complete specimens for offline use.</p>
+        </div>
+        <div id="syncSummary" class="sync-summary" data-type="info"></div>
+      </div>
+      <div class="sync-content">
+        <section class="sync-overview" aria-label="Offline download status">
+          <div id="syncGlobalProgress" class="sync-overview__item">
+            <div class="sync-overview-progress">
+              <span data-text="sync.globalProgress">Global progress</span>
+              <div class="sync-progress" aria-hidden="true"><span style="width:0%"></span></div>
+              <strong>0%</strong>
+            </div>
+          </div>
+          <div class="sync-overview__item">
+            <span data-text="sync.storageHeading">Local storage</span>
+            <strong id="syncStorage">0 B</strong>
+          </div>
+        </section>
+        <section class="sync-section sync-section--specimens">
+          <div class="sync-section__heading">
+            <div>
+              <h3 data-text="sync.downloadHeading">Specimen list</h3>
+              <p class="sync-section__hint" data-text="sync.downloadHint">Catalog updates only refresh the list. Downloads are started per specimen.</p>
+            </div>
+            <div class="sync-actions">
+              <button id="syncRefreshButton" type="button" class="sync-action sync-action--primary" data-text="sync.refreshList">Update list</button>
+              <button id="syncDownloadAllButton" type="button" class="sync-action" data-text="sync.downloadAll">Download missing</button>
+              <button id="syncPauseButton" type="button" class="sync-action" data-text="sync.pause">Pause all</button>
+              <button id="syncResumeButton" type="button" class="sync-action" data-text="sync.resume">Resume all</button>
+              <button id="syncCancelButton" type="button" class="sync-action" data-text="sync.cancel">Cancel all</button>
+            </div>
+          </div>
+          <div class="sync-filter-bar">
+            <label class="sync-filter sync-filter--search">
+              <span data-text="sync.searchSpecimens">Search</span>
+              <input
+                id="syncSearchInput"
+                type="search"
+                autocomplete="off"
+                data-text-attr="placeholder:sync.searchPlaceholder"
+                placeholder="Search specimens..."
+              />
+            </label>
+            <label class="sync-filter">
+              <span data-text="sync.taxonomyFilter">Taxonomy</span>
+              <select id="syncTaxonomyFilter">
+                <option value="" data-text="sync.allTaxa">All taxa</option>
+              </select>
+            </label>
+            <label class="sync-filter">
+              <span data-text="sync.downloadFilter">Download state</span>
+              <select id="syncDownloadFilter">
+                <option value="all" data-text="sync.allStates">All states</option>
+                <option value="downloaded" data-text="sync.downloadedOnly">Downloaded</option>
+                <option value="not_downloaded" data-text="sync.notDownloadedOnly">Not downloaded</option>
+                <option value="active" data-text="sync.activeOnly">Active</option>
+              </select>
+            </label>
+            <label class="sync-filter">
+              <span data-text="sync.sortBy">Sort by</span>
+              <select id="syncSortSelect">
+                <option value="alpha" data-text="sync.sortAlpha">Alphabetical</option>
+                <option value="taxonomy" data-text="sync.sortTaxonomy">Taxonomy</option>
+                <option value="download" data-text="sync.sortDownload">Download state</option>
+              </select>
+            </label>
+          </div>
+          <div id="syncSelection" class="sync-selection">
+            <p class="sync-empty" data-text="sync.selectionPrompt">Apply a catalog synchronization to select specimens.</p>
+          </div>
+        </section>
+        <section class="sync-section sync-section--storage">
+          <div class="sync-section__heading">
+            <div>
+              <h3 data-text="sync.storageHeading">Local storage</h3>
+              <p class="sync-section__hint" data-text="sync.storageHint">Downloaded specimens stay available without a network connection.</p>
+            </div>
+            <button id="syncDeleteButton" type="button" class="sync-action sync-action--danger" data-text="sync.deleteAll">Delete all</button>
+          </div>
+        </section>
+      </div>
+    </dialog>
     <dialog id="optionsDialog" class="options-dialog" aria-labelledby="optionsDialogTitle">
       <button
         id="closeOptions"
         type="button"
         class="options-close"
-        data-i18n-attr="aria-label:options.closeAria"
+        data-text-attr="aria-label:options.closeAria"
       >&times;</button>
-      <h2 id="optionsDialogTitle" data-i18n="options.title">Options</h2>
+      <h2 id="optionsDialogTitle" data-text="options.title">Options</h2>
       <div class="options-content">
         <div class="options-section">
-          <label
-            class="options-language-label"
-            for="languageSelect"
-            data-i18n="language.selectorLabel"
-          >
-            Langue&nbsp;:
-          </label>
-          <select
-            id="languageSelect"
-            class="options-language-select"
-          ></select>
-        </div>
-        <div class="options-section">
-          <label
-            class="options-theme-label"
-            for="themeSelect"
-            data-i18n="options.theme.label"
-          >
-            Theme&nbsp;:
-          </label>
-          <select
-            id="themeSelect"
-            class="options-theme-select"
-          >
-            <option value="dark" data-i18n="options.theme.dark">Dark</option>
-            <option value="light" data-i18n="options.theme.light">Light</option>
-            <option value="geek" data-i18n="options.theme.geek">Matrix</option>
-          </select>
-        </div>
-        <div class="options-section">
-          <label class="options-theme-label" for="screenshot-bg-toggle">
+          <label class="options-label" for="screenshot-bg-toggle">
             <input type="checkbox" id="screenshot-bg-toggle" checked />
-            <span data-i18n="option.screenshotBackground">Background visible in screenshots</span>
+            <span data-text="option.screenshotBackground">Background visible in screenshots</span>
           </label>
         </div>
         <div class="options-section">
           <div class="options-range-label">
-            <span class="options-theme-label" data-i18n="option.anaglyphSeparation">Anaglyph depth</span>
+            <span class="options-label" data-text="option.anaglyphSeparation">Anaglyph depth</span>
             <span id="anaglyphEyeSeparationValue" class="options-range-value">0.064</span>
           </div>
           <input
@@ -473,7 +530,7 @@
             id="reloadDatasets"
             type="button"
             class="options-reload-button options-reload-button--link"
-            data-i18n="sidebar.reloadButton"
+            data-text="sidebar.reloadButton"
           >
             Reload specimen list
           </button>
@@ -483,7 +540,6 @@
 
     <!-- Entry modules: core viewer bootstrap + supporting UI behaviours -->
     <script type="module" src="./public/js/app.js"></script>
-    <script type="module" src="./public/js/about.js"></script>
     <script type="module" src="./public/js/options.js"></script>
     <script type="module" src="./public/js/sidebar.js"></script>
   </body>

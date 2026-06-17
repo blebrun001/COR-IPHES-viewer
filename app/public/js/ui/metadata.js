@@ -4,7 +4,6 @@
 
 // ===== Internal State =====
 let translateRef = (key, fallback = '') => fallback;
-let i18nRef = null;
 let metadataPanelRef = null;
 let coraLinkRef = null;
 let gbifLinkRef = null;
@@ -474,6 +473,11 @@ function updateExternalLinksInternal(detail, modelInfo = null) {
     return;
   }
 
+  if (typeof window !== 'undefined' && window.__COR_IPHES_ONLINE__ === false) {
+    hideAll();
+    return;
+  }
+
   const metadataBlocks = detail?.data?.latestVersion?.metadataBlocks || {};
   const darwinBlock = getMetadataBlock(metadataBlocks, 'darwincore');
 
@@ -520,7 +524,6 @@ function updateExternalLinksInternal(detail, modelInfo = null) {
  *
  * @param {object} deps - Dependency bag for the metadata module.
  * @param {(key: string, fallback?: string) => string} deps.translate - Translate helper.
- * @param {import('../i18n/translator.js').i18n} deps.i18n - I18n instance for language updates.
  * @param {HTMLElement|null} deps.metadataPanel - Metadata panel container.
  * @param {HTMLAnchorElement|null} deps.coraLink - CORA-RDR link element.
  * @param {HTMLAnchorElement|null} deps.gbifLink - GBIF link element.
@@ -529,7 +532,6 @@ function updateExternalLinksInternal(detail, modelInfo = null) {
  */
 export function initMetadata(deps = {}) {
   translateRef = typeof deps.translate === 'function' ? deps.translate : translateRef;
-  i18nRef = deps.i18n ?? i18nRef;
   metadataPanelRef = deps.metadataPanel ?? metadataPanelRef;
   coraLinkRef = deps.coraLink ?? coraLinkRef;
   gbifLinkRef = deps.gbifLink ?? gbifLinkRef;

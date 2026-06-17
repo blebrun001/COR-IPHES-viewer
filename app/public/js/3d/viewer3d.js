@@ -123,12 +123,6 @@ class Viewer3D {
 
     this.listeners = new Map();
     this.screenshotTransparentBackground = false;
-    this.handleThemeChange = () => {
-      this.updateBackgroundFromTheme();
-    };
-    if (typeof window !== 'undefined') {
-      window.addEventListener('themechange', this.handleThemeChange);
-    }
 
     this.setupLights();
     this.setupGrid();
@@ -302,10 +296,6 @@ class Viewer3D {
    * Cleans up event listeners and renderer resources.
    */
   destroy() {
-    if (typeof window !== 'undefined' && this.handleThemeChange) {
-      window.removeEventListener('themechange', this.handleThemeChange);
-    }
-    this.handleThemeChange = null;
     this.disposeScaleReference();
   }
 
@@ -822,7 +812,7 @@ class Viewer3D {
   /**
    * Loads an OBJ model (and related materials/textures) into the scene.
    *
-   * @param {object} source - Descriptor returned by DataverseClient.
+   * @param {object} source - Descriptor returned by the active data client.
    * @returns {Promise<void>}
    */
   async loadModel(source) {

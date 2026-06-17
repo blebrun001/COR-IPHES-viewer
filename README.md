@@ -1,273 +1,178 @@
-# COR-IPHES 3D Viewer
+# COR-IPHES Esqueletos Off-linea
 
-The COR-IPHES 3D Viewer is a fully static web experience built to showcase the COR-IPHES osteological reference collection. It combines a public landing page with an advanced Three.js viewer that streams models directly from the CORA Dataverse. The application emphasises accessibility, internationalisation, and tooling that make scientific 3D assets easier to explore.
+COR-IPHES Esqueletos Off-linea is a desktop-only Tauri v2 application for browsing the COR-IPHES 3D osteological collection without relying on a live web viewer or CDN-hosted assets. It wraps the static frontend in `app/index.html`, stores catalog metadata in SQLite, and downloads Dataverse assets into the application-local data directory for offline inspection.
 
----
+The application is intended for teaching, research support, collection review, and field or classroom situations where network access is limited.
 
-## Table of Contents
-1. [Project Overview](#project-overview)
-2. [Feature Highlights](#feature-highlights)
-3. [Architecture](#architecture)
-4. [Project Structure](#project-structure)
-5. [Prerequisites](#prerequisites)
-6. [Getting Started](#getting-started)
-7. [Development Workflow](#development-workflow)
-8. [Configuration & Environment](#configuration--environment)
-9. [Dataverse Integration](#dataverse-integration)
-10. [Internationalisation (i18n)](#internationalisation-i18n)
-11. [3D Viewer Capabilities](#3d-viewer-capabilities)
-12. [Styling System](#styling-system)
-13. [Performance Notes](#performance-notes)
-14. [Testing & Quality Checklist](#testing--quality-checklist)
-15. [Deployment](#deployment)
-16. [Troubleshooting](#troubleshooting)
-17. [Contributing](#contributing)
-18. [License](#license)
+## Main Features
 
----
+- Offline-first 3D specimen browsing through a Tauri desktop wrapper.
+- Local SQLite catalog seeded on first launch and refreshed from Dataverse on demand.
+- Complete-specimen download workflow with queue, pause, resume, cancel, delete, and storage usage controls.
+- Three.js OBJ/MTL viewer with taxonomy search, metadata panels, anatomical labels, screenshots, measurement tools, clipping planes, anaglyph view, scale reference, and side-by-side comparison.
+- Vendored browser dependencies and fonts so the app can start without CDN access.
+- Native backend-only Dataverse synchronization. The browser layer never talks directly to Dataverse in the finalized desktop flow.
 
-## Project Overview
-- **Landing page (`index.html`)** — Public-facing introduction to the COR-IPHES initiative, describing partners and providing a lightweight hero viewer that animates a cranial model.
-- **Application shell (`app/`)** — Feature-rich 3D viewer with dataset browsing, measurement tools, clipping planes, and comparison mode. Everything runs client-side using native ES modules.
-- **Static hosting** — No backend is required. Assets can be deployed to any static web host (GitHub Pages, Netlify, nginx, Apache, etc.).
+## Repository Layout
 
----
+```text
+app/
+  index.html                  Static frontend entry point loaded by Tauri.
+  public/css/                 UI styling split by surface and responsibility.
+  public/js/                  Frontend modules for state, UI, data, and 3D logic.
+  public/vendor/              Vendored browser dependencies and fonts.
 
-## Feature Highlights
-- **Direct Dataverse access**: OBJ, MTL, and texture files stream on demand from the CORA Dataverse API (`https://dataverse.csuc.cat`).
-- **Automatic scene preparation**: Models are recentred, scaled, lit, and framed as soon as they load.
-- **Rich tooling**: Perspective/orthographic projections, material toggles, wireframe views, scale reference cube, measurement overlays, anaglyph rendering, and rotation gizmo support.
-- **Comparison workflow**: Pin a primary model and load a secondary one side-by-side, with optional normalised scaling.
-- **Search + taxonomy filters**: Free-text search across specimens/elements, Darwin Core taxonomy selectors, and UBERON-aware anatomical detection with deep links to GBIF/CORA/OLS.
-- **Internationalisation**: English, Spanish, French, and Catalan dictionaries ship with the project; the viewer can switch languages at runtime.
-- **Offline-friendly cache**: Dataset metadata lists are cached in `localStorage` to reduce API calls between sessions.
-- **Responsive UI**: Sidebar collapses into a drawer on smaller screens, with dedicated touch affordances.
+src-tauri/
+  src/lib.rs                  Tauri backend, SQLite catalog, sync, downloads.
+  src/main.rs                 Native binary entry point.
+  resources/catalog_seed.json Bundled initial catalog snapshot.
+  tauri.conf.json             Desktop app and bundle configuration.
 
----
+tests/                        Node test suite for frontend logic.
+scripts/                      Vendor, validation, and packaging helpers.
+docs/                         Release validation and project notes.
+```
+
+Vendored third-party code under `app/public/vendor/` is not maintained as part of this project. Update it through `npm run vendor:three` instead of editing it manually.
 
 ## Architecture
-| Layer | Purpose | Key Files |
-| --- | --- | --- |
-| **Landing** | Presents the project and embeds a simplified viewer to animate a model in the hero section. | `index.html`, `script.js`, `styles.css`, `responsive.css`, assets in `ressources/` |
-| **Viewer UI** | Provides layout, panels, toolbar, dialogs, and i18n strings. | `app/index.html`, `app/public/css/*.css`, `app/public/js/ui/*`, `app/public/js/state/*`, `app/public/js/options.js`, `app/public/js/sidebar.js`, `app/public/js/about.js` |
-| **Viewer Core** | Handles Three.js scenes, measurements, clipping, export, and comparison logic. | `app/public/js/3d/*.js` |
-| **Data** | Communicates with the Dataverse API, normalises metadata, prepares model manifests. | `app/public/js/data/dataverseClient.js`, `app/public/js/utils/defaultFetch.js` |
-| **Translations** | Localised strings and keys for the i18n engine. | `app/public/i18n/*.json` |
 
-All modules are written using modern ES syntax and loaded directly by the browser—no bundler is required.
+The app has three main layers:
 
----
+1. The frontend UI in `app/public/js/ui/` manages selectors, search, sync dialogs, metadata, and user commands.
+2. The viewer in `app/public/js/3d/` wraps Three.js behind an intention-focused API (`createViewerApi`) so UI code does not need direct access to renderer internals.
+3. The Tauri backend in `src-tauri/src/lib.rs` owns persistence, Dataverse network access, checksum validation, download recovery, and asset resolution.
 
-## Project Structure
-```
-.
-├── index.html                  # Public landing page with hero viewer
-├── script.js                   # Three.js hero viewer bootstrapper
-├── styles.css                  # Landing styles (layout, theme, typography)
-├── responsive.css              # Landing responsive overrides
-├── ressources/                 # Images & 3D assets used on the landing page
-└── app/
-    ├── index.html              # Viewer application shell
-    ├── public/
-    │   ├── css/                # Modular CSS tokens, layout, and components
-    │   ├── i18n/               # Translation dictionaries
-    │   └── js/
-    │       ├── app.js          # Application bootstrapper (viewer + data client)
-    │       ├── 3d/             # Three.js viewer, mixins, effects
-    │       ├── data/           # Dataverse API client
-    │       ├── state/          # Lightweight global store
-    │       ├── ui/             # UI controllers, search, metadata rendering
-    │       ├── options.js      # Options dialog logic
-    │       ├── sidebar.js      # Sidebar responsiveness & accessibility
-    │       ├── about.js        # About dialog behaviour
-    │       └── utils/          # Shared utilities (fetch detection, etc.)
-    └── public/ressources/      # Viewer-specific images and logos
-```
+The frontend talks to the backend through `LocalCatalogClient`, which calls Tauri commands via `desktopBridge`. `HybridDataClient` is kept as a small facade around the local catalog so existing UI code can use one data client contract.
 
----
+## Offline Data Flow
 
-## Prerequisites
-- Modern browser with **WebGL 2** support (Chrome, Firefox, Edge, Safari ≥ 16).
-- Internet access to:
-  - `https://dataverse.csuc.cat` (models and metadata),
-  - `https://www.ebi.ac.uk/ols4/api/ontologies/uberon/terms` (UBERON synonyms for anatomical search),
-  - `https://unpkg.com/three@0.161.0/...` (Three.js import map; you can self-host the modules if preferred).
-- A local static server to serve the files (due to module and CORS requirements).
-  - **Python 3.9+** (recommended) or **Node.js 18+**.
+1. On first launch, the backend creates the app-local data directory, initializes `catalog.sqlite3`, and imports `src-tauri/resources/catalog_seed.json` when the catalog is empty.
+2. The main specimen selector lists only complete downloaded specimens by default.
+3. The synchronization manager can request `sync_preview` while online to inspect current Dataverse metadata.
+4. Applying a sync writes remote catalog metadata into SQLite. Destructive replacements require an explicit decision from the UI.
+5. Download requests enqueue the required files for complete specimens. Files are stored as opaque blobs under app-local storage, with checksums and byte counts tracked in SQLite.
+6. When the viewer loads a model, the frontend asks `asset_resolve` for local paths and converts them to Tauri asset URLs. OBJ material-library references and MTL texture references are resolved against the local catalog.
 
----
+Downloaded source assets are intentionally not exposed as loose `.obj`, `.mtl`, or texture files in the UI.
 
-## Getting Started
-### 1. Clone or download the repository
-```bash
-git clone https://github.com/<org>/<repo>.git
-cd <repo>
-```
+## Requirements
 
-### 2. Start a local web server
-<details>
-<summary>Python (minimal, no install)</summary>
+- Node.js 18 or newer
+- Rust and Cargo
+- Tauri v2 native prerequisites for the target operating system
+
+Install JavaScript dependencies:
 
 ```bash
-python3 -m http.server 8000
+npm install
 ```
-Then open `http://localhost:8000/`.
-</details>
 
-<details>
-<summary>Node.js (with live reload via <code>serve</code>)</summary>
+Refresh vendored Three.js assets from `node_modules`:
 
 ```bash
-npm install --global serve
-serve . --listen 8000
+npm run vendor:three
 ```
-Then open `http://localhost:8000/`.
-</details>
 
-### 3. Open the application
-- `http://localhost:8000/` — landing page with hero viewer.
-- `http://localhost:8000/app/index.html` — full 3D viewer application (also linked from the landing page).
+## Development
 
----
+Run the desktop app:
 
-## Development Workflow
-1. **Create a feature branch**:
-   ```bash
-   git checkout -b feature/my-change
-   ```
-2. **Make changes** inside `app/public/js` or `app/public/css`, or update landing assets.
-3. **Serve locally** as described above to preview your changes.
-4. **Verify core flows** (dataset loading, measurement, comparison, i18n switching).
-5. **Document updates** in this README if behaviour or tooling changes.
-6. **Open a Pull Request** summarising changes and validation steps.
+```bash
+npm run tauri:dev
+```
 
-> The project intentionally avoids bundlers. Keep modules self-contained and ensure paths remain relative.
+Run the full automated test suite:
 
----
+```bash
+npm test
+```
 
-## Configuration & Environment
-- **Environment variables**: None required. API endpoints are hard-coded in `app/public/js/data/dataverseClient.js`.
-- **Caching**: Dataset listings are cached in `localStorage` for 24 hours. Use the “Reload lists” button (options dialog) to bust cache manually.
-- **Theme**: Dark theme by default. Users may toggle `dark` / `light` / `geek` (Matrix-style) via the options dialog; theme selection is persisted in `localStorage`.
-- **Screenshots**: Options dialog lets you toggle background visibility for captured PNGs; preference is stored locally.
-- **Build step**: Not required. Any optimisation (minification, bundling) would have to be scripted manually if desired for production.
+Run frontend tests only:
 
----
+```bash
+npm run test:js
+```
 
-## Dataverse Integration
-`DataverseClient` performs the following:
-1. Queries dataset listings from the CORA Dataverse (`/api/dataverses/<alias>/contents`).
-2. For each dataset, fetches metadata to identify OBJ/MTL/texture files.
-3. Builds model manifests with resolved URLs for assets.
-4. Normalises metadata (taxonomy, specimen info, identifiers) for the viewer UI.
+Run Rust tests only:
 
-The client accepts a custom `fetch` implementation, enabling substitution during testing. Default behaviour falls back to `window.fetch`.
+```bash
+npm run test:rust
+```
 
----
+Some Rust tests exercise live Dataverse behavior and may require network access or ignored-test flags depending on the workflow under validation.
 
-## Internationalisation (i18n)
-- Translation dictionaries live in `app/public/i18n/*.json`.
-- Supported languages: `en`, `es`, `fr`, `ca`.
-- UI strings use the `"group.key"` notation (e.g., `"sidebar.moreInfoHeading"`).
-- The translator module (`app/public/js/i18n/translator.js`) handles:
-  - Loading dictionaries,
-  - Updating text content and `data-i18n-attr` attributes,
-  - Persisting the selected language.
-- To add a language:
-  1. Duplicate `en.json`, translate values, and save as `<lang>.json`.
-  2. Register the new language code in `SUPPORTED_LANGUAGES`.
-  3. Provide fallbacks for any new strings.
+## Tauri Commands
 
----
+The frontend uses these backend commands:
 
-## 3D Viewer Capabilities
-- **Search & taxonomy filters**: Free-text search spans specimens and anatomical elements; Darwin Core taxonomy selectors (class → species) filter datasets; anatomical detection uses UBERON codes inferred from model paths plus synonyms fetched from OLS.
-- **Model lifecycle**: Primary model management, comparison mode, screenshot capture with watermark and measurement overlays.
-- **Camera controls**: Perspective/orthographic switching, orbit modes (upright vs. free), focus on active content.
-- **Rendering toggles**: Textures, wireframe, lighting dimmer, scale reference cube, anaglyph stereo (adjustable eye separation).
-- **Tools**:
-  - Measurement mode with labelled segments,
-  - Label overlays for comparison models,
-  - Clipping planes with draggable handles,
-  - Rotation gizmo using Three.js `TransformControls`.
-- **Export**: Capture PNG screenshots with watermark (`app/public/js/3d/export.js`).
+- `catalog_list` lists catalog entries, hiding incomplete specimens unless requested by the sync manager.
+- `catalog_entry_command` returns a hydrated dataset entry with files and models.
+- `sync_preview` fetches Dataverse metadata and reports catalog changes.
+- `sync_apply` persists accepted catalog changes.
+- `download_enqueue` queues required specimen files.
+- `download_pause`, `download_resume`, and `download_cancel` manage queued or active jobs.
+- `download_status` reports global, specimen-level, and file-level progress.
+- `storage_usage` reports local asset storage usage.
+- `storage_delete` removes downloaded assets for one specimen or all specimens.
+- `network_status` checks whether the Dataverse API is reachable.
+- `asset_resolve` converts a downloaded catalog file into a local asset path.
 
-Each capability is implemented as a mixin in `app/public/js/3d/`, enhancing the core `Viewer3D` class to keep features loosely coupled.
+## Build and Packaging
 
----
+Build targets:
 
-## Styling System
-- **Design tokens** (`app/public/css/tokens.css`) define colours, typography, spacing.
-- **Modular CSS**: Styles are broken into semantic files (top bar, toolbar, metadata panel, responsive overrides).
-- **Glassmorphism aesthetic**: Panels use translucent backgrounds with blur to maintain focus on the model.
-- **Responsive behaviour**:
-  - Sidebar collapses into an overlay below 1024 px.
-  - Toolbar reflows button groups and hides secondary controls on narrow viewports.
-  - Touch devices receive larger hit targets and touch-action adjustments.
+```bash
+npm run tauri:build:mac
+npm run tauri:build:linux
+npm run tauri:build:windows
+```
 
----
+Expected primary artifacts:
 
-## Performance Notes
-- **Lazy loading**: Assets are fetched on demand; nothing is bundled upfront.
-- **Caching**: Dataverse metadata caching reduces repeated API calls. Textures are cached per session in memory.
-- **Throttle management**: Loading manager and progress events provide feedback; models may take several seconds depending on size and network.
-- **Mobile considerations**: Heavy models may push memory constraints on low-end devices. Encourage users to switch to desktop for full fidelity.
+- macOS: `.app` and zipped `.app` under `src-tauri/target/release/bundle/macos/`
+- Linux: `.AppImage` built on Linux
+- Windows: portable archive created by `scripts/package-windows-portable.mjs` on Windows
 
----
+Cross-platform release artifacts can also be produced by the `Release builds` GitHub Actions workflow in `.github/workflows/release-builds.yml`.
 
-## Testing & Quality Checklist
-- [ ] Use the taxonomy selectors (class → species) to filter specimens and confirm search results update.
-- [ ] Run a free-text search for anatomical elements; verify UBERON-linked labels/synonyms appear (requires OLS network access).
-- [ ] Load at least one dataset and confirm the model appears with textures.
-- [ ] Switch between projection modes and orbit modes.
-- [ ] Enable measurement mode, create/remove measurements, and export a screenshot.
-- [ ] Enter comparison mode, load a secondary model, and toggle scale normalisation.
-- [ ] Test clipping planes: enable, drag handles, reset.
-- [ ] Toggle each rendering option (textures, wireframe, lighting dimmer, scale reference).
-- [ ] Open the GBIF/CORA/UBERON external links for a specimen to confirm they resolve correctly.
-- [ ] Switch languages and verify translations update dynamically.
-- [ ] Toggle theme (dark, light, geek) and ensure viewer assets swap correctly.
-- [ ] Toggle screenshot background visibility in Options and confirm captures reflect the setting.
-- [ ] Resize the browser below 1024 px and confirm the sidebar toggle works.
-- [ ] Test the options dialog and ensure theme switching applies correctly.
+## Release Validation
 
----
+Canonical local release validation on macOS:
 
-## Deployment
-1. **Build artefacts**: Since the project is static, deployment equals copying the repository files to the hosting provider.
-2. **Configure hosting**:
-   - Serve from the repository root (the directory containing `index.html`).
-   - Ensure the `/app/` subdirectory is available as-is.
-   - Enforce HTTPS so that browser requests to `https://dataverse.csuc.cat` succeed.
-   - Allow outgoing requests to `dataverse.csuc.cat`, `www.ebi.ac.uk` (OLS UBERON), and `unpkg.com` (Three.js CDN) or self-host those assets.
-3. **CDN/Cache headers**: Optional, but consider enabling caching for static assets (`.js`, `.css`, textures) while keeping HTML uncached for rapid updates.
-4. **Post-deploy checks**: Validate core flows, especially Dataverse fetches (some hosts block external APIs).
+```bash
+npm run validate:release:local
+```
 
----
+This command runs the local JavaScript and Rust tests, live Dataverse checks, macOS release build, `.app.zip` creation, artifact checks, and a launch smoke check.
 
-## Troubleshooting
-| Symptom | Possible Cause | Resolution |
-| --- | --- | --- |
-| Models fail to load | Dataverse API unreachable or CORS blocked | Confirm host allows outgoing HTTPS requests to `dataverse.csuc.cat`; check browser console for errors. |
-| Blank canvas | WebGL disabled | Enable hardware acceleration or switch to a WebGL 2 compatible browser/device. |
-| Landing hero model missing textures | Asset paths in `script.js` or `ressources/model/` incorrect | Verify filenames and relative paths. |
-| Translation strings show placeholders | Missing keys in dictionary | Ensure each dictionary file mirrors the structure of `en.json`. |
-| Sidebar stuck open on mobile | Cached `localStorage` state | Toggle the sidebar off, or clear site data/storage. |
+Additional validation material:
 
----
+- `docs/release-validation-report.md` records local validation evidence.
+- `docs/manual-offline-acceptance.md` describes the full GUI offline acceptance pass.
+- `docs/external-release-validation.md` covers Windows, Linux, and GitHub Actions artifact validation.
+- `docs/project/` contains project briefs and implementation status notes.
 
-## Contributing
-1. Fork the repository and create a feature branch.
-2. Follow the [Development Workflow](#development-workflow).
-3. Keep PRs focused—documentation updates are welcome alongside code changes.
-4. Describe validation steps (manual tests, browsers used, datasets loaded).
-5. Ensure new features include appropriate comments and, when applicable, translation keys.
+Manual acceptance should confirm that:
 
----
+- First launch imports the bundled catalog seed.
+- `sync_preview` scans Dataverse while online.
+- `sync_apply` populates SQLite after user confirmation for replacements.
+- Selected complete-specimen and full-catalog downloads can be queued, paused, resumed, cancelled, and deleted.
+- After relaunch with network disabled, downloaded specimen metadata and 3D models still load.
+- The app starts without CDN dependencies.
+- Linux AppImage and Windows portable archives run on their target systems.
+
+## Development Notes
+
+- Keep browser-facing text in English.
+- Keep frontend modules small and responsibility-oriented: state in `app/public/js/state/`, data access in `app/public/js/data/`, viewer logic in `app/public/js/3d/`, and DOM orchestration in `app/public/js/ui/`.
+- Prefer the `viewerApi` facade over direct `Viewer3D` access from UI modules.
+- Do not bypass the Tauri backend for Dataverse access in production desktop flows.
+- Keep local assets opaque; the catalog database is the source of truth for file-to-model relationships.
 
 ## License
-This project is distributed under the **Creative Commons CC BY-NC 4.0** licence. Attribution to COR-IPHES and collaborators is required for derivative works; commercial use is prohibited.
 
----
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International license (`CC-BY-NC-4.0`). See `LICENSE` for the project license and `NOTICE` for third-party license notes.
 
-> For questions or contributions related to the COR-IPHES collection, please contact the project maintainers or the IPHES-CERCA team.
+Third-party dependencies keep their own licenses. In particular, vendored Three.js files under `app/public/vendor/three/` are covered by the upstream Three.js license included in that directory.

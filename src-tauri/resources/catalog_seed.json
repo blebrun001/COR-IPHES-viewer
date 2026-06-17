@@ -1,0 +1,79 @@
+[
+  {
+    "persistent_id": "doi:10.34810/data1785",
+    "identifier": "data1785",
+    "title": "Equus ferus przewalskii 374",
+    "detail": {
+      "data": {
+        "latestVersion": {
+          "metadataBlocks": {
+            "citation": {
+              "fields": [
+                {
+                  "typeName": "title",
+                  "value": "Equus ferus przewalskii 374"
+                }
+              ]
+            },
+            "darwincore": {
+              "fields": [
+                {
+                  "typeName": "dwcScientificName",
+                  "value": "Equus ferus przewalskii"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "specimen_summary": null,
+    "taxonomy_path": {
+      "kingdom": null,
+      "phylum": null,
+      "class": null,
+      "order": null,
+      "family": null,
+      "subfamily": null,
+      "genus": "Equus",
+      "species": "Equus ferus przewalskii"
+    },
+    "files": [
+      {
+        "file_id": 136547,
+        "label": "posterior_left_large_sesamoid_medial.obj",
+        "directory_label": "posterior_left_large_sesamoid_medial",
+        "path": "posterior_left_large_sesamoid_medial/posterior_left_large_sesamoid_medial.obj",
+        "content_type": "application/octet-stream",
+        "filesize": 6340225,
+        "checksum_type": null,
+        "checksum_value": null,
+        "download_url": "https://dataverse.csuc.cat/api/access/datafile/136547?format=original",
+        "remote_hash": "seed-file-136547"
+      },
+      {
+        "file_id": 136937,
+        "label": "posterior_left_large_sesamoid_medial.mtl",
+        "directory_label": "posterior_left_large_sesamoid_medial",
+        "path": "posterior_left_large_sesamoid_medial/posterior_left_large_sesamoid_medial.mtl",
+        "content_type": "application/octet-stream",
+        "filesize": 435,
+        "checksum_type": null,
+        "checksum_value": null,
+        "download_url": "https://dataverse.csuc.cat/api/access/datafile/136937?format=original",
+        "remote_hash": "seed-file-136937"
+      }
+    ],
+    "models": [
+      {
+        "model_key": "136547",
+        "display_name": "posterior_left_large_sesamoid_medial",
+        "directory": "posterior_left_large_sesamoid_medial",
+        "obj_file_id": 136547,
+        "mtl_file_id": 136937,
+        "remote_hash": "seed-model-136547"
+      }
+    ],
+    "remote_hash": "seed-dataset-data1785"
+  }
+]

@@ -124,52 +124,6 @@
   display: none !important;
 }
 
-/* Inline language selector mirrors the external link styling for cohesion. */
-.language-selector {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.55rem 0.75rem;
-  border-radius: 0.65rem;
-  border: 1px solid var(--color-accent);
-  background: var(--color-accent);
-  color: var(--color-text-primary);
-  font-size: var(--font-sm);
-  letter-spacing: 0.04em;
-  transition: box-shadow 0.2s ease, filter 0.2s ease;
-}
-
-.language-selector:focus-within {
-  box-shadow: 0 0 0 0.1875rem rgba(56, 189, 248, 0.35);
-}
-
-.language-selector__label {
-  font-size: var(--font-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-text-primary);
-  opacity: 0.85;
-}
-
-.language-selector__control {
-  appearance: none;
-  border: none;
-  background: transparent;
-  color: inherit;
-  font-size: var(--font-sm);
-  cursor: pointer;
-  padding: 0;
-  min-width: 7.5rem;
-}
-
-.language-selector__control:focus-visible {
-  outline: none;
-}
-
-.language-selector__control option {
-  color: #000;
-}
-
 /* Footer holds floating buttons that duplicate key controls outside the sidebar. */
 .sidebar-footer {
   display: flex;
@@ -182,8 +136,8 @@
 
 /* Floating action buttons share styling and interaction feedback. */
 .floating-options-button,
-.floating-info-button,
-.floating-reset-button {
+.floating-reset-button,
+.floating-sync-button {
   width: 3rem;
   height: 3rem;
   border-radius: 999px;
@@ -199,11 +153,11 @@
 }
 
 .floating-options-button:hover,
-.floating-info-button:hover,
 .floating-reset-button:hover,
+.floating-sync-button:hover,
 .floating-options-button:focus-visible,
-.floating-info-button:focus-visible,
-.floating-reset-button:focus-visible {
+.floating-reset-button:focus-visible,
+.floating-sync-button:focus-visible {
   outline: none;
   transform: translateY(-2px);
   box-shadow: 0 16px 28px rgba(0, 0, 0, 0.25);
@@ -211,8 +165,8 @@
 }
 
 .floating-options-button__icon,
-.floating-info-button__icon,
-.floating-reset-button__icon {
+.floating-reset-button__icon,
+.floating-sync-button__icon {
   font-family: 'Material Icons', sans-serif;
   font-size: 1.6rem;
   line-height: 1;
@@ -222,8 +176,8 @@
 }
 
 .floating-options-button:active,
-.floating-info-button:active,
-.floating-reset-button:active {
+.floating-reset-button:active,
+.floating-sync-button:active {
   transform: translateY(0);
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
 }

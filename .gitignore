@@ -1,1 +1,29 @@
+# OS and editor metadata
 .DS_Store
+._*
+.vscode/
+.idea/
+
+# Dependencies
+node_modules/
+
+# Build outputs and generated files
+/dist/
+/build/
+/coverage/
+src-tauri/target/
+src-tauri/gen/
+src-tauri/Cargo.lock.tmp
+
+# Runtime/local data
+*.log
+*.sqlite
+*.sqlite3
+*.db
+*.tmp
+*.bak
+
+# Environment files and local secrets
+.env
+.env.*
+!.env.example

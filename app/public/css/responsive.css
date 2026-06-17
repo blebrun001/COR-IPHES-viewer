@@ -87,11 +87,6 @@
     flex-direction: column;
   }
 
-  .language-selector {
-    width: 100%;
-    justify-content: space-between;
-  }
-
   .toolbar-control label {
     display: none;
   }
@@ -126,14 +121,6 @@
   .external-link {
     min-width: auto;
     padding: 0.45rem 0.6rem;
-  }
-
-  .language-selector {
-    padding: 0.45rem 0.6rem;
-  }
-
-  .language-selector__control {
-    min-width: 0;
   }
 
   .viewer-toolbar__inner {

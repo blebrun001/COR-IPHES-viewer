@@ -1,0 +1,10 @@
+# Third-Party Notices
+
+This repository contains project code and assets licensed under CC-BY-NC-4.0 unless stated otherwise.
+
+Vendored third-party dependencies retain their original licenses:
+
+- Three.js under `app/public/vendor/three/` is distributed under its upstream MIT license. See `app/public/vendor/three/LICENSE`.
+- Vendored font files under `app/public/vendor/fonts/` retain their upstream font licenses.
+
+Build outputs, local databases, downloaded Dataverse assets, and files under `src-tauri/target/` are generated or runtime artifacts and are not part of the source license grant.

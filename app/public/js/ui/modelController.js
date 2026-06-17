@@ -44,6 +44,7 @@ let setProgressPercentRef = () => {};
 let resetProgressPercentRef = () => {};
 let datasetSelectRef = null;
 let modelSelectRef = null;
+let downloadSpecimenButtonRef = null;
 let reloadButtonRef = null;
 let compareButtonRef = null;
 let toggleLabelsButtonRef = null;
@@ -90,6 +91,7 @@ let updateNormalizeScaleButtonRef = () => {};
 let updateScaleReferenceButtonRef = () => {};
 let setCustomStatusRef = () => {};
 let getLastStatusRef = () => null;
+let openDownloadsRef = () => {};
 
 const getTranslate = (key, fallback = '') =>
   typeof translateRef === 'function' ? translateRef(key, fallback) : fallback;
@@ -123,29 +125,98 @@ const clearMetadataPanel = () => {
   }
 };
 
+const getDatasetInfo = (persistentId) => {
+  const allDatasets =
+    typeof getAllDatasetsRef === 'function' ? getAllDatasetsRef() : [];
+  return Array.isArray(allDatasets)
+    ? allDatasets.find((dataset) => dataset?.value === persistentId || dataset?.persistentId === persistentId)
+    : null;
+};
+
+const getDatasetDownloadState = (dataset) =>
+  dataset?.downloadState ||
+  dataset?.download_state ||
+  dataset?.downloadStats?.state ||
+  dataset?.download_stats?.state ||
+  'missing';
+
+const isSpecimenLoadable = (dataset) => {
+  if (!dataClientRef?.usesPersistentCatalog) {
+    return true;
+  }
+  const state = getDatasetDownloadState(dataset);
+  return state === 'downloaded' || state === 'update_available';
+};
+
+const isActiveDownloadState = (state) =>
+  state === 'queued' ||
+  state === 'downloading' ||
+  state === 'paused' ||
+  state === 'partial' ||
+  state === 'error';
+
+const syncDownloadSpecimenButton = (persistentId = null) => {
+  if (!downloadSpecimenButtonRef) {
+    return;
+  }
+  const dataset = persistentId ? getDatasetInfo(persistentId) : null;
+  const state = getDatasetDownloadState(dataset);
+  const shouldShow =
+    Boolean(persistentId) &&
+    dataClientRef?.usesPersistentCatalog &&
+    !isSpecimenLoadable(dataset);
+  downloadSpecimenButtonRef.hidden = !shouldShow;
+  downloadSpecimenButtonRef.dataset.datasetId = shouldShow ? persistentId : '';
+  downloadSpecimenButtonRef.textContent = isActiveDownloadState(state)
+    ? getTranslate('sync.openDownloads', 'Open downloads')
+    : getTranslate('sync.downloadSpecimen', 'Download specimen');
+};
+
+const showOpenDownloadsButton = () => {
+  if (!downloadSpecimenButtonRef || !dataClientRef?.usesPersistentCatalog) {
+    return;
+  }
+  downloadSpecimenButtonRef.hidden = false;
+  downloadSpecimenButtonRef.dataset.datasetId = '';
+  downloadSpecimenButtonRef.textContent = getTranslate('sync.openDownloads', 'Open downloads');
+};
+
 // ===== Datasets =====
 const loadDatasetsFromAPI = async ({ force = false, onProgress } = {}) => {
   if (!dataClientRef) {
     throw new Error('Data client not provided');
   }
 
-  const datasets = await dataClientRef.listDatasets({ force, onProgress });
-  const payload = {
-    datasets,
-    timestamp: Date.now(),
-    version: CACHE_VERSION,
+  const request = {
+    force,
+    onProgress,
   };
+  if (dataClientRef?.usesPersistentCatalog) {
+    request.includeIncomplete = false;
+  }
 
-  try {
-    windowRef?.localStorage?.setItem(CACHE_KEY, JSON.stringify(payload));
-  } catch (error) {
-    console.warn('Failed to store dataverse cache', error);
+  const datasets = await dataClientRef.listDatasets(request);
+  if (!dataClientRef?.usesPersistentCatalog) {
+    const payload = {
+      datasets,
+      timestamp: Date.now(),
+      version: CACHE_VERSION,
+    };
+
+    try {
+      windowRef?.localStorage?.setItem(CACHE_KEY, JSON.stringify(payload));
+    } catch (error) {
+      console.warn('Failed to store dataverse cache', error);
+    }
   }
 
   return datasets;
 };
 
 const loadDatasetsFromCache = () => {
+  if (dataClientRef?.usesPersistentCatalog) {
+    return null;
+  }
   try {
     const raw = windowRef?.localStorage?.getItem(CACHE_KEY);
     if (!raw) return null;
@@ -242,7 +313,18 @@ const initDatasets = async ({ force = false } = {}) => {
 
     const normalizedDatasets = setAllDatasetsInternalSafe(datasets);
     searchHandlersRef?.initializeTaxonomySelectors?.(normalizedDatasets);
-    searchHandlersRef?.refreshSpecimenOptions?.('status.datasetsLoadedFromAPI');
+    const statusKey =
+      dataClientRef?.usesPersistentCatalog && normalizedDatasets.length === 0
+        ? 'status.syncCatalogRequired'
+        : dataClientRef?.usesPersistentCatalog
+          ? 'status.datasetsLoadedFromCatalog'
+          : 'status.datasetsLoadedFromAPI';
+    searchHandlersRef?.refreshSpecimenOptions?.(statusKey);
+    if (dataClientRef?.usesPersistentCatalog && normalizedDatasets.length === 0) {
+      showOpenDownloadsButton();
+    } else {
+      syncDownloadSpecimenButton(null);
+    }
 
     console.log('Datasets loaded, building initial search index...');
     await searchHandlersRef?.buildSearchIndex?.({ forceSynonymRefresh: force });
@@ -278,6 +360,19 @@ const formatModelLabel = (model) => {
   return model?.displayName || model?.label || model?.key || '';
 };
 
+const renderModelOption = (model) => {
+  const value = getEscaped(model?.key ?? '');
+  const state = model?.downloadState || model?.download_state || null;
+  const baseLabel = formatModelLabel(model);
+  const disabled =
+    dataClientRef?.usesPersistentCatalog &&
+    state &&
+    state !== 'downloaded' &&
+    state !== 'update_available';
+  const label = getEscaped(baseLabel);
+  return `<option value="${value}"${disabled ? ' disabled' : ''}>${label}</option>`;
+};
+
 const loadDatasetModelsForComparison = async (persistentId) => {
   if (!modelSelectRef) {
     return;
@@ -286,6 +381,7 @@ const loadDatasetModelsForComparison = async (persistentId) => {
   if (!persistentId) {
     setActiveDatasetIdForBRef?.(null);
     setComparisonModelBIdRef?.(null);
+    syncDownloadSpecimenButton(null);
     const comparePrompt = getEscaped(
       getTranslate('selector.model.comparePrompt', 'Choose a model to compare...'),
     );
@@ -303,6 +399,20 @@ const loadDatasetModelsForComparison = async (persistentId) => {
     modelSelectRef.innerHTML = `<option value="">${loadingModelsOption}</option>`;
 
     const entry = await dataClientRef.ensureDatasetPrepared(persistentId);
+    const dataset = getDatasetInfo(persistentId);
+    if (!isSpecimenLoadable(dataset)) {
+      const state = getDatasetDownloadState(dataset);
+      const unavailableOption = getEscaped(
+        getTranslate('selector.model.downloadRequired', 'Download specimen to view models'),
+      );
+      modelSelectRef.innerHTML = `<option value="">${unavailableOption}</option>`;
+      modelSelectRef.disabled = true;
+      syncDownloadSpecimenButton(persistentId);
+      setStatusRef('status.specimenDownloadRequired', 'info');
+      console.warn('Comparison dataset is not fully downloaded:', persistentId, state);
+      return;
+    }
+    syncDownloadSpecimenButton(null);
     const models = entry?.models ?? [];
     if (!models.length) {
       const noModelsOption = getEscaped(
@@ -319,11 +429,7 @@ const loadDatasetModelsForComparison = async (persistentId) => {
     const options =
       `<option value="">${comparePrompt}</option>` +
       models
-        .map((model) => {
-          const label = getEscaped(formatModelLabel(model));
-          const value = getEscaped(model?.key ?? '');
-          return `<option value="${value}">${label}</option>`;
-        })
+        .map((model) => renderModelOption(model))
         .join('');
 
     modelSelectRef.innerHTML = options;
@@ -335,6 +441,7 @@ const loadDatasetModelsForComparison = async (persistentId) => {
     modelSelectRef.innerHTML = `<option value="">${errorOption}</option>`;
     modelSelectRef.disabled = true;
   }
+  syncDownloadSpecimenButton(null);
 };
 
 const loadDatasetModels = async (persistentId) => {
@@ -349,6 +456,7 @@ const loadDatasetModels = async (persistentId) => {
     setActiveDatasetIdRef?.(null);
     setComparisonModelAIdRef?.(null);
     setComparisonModelBIdRef?.(null);
+    syncDownloadSpecimenButton(null);
     if (modelSelectRef) {
       const selectDatasetOption = getEscaped(
         getTranslate('selector.model.disabled', 'Select a specimen'),
@@ -385,6 +493,22 @@ const loadDatasetModels = async (persistentId) => {
     metadataRef?.renderDatasetMetadata?.(detail);
     metadataRef?.updateExternalLinks?.(detail);
 
+    const dataset = getDatasetInfo(persistentId);
+    if (!isSpecimenLoadable(dataset)) {
+      if (modelSelectRef) {
+        const downloadRequiredOption = getEscaped(
+          getTranslate('selector.model.downloadRequired', 'Download specimen to view models'),
+        );
+        modelSelectRef.innerHTML = `<option value="">${downloadRequiredOption}</option>`;
+        modelSelectRef.disabled = true;
+      }
+      syncDownloadSpecimenButton(persistentId);
+      setStatusRef('status.specimenDownloadRequired', 'info');
+      updateCompareButtonStateRef?.();
+      return;
+    }
+    syncDownloadSpecimenButton(null);
+
     const models = entry?.models ?? [];
     if (!models.length) {
       if (modelSelectRef) {
@@ -405,11 +529,7 @@ const loadDatasetModels = async (persistentId) => {
       const options =
         `<option value="">${chooseModelOption}</option>` +
         models
-          .map((model) => {
-            const label = getEscaped(formatModelLabel(model));
-            const value = getEscaped(model?.key ?? '');
-            return `<option value="${value}">${label}</option>`;
-          })
+          .map((model) => renderModelOption(model))
           .join('');
       modelSelectRef.innerHTML = options;
       modelSelectRef.disabled = false;
@@ -572,11 +692,7 @@ const enterComparisonMode = async () => {
         const options =
           `<option value="">${comparePrompt}</option>` +
           models
-            .map((model) => {
-              const label = getEscaped(formatModelLabel(model));
-              const value = getEscaped(model?.key ?? '');
-              return `<option value="${value}">${label}</option>`;
-            })
+            .map((model) => renderModelOption(model))
             .join('');
         modelSelectRef.innerHTML = options;
         modelSelectRef.disabled = false;
@@ -675,6 +791,7 @@ const resetInterfaceState = async ({ forceDatasetReload = false } = {}) => {
     modelSelectRef.value = '';
     modelSelectRef.disabled = true;
   }
+  syncDownloadSpecimenButton(null);
 
   searchHandlersRef?.resetTaxonomyState?.();
   searchHandlersRef?.setTaxonomyCollapsed?.(true);
@@ -819,6 +936,40 @@ const loadComparisonModelB = async (datasetId, modelKey) => {
   }
 };
 
+const handleDownloadSpecimenButtonClick = async () => {
+  const datasetId = downloadSpecimenButtonRef?.dataset?.datasetId || getActiveDatasetIdRef?.();
+  if (!datasetId || !dataClientRef?.downloadEnqueue) {
+    if (dataClientRef?.usesPersistentCatalog) {
+      openDownloadsRef?.();
+    }
+    return;
+  }
+  const dataset = getDatasetInfo(datasetId);
+  const state = getDatasetDownloadState(dataset);
+  if (isActiveDownloadState(state)) {
+    openDownloadsRef?.();
+    return;
+  }
+  try {
+    downloadSpecimenButtonRef.disabled = true;
+    await dataClientRef.downloadEnqueue({ datasetIds: [datasetId] });
+    dataClientRef.resetCache?.();
+    await initDatasets({ force: true });
+    syncDownloadSpecimenButton(datasetId);
+    if (downloadSpecimenButtonRef && !downloadSpecimenButtonRef.hidden) {
+      downloadSpecimenButtonRef.textContent = getTranslate('sync.openDownloads', 'Open downloads');
+    }
+    openDownloadsRef?.();
+  } catch (error) {
+    console.error('Failed to enqueue specimen download', error);
+    setStatusRef('status.specimenDownloadEnqueueFailure', 'error');
+  } finally {
+    if (downloadSpecimenButtonRef) {
+      downloadSpecimenButtonRef.disabled = false;
+    }
+  }
+};
+
 // ===== Reset =====
 
 /**
@@ -846,6 +997,7 @@ export function initModelController(deps = {}) {
       : resetProgressPercentRef;
   datasetSelectRef = deps.datasetSelect ?? datasetSelectRef;
   modelSelectRef = deps.modelSelect ?? modelSelectRef;
+  downloadSpecimenButtonRef = deps.downloadSpecimenButton ?? downloadSpecimenButtonRef;
   reloadButtonRef = deps.reloadButton ?? reloadButtonRef;
   compareButtonRef = deps.compareButton ?? compareButtonRef;
   toggleLabelsButtonRef = deps.toggleLabelsButton ?? toggleLabelsButtonRef;
@@ -966,6 +1118,8 @@ export function initModelController(deps = {}) {
     typeof deps.setCustomStatus === 'function' ? deps.setCustomStatus : setCustomStatusRef;
   getLastStatusRef =
     typeof deps.getLastStatus === 'function' ? deps.getLastStatus : getLastStatusRef;
+  openDownloadsRef =
+    typeof deps.openDownloads === 'function' ? deps.openDownloads : openDownloadsRef;
 
   return {
     initDatasets,
@@ -979,5 +1133,6 @@ export function initModelController(deps = {}) {
     exitComparisonMode,
     resetInterfaceState,
     loadComparisonModelB,
+    handleDownloadSpecimenButtonClick,
   };
 }

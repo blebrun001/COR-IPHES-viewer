@@ -3,7 +3,7 @@
  * the Dataverse data client, and the user interface layer.
  */
 import { createViewerApi } from './3d/viewerApi.js';
-import { DataverseClient } from './data/dataverseClient.js';
+import { HybridDataClient } from './data/hybridDataClient.js';
 import { initInterface } from './ui/interface.js';
 
 /**
@@ -17,7 +17,7 @@ async function bootstrap() {
   if (typeof window !== 'undefined') {
     window.viewerApi = viewerApi;
   }
-  const dataClient = new DataverseClient();
+  const dataClient = new HybridDataClient();
   try {
     await initInterface({ viewerApi, dataClient });
   } catch (error) {

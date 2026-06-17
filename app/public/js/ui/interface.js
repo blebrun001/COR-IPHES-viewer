@@ -1,15 +1,15 @@
 /**
  * Orchestrates the UI layer: dataset/model selectors, metadata rendering,
- * viewer controls, and localisation glue code.
+ * viewer controls, and static English UI text.
  */
-import { DataverseClient } from '../data/dataverseClient.js';
-import { i18n } from '../i18n/translator.js';
+import { englishText } from '../text/english.js';
 import initControllers from './controllers.js';
 import { initSearch, formatModelOptionLabel, deriveUberonUrlFromModel } from './search.js';
 import { initMetadata } from './metadata.js';
 import { initMaterialControls } from './materialControls.js';
 import { initInterfaceControls } from './interfaceControls.js';
 import { initModelController } from './modelController.js';
+import { initSyncManager } from './syncManager.js';
 import { createTooltipService } from './tooltips.js';
 import {
   setActiveDataset as dispatchSetActiveDataset,
@@ -109,13 +109,13 @@ const escapeHtml = (value) =>
   });
 
 /**
- * Helper wrapper to keep translation lookups concise with a fallback string.
+ * Helper wrapper to keep text lookups concise with a fallback string.
  *
- * @param {string} key - I18n key to resolve.
- * @param {string} [fallback=''] - Text to use when no translation is found.
- * @returns {string} Resolved translation or fallback.
+ * @param {string} key - Text key to resolve.
+ * @param {string} [fallback=''] - Text to use when no catalog entry is found.
+ * @returns {string} Resolved English text or fallback.
  */
-const translate = (key, fallback = '') => i18n.translate(key, { defaultValue: fallback });
+const translate = (key, fallback = '') => englishText.translate(key, { defaultValue: fallback });
 
 const getAllDatasets = () => selectAllDatasets();
 const setAllDatasets = (datasets) => {
@@ -178,27 +178,29 @@ const getModelToken = () => selectModelToken();
  *
  * @param {object} options - Init options.
  * @param {object} options.viewerApi - High-level façade for the viewer.
- * @param {DataverseClient} [options.dataClient] - Data client used to query Dataverse.
+ * @param {object} [options.dataClient] - Data client used to query Dataverse or the offline catalog.
  * @param {Document} [options.documentRef=document] - Document reference (facilitates testing).
  * @param {Window} [options.windowRef=window] - Window reference (facilitates testing).
  * @returns {Promise<{destroy: () => void}>} Cleanup handle.
  */
 export async function initInterface({
   viewerApi,
-  dataClient = new DataverseClient(),
+  dataClient,
   documentRef = document,
   windowRef = window,
 } = {}) {
   if (!viewerApi) {
     throw new Error('initInterface requires a viewerApi instance');
   }
+  if (!dataClient) {
+    throw new Error('initInterface requires a dataClient instance');
+  }
 
-  await i18n.init();
-  const LANGUAGE_CODES = i18n.getSupportedLanguages().map(({ code }) => code);
-  const languageOptionNodes = new Map();
+  await englishText.init();
 
   const datasetSelect = documentRef.getElementById('datasetSelect');
   const modelSelect = documentRef.getElementById('modelSelect');
+  const downloadSpecimenButton = documentRef.getElementById('downloadSpecimenButton');
   const reloadButton = documentRef.getElementById('reloadDatasets');
   const searchInput = documentRef.getElementById('searchInput');
   const searchResults = documentRef.getElementById('searchResults');
@@ -259,7 +261,6 @@ export async function initInterface({
   const toggleLabelsButton = documentRef.getElementById('toggleLabels');
   const labelOverlay = documentRef.getElementById('labelOverlay');
   const rotationGizmoButton = documentRef.getElementById('toggleRotationGizmo');
-  const languageSelect = documentRef.getElementById('languageSelect');
   const viewerToolbar = documentRef.getElementById('viewerToolbar');
   const viewerToolbarToggle = documentRef.getElementById('viewerToolbarToggle');
   const exitFullscreenButton = documentRef.getElementById('exitFullscreen');
@@ -268,9 +269,8 @@ export async function initInterface({
   const sidebar = documentRef.getElementById('appSidebar');
   const toggleSidebarButton = documentRef.getElementById('toggleSidebar');
   const optionsButton = documentRef.getElementById('optionsButton');
-  const aboutButton = documentRef.getElementById('aboutButton');
+  const syncButton = documentRef.getElementById('syncButton');
   const closeOptionsButton = documentRef.getElementById('closeOptions');
-  const themeSelect = documentRef.getElementById('themeSelect');
   const screenshotBgToggle = documentRef.getElementById('screenshot-bg-toggle');
   const anaglyphEyeSeparation = documentRef.getElementById('anaglyphEyeSeparation');
   const reloadDatasetsButton = documentRef.getElementById('reloadDatasets');
@@ -298,19 +298,18 @@ export async function initInterface({
     [toggleSidebarButton, 'header.tooltips.toggleSidebar', 'Toggle sidebar'],
     [datasetSelect, 'sidebar.tooltips.dataset', 'Select a specimen to load its models'],
     [modelSelect, 'sidebar.tooltips.model', 'Select an anatomical element'],
+    [downloadSpecimenButton, 'sync.openDownloads', 'Download or inspect this specimen'],
     [reloadButton, 'sidebar.tooltips.reload', 'Reload page'],
     [resetInterfaceButton, 'sidebar.tooltips.reset', 'Reset interface state'],
     [gbifLink, 'sidebar.tooltips.gbif', 'Open GBIF entry'],
     [coraLink, 'sidebar.tooltips.cora', 'Open CORA-RDR entry'],
     [uberonLink, 'sidebar.tooltips.uberon', 'Open ontology entry'],
     [optionsButton, 'sidebar.tooltips.settings', 'Settings'],
-    [aboutButton, 'sidebar.tooltips.about', 'About this project'],
+    [syncButton, 'sidebar.tooltips.sync', 'Synchronize offline catalog'],
     [viewerToolbarToggle, 'viewer.toolbar.tooltips.toggle', 'Show or hide secondary controls'],
     [screenshotButton, 'viewer.buttons.capture', 'Capture'],
     [resetViewButton, 'viewer.buttons.resetView', 'Reset view'],
     [closeOptionsButton, 'options.tooltips.close', 'Close options'],
-    [languageSelect, 'options.tooltips.language', 'Change interface language'],
-    [themeSelect, 'options.tooltips.theme', 'Change viewer theme'],
     [screenshotBgToggle, 'options.tooltips.screenshotBackground', 'Toggle screenshot background'],
     [anaglyphEyeSeparation, 'options.tooltips.anaglyph', 'Adjust anaglyph depth'],
     [reloadDatasetsButton, 'options.tooltips.reloadDatasets', 'Reload specimen list'],
@@ -318,7 +317,6 @@ export async function initInterface({
 
   const depsMetadata = {
     translate,
-    i18n,
     metadataPanel,
     coraLink,
     gbifLink,
@@ -552,35 +550,14 @@ export async function initInterface({
 
   updateFullscreenUI(false);
 
-  const buildLanguageLabel = (code) => translate(`language.names.${code}`, code.toUpperCase());
-
-  const refreshLanguageSelector = () => {
-    if (!languageSelect) {
-      return;
-    }
-    LANGUAGE_CODES.forEach((code) => {
-      let option = languageOptionNodes.get(code);
-      if (!option) {
-        option = documentRef.createElement('option');
-        option.value = code;
-        languageOptionNodes.set(code, option);
-        languageSelect.appendChild(option);
-      }
-      option.textContent = buildLanguageLabel(code);
-    });
-    const current = i18n.currentLanguage || i18n.defaultLanguage || 'en';
-    languageSelect.value = LANGUAGE_CODES.includes(current) ? current : i18n.defaultLanguage;
-  };
-
-  const applyLanguageToDocument = () => {
+  const applyDocumentLanguage = () => {
     if (documentRef?.documentElement) {
-      documentRef.documentElement.setAttribute('lang', i18n.currentLanguage || 'en');
+      documentRef.documentElement.setAttribute('lang', 'en');
     }
   };
 
-  const refreshLanguageDependentUI = () => {
-    applyLanguageToDocument();
-    refreshLanguageSelector();
+  const refreshTextDependentUI = () => {
+    applyDocumentLanguage();
     metadata.renderDatasetMetadata(getCurrentMetadataDetail());
     reapplyStatus();
     updateCompareButtonState();
@@ -595,7 +572,7 @@ export async function initInterface({
     updateMeasureButton();
     syncClippingUI();
     updateFullscreenUI(isFullscreenActive);
-    i18n.applyTranslations(documentRef);
+    englishText.applyToDocument(documentRef);
     tooltips.refresh();
     updateToolbarToggle();
     if (searchHandlers?.isTaxonomySupported()) {
@@ -640,7 +617,6 @@ export async function initInterface({
   const controllerDeps = {
     viewerApi,
     dataClient,
-    i18n,
     translate,
     documentRef,
     windowRef,
@@ -693,7 +669,6 @@ export async function initInterface({
     setActiveDatasetId: (value) => {
       setActiveDatasetId(value ?? null);
     },
-    i18n,
     appStateAccessors: searchStateAccessors,
     tooltipService: tooltips,
   };
@@ -706,12 +681,12 @@ export async function initInterface({
     dataClient,
     translate,
     escapeHtml,
-    i18n,
     windowRef,
     metadata,
     searchHandlers,
     datasetSelect,
     modelSelect,
+    downloadSpecimenButton,
     reloadButton,
     compareButton,
     toggleLabelsButton,
@@ -754,6 +729,7 @@ export async function initInterface({
     getDatasetToken,
     incrementModelToken,
     getModelToken,
+    openDownloads: () => syncButton?.click?.(),
   };
   const modelController = initModelController(depsModel);
   loadDatasetModelsDelegate = (...args) => modelController.loadDatasetModels(...args);
@@ -765,6 +741,13 @@ export async function initInterface({
   exitComparisonModeDelegate = (...args) => modelController.exitComparisonMode(...args);
   resetInterfaceStateDelegate = (...args) => modelController.resetInterfaceState(...args);
   modelUtilities.initDatasets = (...args) => modelController.initDatasets(...args);
+  initSyncManager({
+    dataClient,
+    documentRef,
+    windowRef,
+    translate,
+    resetInterfaceState: modelController.resetInterfaceState,
+  });
   const clearDatasetsCache =
     typeof modelController.clearDatasetsCache === 'function'
       ? () => modelController.clearDatasetsCache()
@@ -956,6 +939,10 @@ export async function initInterface({
 
     datasetSelect.addEventListener('change', handleDatasetSelectChange);
     modelSelect.addEventListener('change', controllers.handleModelSelectChange);
+    downloadSpecimenButton?.addEventListener(
+      'click',
+      modelController.handleDownloadSpecimenButtonClick,
+    );
 
     if (searchInput && searchHandlers) {
       searchInput.addEventListener('input', searchHandlers.handleSearchInput);
@@ -984,10 +971,6 @@ export async function initInterface({
 
     if (toggleLabelsButton) {
       toggleLabelsButton.addEventListener('click', controllers.handleToggleLabelsButtonClick);
-    }
-
-    if (languageSelect) {
-      languageSelect.addEventListener('change', controllers.handleLanguageSelectChange);
     }
 
     projectionModeButtons.forEach(({ button, mode }) => {
@@ -1088,11 +1071,7 @@ export async function initInterface({
     documentRef.addEventListener('MSFullscreenChange', handleDocumentFullscreenChange);
   };
 
-  const unsubscribe = i18n.onChange(() => {
-    refreshLanguageDependentUI();
-  });
-
-  refreshLanguageDependentUI();
+  refreshTextDependentUI();
   modelController.initDatasets();
   registerEventHandlers();
   updateRotationGizmoButton();
@@ -1112,9 +1091,6 @@ export async function initInterface({
       }
       if (exitFullscreenButton) {
         exitFullscreenButton.removeEventListener('click', handleExitFullscreenClick);
-      }
-      if (typeof unsubscribe === 'function') {
-        unsubscribe();
       }
       viewerEventUnsubscribes.splice(0).forEach((unsubscribe) => {
         try {

@@ -14,6 +14,9 @@ body {
   font-size: var(--font-md);
   line-height: var(--line-height-base);
   background-color: var(--color-bg);
+  background-image: radial-gradient(circle at 20% 20%, rgba(0, 243, 109, 0.05), transparent 20%),
+    radial-gradient(circle at 80% 0%, rgba(0, 243, 109, 0.04), transparent 25%),
+    linear-gradient(180deg, rgba(0, 243, 109, 0.03) 0, rgba(0, 243, 109, 0.06) 50%, transparent 100%);
   color: var(--color-text-primary);
   transition: background-color 0.25s ease, color 0.25s ease;
 }
@@ -23,14 +26,7 @@ body.is-fullscreen {
   overflow: hidden;
 }
 
-/* Matrix-styled accenting for the geek theme. */
-[data-theme='geek'] body {
-  background-image: radial-gradient(circle at 20% 20%, rgba(0, 243, 109, 0.05), transparent 20%),
-    radial-gradient(circle at 80% 0%, rgba(0, 243, 109, 0.04), transparent 25%),
-    linear-gradient(180deg, rgba(0, 243, 109, 0.03) 0, rgba(0, 243, 109, 0.06) 50%, transparent 100%);
-}
-
-[data-theme='geek'] * {
+* {
   border-radius: 0 !important;
 }
 
