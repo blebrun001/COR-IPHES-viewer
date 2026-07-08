@@ -266,7 +266,7 @@ Each capability is implemented as a mixin in `app/public/js/3d/`, enhancing the 
 ---
 
 ## License
-This project is distributed under the **Creative Commons CC BY-NC 4.0** licence. Attribution to COR-IPHES and collaborators is required for derivative works; commercial use is prohibited.
+This project is distributed under the **GNU General Public License, Version 3, 29 June 2007**. See `LICENSE` for the full license text.
 
 ---
 
